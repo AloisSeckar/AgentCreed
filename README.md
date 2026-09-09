@@ -8,7 +8,7 @@ Feedback and help are welcome from day one.
 
 ## Motivation
 
-I am having multiple SW projects and I am in process of improving their capabilities for AI-driven development using AI agents. Solid set of instructions is required both to improve output quality and to reduce the execution costs. Because I honor DRY principle, I don't like to repeat myself over and over again. So I am collecting the repeating patterns, evaluating what works and what doesn't and I am trying to create some baseline that can be quickly applied to any project. 
+I am having multiple SW projects and I am in process of improving their capabilities for AI-driven development using AI agents. Solid set of instructions is required both to improve output quality and to reduce the execution costs. Because I honor DRY principle, I don't like to repeat myself over and over again. So I am collecting the repeating patterns, evaluating what works and what doesn't and I am trying to create some baseline that can be quickly applied to any project.
 
 ## Goals
 
@@ -22,7 +22,7 @@ To provide a set of instructions that can be quickly applied to any project, eit
 
 ## Non-goals
 
-`AgentCreed` will work best for the short-circuit `human prompt -> agent response -> human review` workflow. 
+`AgentCreed` will work best for the short-circuit `human prompt -> agent response -> human review` workflow.
 
 It is - at least not yet - oriented on fully autonomous agentic systems. It is not imposing boundaries on self-operating agents. This might be a subject of later improvement.
 

@@ -9,8 +9,9 @@
 
 ## Skills
 
-- [ ] skill making agent asking more before working randomly based on https://www.skills.sh/mattpocock/skills/grill-me
-- [ ] skill helping agent to scaffold project-specific info based on https://www.skills.sh/cloudai-x/claude-workflow-v2/analyzing-projects
+- [ ] skill making agent asking more before working randomly based on <https://www.skills.sh/mattpocock/skills/grill-me>
+- [ ] skill helping agent to scaffold project-specific info based on <https://www.skills.sh/cloudai-x/claude-workflow-v2/analyzing-projects>
+- [ ] custom skill for converting pdf/docx (with specs) to `.md` files
 
 ## CLI
 
