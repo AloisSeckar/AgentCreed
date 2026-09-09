@@ -1,0 +1,37 @@
+{
+  "name": "agentcreed",
+  "version": "0.0.0",
+  "description": "Methodology for adding AI agents' instructions into SW projects",
+  "license": "MIT",
+  "author": {
+    "name": "Alois Seckar",
+    "email": "alois.seckar@gmail.com",
+    "url": "http://aloisseckar.com/"
+  },
+  "homepage": "https://github.com/AloisSeckar/AgentCreed#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AloisSeckar/AgentCreed.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AloisSeckar/AgentCreed/issues"
+  },
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "agentcreed": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "elrh-cosca": "0.3.6"
+  },
+  "keywords": [
+    "AI",
+    "agents",
+    "software",
+    "methodology"
+  ],
+  "packageManager": "pnpm@12.3.4"
+}
