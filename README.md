@@ -36,4 +36,14 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 - The project will carry on universal rules and priciples while having project-specific needs in mind (e.g. via a placeholders in instruction files)
 - Instruction sets for specific languages and tools will be gradually added
 
+## Usage
+
+- to start, just use `npx agentcreed setup` - CLI will run a wizard to create/adjust necessary files
+- to update existing instance, use `npx agendcreed update` - CLI will update existing instruction files to latest versions (while preserving project-specific sections) and create new files if needed
+
+## Structure
+
+- `bin` - folder with CLI scripts' definitions
+- `src` - folder with templates for agents instructions
+
 MORE TBA

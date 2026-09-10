@@ -5,7 +5,6 @@
 - [ ] `AGENTS.md` - basic context with progressive disclosure (enforce `creed-dev` skill and link to other instruction files)
 - [ ] `ARCHITECTURE.md` - how to keep info about the project (tech stack, structure, workflows, etc)
 - [ ] `SECURITY.md` - core security boundaries
-- [ ] `CODING.md` - guidelines for coding - dos and don'ts
 
 ## Skills
 
@@ -18,6 +17,7 @@
 ## CLI
 
 - [ ] remotely executable (`npx agentcreed setup`) Node script for establishing this in any project
+- [ ] remotely executable (`npx agentcreed uodate`) Node script for updating instructions when already established
 
 ---
 
