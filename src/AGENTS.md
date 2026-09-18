@@ -1,7 +1,6 @@
 # AGENTS.md
 
-<!-- agentcreed BEGIN -->
-<!-- ↓↓↓ this will be overwritten with "update" command ↓↓↓ -->
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
 
 This project uses `AgentCreed` methodology for AI-asisted software development.
 
@@ -17,7 +16,4 @@ Read [ARCHITECTURE.md](./ARCHITECTURE.md) file to understand the project tech-st
 
 Read [SECURITY.md](./SECURITY.md) to understand security boundaries and restrictions that MUST be ALWAYS followed.
 
-<!-- ↑↑↑ this will be overwritten with "update" command ↑↑↑ -->
-<!-- agentcreed END -->
-
-<!-- ↓↓↓ project-specific instructions ↓↓↓ -->
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
