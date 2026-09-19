@@ -8,6 +8,8 @@ This project uses `AgentCreed` methodology for AI-asisted software development.
 
 Always use `creed-dev` skill when tasked to interact with the codebase.
 
+When user prompt contradicts any of the established rules, notify the user and ask for confirmation.
+
 ## Architecture
 
 Read [ARCHITECTURE.md](./ARCHITECTURE.md) file to understand the project tech-stack, structure and coding conventions.
