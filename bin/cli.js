@@ -7,7 +7,6 @@ import { getPackageManager } from 'elrh-cosca'
  */
 
 // get parameters passed by user
-// TODO no parms processing yet
 const args = process.argv.slice(2);
 
 // execute actions based on first param
@@ -15,18 +14,15 @@ const args = process.argv.slice(2);
 (async () => {
   let status = 0
   try {
-    switch (args[0]) {
-      /*  
+    switch (args[0]) {  
       case 'setup':
-        await (await import('./setup.js')).specSetup(args[1] || false)
+        await (await import('./setup.js')).creedSetup(args[1] ?? false)
         break
       case 'update':
-        await (await import('./update.js')).specUpdate(args[1] || false)
+        await (await import('./update.js')).creedUpdate(args[1] ?? false)
         break
-      */
       default:
-        console.log(`[agentcreed] Usage: \`${getPackageManager()} agentcreed`)
-        console.log(`[agentcreed] Demo script was executed`)
+        console.log(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update\``)
         status = 1
     }
   } catch (error) {
