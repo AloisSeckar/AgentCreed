@@ -22,7 +22,7 @@
     "agentcreed": "bin/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/setup.test.js"
   },
   "dependencies": {
     "elrh-cosca": "0.3.6"
