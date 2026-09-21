@@ -27,8 +27,12 @@ async function setupFixture(context, answers = []) {
   context.after(async () => {
     context.mock.restoreAll()
     syncBuiltinESMExports()
-    process.chdir(cwd)
-    await fs.rm(directory, { recursive: true, force: true })
+    try {
+      assert.deepEqual((await fs.readdir(directory)).filter(name => name.startsWith('.agentcreed-')), [])
+    } finally {
+      process.chdir(cwd)
+      await fs.rm(directory, { recursive: true, force: true })
+    }
   })
   const templates = new Map(FILES.map(file => [
     `${BASE_URL}${file}`, `${file === SKILL ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
@@ -93,6 +97,31 @@ test('scaffolds all four full templates from main in order without prompting', a
   for (const file of FILES) {
     assert.equal(await fs.readFile(file, 'utf8'), templates.get(`${BASE_URL}${file}`))
     await assert.rejects(fs.access(file.replace(/\.md$/, '_temp.md')), { code: 'ENOENT' })
+  }
+})
+
+test('downloads existing-file templates through COSCA and removes them after processing', async context => {
+  const { templates } = await setupFixture(context)
+  for (const file of FILES) {
+    await fs.mkdir(path.dirname(file), { recursive: true })
+    await fs.writeFile(file, templates.get(`${BASE_URL}${file}`))
+  }
+  const downloads = []
+  const readFile = fs.readFile.bind(fs)
+  context.mock.method(fs, 'readFile', async (file, ...args) => {
+    const content = await readFile(file, ...args)
+    if (file.startsWith('.agentcreed-')) downloads.push({ file, content })
+    return content
+  })
+  const writes = context.mock.method(fsSync, 'writeFileSync')
+  syncBuiltinESMExports()
+  await creedSetup(true)
+  assert.equal(downloads.length, FILES.length)
+  assert.equal(new Set(downloads.map(download => download.file)).size, FILES.length)
+  for (const [index, download] of downloads.entries()) {
+    assert.equal(download.content, templates.get(`${BASE_URL}${FILES[index]}`))
+    assert.ok(writes.mock.calls.some(call => call.arguments[0] === path.resolve(download.file)))
+    await assert.rejects(fs.access(download.file), { code: 'ENOENT' })
   }
 })
 
@@ -232,11 +261,22 @@ test('refuses to overwrite or remove a pre-existing temp file', async context =>
   assert.equal(await fs.readFile('AGENTS_temp.md', 'utf8'), 'Unrelated temp content')
 })
 
-for (const failure of ['prefix write', 'append', 'verification', 'rename']) {
+for (const failure of ['download write', 'download read', 'prefix write', 'append', 'verification', 'rename']) {
   test(`preserves the original and cleans its temp after a ${failure} failure`, async context => {
     await setupFixture(context)
     await fs.writeFile('AGENTS.md', '# Original\nUntouched')
-    if (failure === 'prefix write') {
+    if (failure === 'download write') {
+      const writeFile = fsSync.writeFileSync.bind(fsSync)
+      context.mock.method(fsSync, 'writeFileSync', (file) => {
+        writeFile(file, 'Partial download')
+        throw new Error('Download write failed')
+      })
+      syncBuiltinESMExports()
+    } else if (failure === 'download read') {
+      const readFile = fs.readFile.bind(fs)
+      context.mock.method(fs, 'readFile', (file, ...args) => file.startsWith('.agentcreed-')
+        ? Promise.reject(new Error('Download read failed')) : readFile(file, ...args))
+    } else if (failure === 'prefix write') {
       const open = fs.open.bind(fs)
       context.mock.method(fs, 'open', async (...args) => {
         const handle = await open(...args)
@@ -244,7 +284,11 @@ for (const failure of ['prefix write', 'append', 'verification', 'rename']) {
         return handle
       })
     } else if (failure === 'append') {
-      context.mock.method(fsSync, 'writeFileSync', () => { throw new Error('Append failed') })
+      const writeFile = fsSync.writeFileSync.bind(fsSync)
+      context.mock.method(fsSync, 'writeFileSync', (file, ...args) => {
+        if (file.endsWith('_temp.md')) throw new Error('Append failed')
+        return writeFile(file, ...args)
+      })
       syncBuiltinESMExports()
     } else if (failure === 'verification') {
       const readFile = fs.readFile.bind(fs)
@@ -253,7 +297,7 @@ for (const failure of ['prefix write', 'append', 'verification', 'rename']) {
     } else {
       context.mock.method(fs, 'rename', async () => { throw new Error('Rename failed') })
     }
-    await assert.rejects(creedSetup(true), /Write failed|Append failed|expected content|Rename failed/)
+    await assert.rejects(creedSetup(true), /Download (write|read) failed|Write failed|Append failed|expected content|Rename failed/)
     assert.equal(await fs.readFile('AGENTS.md', 'utf8'), '# Original\nUntouched')
     await assert.rejects(fs.access('AGENTS_temp.md'), { code: 'ENOENT' })
   })

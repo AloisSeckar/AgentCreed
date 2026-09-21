@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs/promises'
-import https from 'node:https'
 import {
   createFileFromWebTemplate, pathExists, promptUser, showMessage, updateTextFile,
 } from 'elrh-cosca'
@@ -12,24 +11,6 @@ const START_MARKER = '<!-- \u2193\u2193\u2193 agentcreed \u2193\u2193\u2193 -->'
 const END_MARKER = '<!-- \u2191\u2191\u2191 agentcreed \u2191\u2191\u2191 -->'
 const SKILL_FILE = '.agents/skills/creed-dev/SKILL.md'
 const FILES = ['AGENTS.md', 'ARCHITECTURE.md', 'SECURITY.md', SKILL_FILE]
-
-function fetchTemplate(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, response => {
-      if (response.statusCode !== 200) {
-        response.resume()
-        reject(new Error(`Template download returned HTTP ${response.statusCode}`))
-        return
-      }
-      let content = ''
-      response.setEncoding('utf8')
-      response.on('data', chunk => { content += chunk })
-      response.on('end', () => resolve(content))
-      response.on('error', reject)
-      response.on('aborted', () => reject(new Error('Template download was interrupted')))
-    }).on('error', reject)
-  })
-}
 
 function splitDocument(text, isSkill) {
   const content = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
@@ -150,7 +131,14 @@ export async function creedSetup(autoRun = false) {
     const url = `${TEMPLATE_BASE_URL}${file}`
     try {
       if (pathExists(file)) {
-        await mergeFile(file, await fetchTemplate(url))
+        const templateDirectory = await fs.mkdtemp('.agentcreed-')
+        try {
+          const templateFile = `${templateDirectory}/template.md`
+          await createFileFromWebTemplate(url, templateFile, true)
+          await mergeFile(file, await fs.readFile(templateFile, 'utf8'))
+        } finally {
+          await fs.rm(templateDirectory, { recursive: true, force: true })
+        }
       } else {
         await createFileFromWebTemplate(url, file, true)
       }
