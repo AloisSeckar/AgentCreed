@@ -22,10 +22,13 @@
     "agentcreed": "bin/cli.js"
   },
   "scripts": {
-    "test": "node --test test/setup.test.js"
+    "test": "pnpm vitest run"
   },
   "dependencies": {
     "elrh-cosca": "0.3.6"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.0"
   },
   "keywords": [
     "AI",
@@ -33,5 +36,5 @@
     "software",
     "methodology"
   ],
-  "packageManager": "pnpm@12.3.4"
+  "packageManager": "pnpm@12.5.1"
 }
