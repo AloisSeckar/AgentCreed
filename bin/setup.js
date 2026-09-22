@@ -4,13 +4,11 @@ import fs from 'node:fs/promises'
 import {
   createFileFromWebTemplate, pathExists, promptUser, showMessage, updateTextFile,
 } from 'elrh-cosca'
+import {
+  CREED_BLOCK_END, CREED_FILES, CREED_SKILL_FILE, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
+} from '../utils/constants.js'
 
 const TARGET_VERSION = '0.0.0'
-const TEMPLATE_BASE_URL = 'https://raw.githubusercontent.com/AloisSeckar/AgentCreed/refs/heads/main/src/'
-const START_MARKER = '<!-- \u2193\u2193\u2193 agentcreed \u2193\u2193\u2193 -->'
-const END_MARKER = '<!-- \u2191\u2191\u2191 agentcreed \u2191\u2191\u2191 -->'
-const SKILL_FILE = '.agents/skills/creed-dev/SKILL.md'
-const FILES = ['AGENTS.md', 'ARCHITECTURE.md', 'SECURITY.md', SKILL_FILE]
 
 function splitDocument(text, isSkill) {
   const content = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
@@ -21,7 +19,7 @@ function splitDocument(text, isSkill) {
     if (closing === -1) throw new Error('Unterminated skill frontmatter')
     return { prefix: lines.slice(0, closing + 1).join('\n'), body: lines.slice(closing + 1).join('\n') }
   }
-  if ([START_MARKER, END_MARKER].includes(lines[0].trim())) {
+  if ([CREED_BLOCK_BEGIN, CREED_BLOCK_END].includes(lines[0].trim())) {
     throw new Error('Expected a headline before Agent Creed markers')
   }
   return { prefix: content ? lines[0] : null, body: lines.slice(1).join('\n') }
@@ -32,10 +30,10 @@ function findManagedBlocks(body) {
   const blocks = []
   let opening = -1
   for (const [index, line] of lines.entries()) {
-    if (line.trim() === START_MARKER) {
+    if (line.trim() === CREED_BLOCK_BEGIN) {
       if (opening !== -1) throw new Error('Nested Agent Creed opening marker')
       opening = index
-    } else if (line.trim() === END_MARKER) {
+    } else if (line.trim() === CREED_BLOCK_END) {
       if (opening === -1) throw new Error('Agent Creed closing marker without an opening marker')
       blocks.push({ start: opening, end: index })
       opening = -1
@@ -82,7 +80,7 @@ function getMergeSections(original, template, isSkill) {
 
 async function mergeFile(file, template) {
   const original = await fs.readFile(file, 'utf8')
-  const { prefix, block, body } = getMergeSections(original, template, file === SKILL_FILE)
+  const { prefix, block, body } = getMergeSections(original, template, file === CREED_SKILL_FILE)
   const tempFile = file.replace(/\.md$/, '_temp.md')
   let ownsTemp = false
   try {
@@ -123,12 +121,12 @@ export async function creedSetup(autoRun = false) {
   const isAutoRun = autoRun || await promptUser('Do you want to set everything up automatically (no more prompts)?')
   showMessage('')
 
-  for (const file of FILES) {
+  for (const file of CREED_FILES) {
     if (!isAutoRun && !await promptUser(`Set up '${file}' while preserving your instructions?`)) {
       showMessage(`Setup of '${file}' skipped.`)
       continue
     }
-    const url = `${TEMPLATE_BASE_URL}${file}`
+    const url = `${REMOTE_CREED_FILES_URL}${file}`
     try {
       if (pathExists(file)) {
         const templateDirectory = await fs.mkdtemp('.agentcreed-')
