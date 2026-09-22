@@ -92,8 +92,8 @@ async function mergeFile(file, template) {
       await handle.close()
     }
     await updateTextFile(tempFile, [block], true)
-    if (body) await updateTextFile(tempFile, [`${body}\n`], true)
-    const expected = `${prefix}\n\n${block}\n${body ? `\n${body}\n\n` : ''}`
+    if (body) await updateTextFile(tempFile, [body], true)
+    const expected = `${prefix}\n\n${block}\n${body ? `\n${body}\n` : ''}`
     if (await fs.readFile(tempFile, 'utf8') !== expected) {
       throw new Error('Temporary file did not preserve the expected content')
     }
