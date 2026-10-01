@@ -17,21 +17,21 @@ const TARGET_VERSION = '0.0.0'
  * @param {boolean} autoRun - Whether to run the setup automatically without any prompts (defaults to false).
  */
 export async function creedUpdate(autoRun = false) {
-  showMessage('AGENT CREED UPDATE')
-  showMessage(`Target version: ${TARGET_VERSION}`)
-  showMessage('This CLI tool will help you update your Agent Creed setup.')
-  showMessage('Refer to the documentation for more information.', 2)
+  showMessage({ message: 'AGENT CREED UPDATE' })
+  showMessage({ message: `Target version: ${TARGET_VERSION}` })
+  showMessage({ message: 'This CLI tool will help you update your Agent Creed setup.' })
+  showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
 
-  const isAutoRun = autoRun || await promptUser('Do you want to set everything up automatically (no more prompts)?')
-  showMessage('')
+  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to set everything up automatically (no more prompts)?' })
+  showMessage({ message: '' })
 
   // 1) TODO
 
   // steps required to set up the project
 
   // inform user
-  showMessage('')
-  showMessage('AGENT CREED UPDATE COMPLETE', 2)
+  showMessage({ message: '' })
+  showMessage({ message: 'AGENT CREED UPDATE COMPLETE', linesAfter: 2 })
 
   // force exit to prevent #20
   process.exit(0)

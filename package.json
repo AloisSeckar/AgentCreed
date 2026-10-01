@@ -25,7 +25,7 @@
     "test": "pnpm vitest run"
   },
   "dependencies": {
-    "elrh-cosca": "0.3.6"
+    "elrh-cosca": "0.4.0"
   },
   "devDependencies": {
     "vitest": "^5.0.0"

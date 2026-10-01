@@ -91,8 +91,8 @@ async function mergeFile(file, template) {
     } finally {
       await handle.close()
     }
-    await updateTextFile(tempFile, [block], true)
-    if (body) await updateTextFile(tempFile, [body], true)
+    await updateTextFile({ targetFile: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true })
+    if (body) await updateTextFile({ targetFile: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true })
     const expected = `${prefix}\n\n${block}\n${body ? `\n${body}\n` : ''}`
     if (await fs.readFile(tempFile, 'utf8') !== expected) {
       throw new Error('Temporary file did not preserve the expected content')
@@ -113,32 +113,32 @@ async function mergeFile(file, template) {
  * @returns {Promise<void>} Completes setup and exits on success; rejects on failure.
  */
 export async function creedSetup(autoRun = false) {
-  showMessage('AGENT CREED SETUP')
-  showMessage(`Target version: ${TARGET_VERSION}`)
-  showMessage('This CLI tool will help you establishing Agent Creed AI-assisted development in your project.')
-  showMessage('Refer to the documentation for more information.', 2)
+  showMessage({ message: 'AGENT CREED SETUP' })
+  showMessage({ message: `Target version: ${TARGET_VERSION}` })
+  showMessage({ message: 'This CLI tool will help you establishing Agent Creed AI-assisted development in your project.' })
+  showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
 
-  const isAutoRun = autoRun || await promptUser('Do you want to set everything up automatically (no more prompts)?')
-  showMessage('')
+  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to set everything up automatically (no more prompts)?' })
+  showMessage({ message: '' })
 
   for (const file of CREED_FILES) {
-    if (!isAutoRun && !await promptUser(`Set up '${file}' while preserving your instructions?`)) {
-      showMessage(`Setup of '${file}' skipped.`)
+    if (!isAutoRun && !await promptUser({ question: `Set up '${file}' while preserving your instructions?` })) {
+      showMessage({ message: `Setup of '${file}' skipped.` })
       continue
     }
     const url = `${REMOTE_CREED_FILES_URL}${file}`
     try {
-      if (pathExists(file)) {
+      if (pathExists({ targetPath: file })) {
         const templateDirectory = await fs.mkdtemp('.agentcreed-')
         try {
           const templateFile = `${templateDirectory}/template.md`
-          await createFileFromWebTemplate(url, templateFile, true)
+          await createFileFromWebTemplate({ url, targetFile: templateFile, force: true })
           await mergeFile(file, await fs.readFile(templateFile, 'utf8'))
         } finally {
           await fs.rm(templateDirectory, { recursive: true, force: true })
         }
       } else {
-        await createFileFromWebTemplate(url, file, true)
+        await createFileFromWebTemplate({ url, targetFile: file, force: true })
       }
     } catch (error) {
       throw new Error(`Could not set up '${file}' from ${url}: ${error.message}`, { cause: error })
@@ -146,8 +146,8 @@ export async function creedSetup(autoRun = false) {
   }
 
   // inform user
-  showMessage('')
-  showMessage('AGENT CREED SETUP COMPLETE', 2)
+  showMessage({ message: '' })
+  showMessage({ message: 'AGENT CREED SETUP COMPLETE', linesAfter: 2 })
 
   // force exit to prevent #20
   process.exit(0)
