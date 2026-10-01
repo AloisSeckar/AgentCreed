@@ -14,9 +14,8 @@ export const CREED_BLOCK_BEGIN = '<!-- \u2193\u2193\u2193 agentcreed \u2193\u219
 /** Structural marker in instruction files - end */
 export const CREED_BLOCK_END = '<!-- \u2191\u2191\u2191 agentcreed \u2191\u2191\u2191 -->'
 
-/** Path to the creed-dev skill file */
-// TODO rework to array-based value once more skills are added
-export const CREED_SKILL_FILE = '.agents/skills/creed-dev/SKILL.md'
+/** Paths to the AgentCreed skill files */
+export const CREED_SKILLS = ['.agents/skills/creed-dev/SKILL.md', '.agents/skills/creed-chat/SKILL.md']
 
 /** List of AgentCreed instruction files */
-export const CREED_FILES = ['AGENTS.md', 'ARCHITECTURE.md', 'SECURITY.md', CREED_SKILL_FILE]
+export const CREED_FILES = ['AGENTS.md', 'ARCHITECTURE.md', 'SECURITY.md', ...CREED_SKILLS]

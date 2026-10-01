@@ -5,7 +5,7 @@ import {
   createFileFromWebTemplate, pathExists, promptUser, showMessage, updateTextFile,
 } from 'elrh-cosca'
 import {
-  CREED_BLOCK_END, CREED_FILES, CREED_SKILL_FILE, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
+  CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
 } from '../utils/constants.js'
 
 const TARGET_VERSION = '0.0.0'
@@ -80,7 +80,7 @@ function getMergeSections(original, template, isSkill) {
 
 async function mergeFile(file, template) {
   const original = await fs.readFile(file, 'utf8')
-  const { prefix, block, body } = getMergeSections(original, template, file === CREED_SKILL_FILE)
+  const { prefix, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
   const tempFile = file.replace(/\.md$/, '_temp.md')
   let ownsTemp = false
   try {
@@ -105,7 +105,7 @@ async function mergeFile(file, template) {
 }
 
 /**
- * Scaffold the root instruction documents and creed-dev skill from GitHub main.
+ * Scaffold the root instruction documents and skills from GitHub main.
  * Existing headlines, skill metadata and instructions outside managed blocks are preserved.
  * Manual mode requests consent once per file; automatic mode suppresses prompts.
  *

@@ -11,7 +11,7 @@ import { Readable } from 'node:stream'
 import { expect, onTestFinished, test, vi } from 'vitest'
 import { creedSetup } from '../bin/setup.js'
 import {
-  CREED_BLOCK_END, CREED_FILES, CREED_SKILL_FILE, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
+  CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
 } from '../utils/constants.js'
 
 const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
@@ -32,7 +32,7 @@ async function setupFixture(answers = []) {
     }
   })
   const templates = new Map(CREED_FILES.map(file => [
-    `${REMOTE_CREED_FILES_URL}${file}`, `${file === CREED_SKILL_FILE ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
+    `${REMOTE_CREED_FILES_URL}${file}`, `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
   ]))
   const requests = []
   vi.spyOn(https, 'get').mockImplementation((url, callback) => {
@@ -148,21 +148,21 @@ test('extracts first through last template markers without duplicating that span
 test('preserves custom skill metadata including comments, ordering and multiline values', async () => {
   await setupFixture()
   const metadata = '---\n# Custom comment\ndescription: |\n  ---\n  My own description\n  ...\nname: local-skill\ncustom: true\n---'
-  await fs.mkdir(path.dirname(CREED_SKILL_FILE), { recursive: true })
-  await fs.writeFile(CREED_SKILL_FILE, `${metadata}\nBefore\n${CREED_BLOCK_BEGIN}\nOld skill\n${CREED_BLOCK_END}\nAfter`)
+  await fs.mkdir(path.dirname(CREED_SKILLS[0]), { recursive: true })
+  await fs.writeFile(CREED_SKILLS[0], `${metadata}\nBefore\n${CREED_BLOCK_BEGIN}\nOld skill\n${CREED_BLOCK_END}\nAfter`)
   await creedSetup(true)
   const expected = `${metadata}\n\n${BLOCK}\n\nBefore\nAfter\n\n`
-  expect(await fs.readFile(CREED_SKILL_FILE, 'utf8')).toBe(expected)
+  expect(await fs.readFile(CREED_SKILLS[0], 'utf8')).toBe(expected)
   await creedSetup(true)
-  expect(await fs.readFile(CREED_SKILL_FILE, 'utf8')).toBe(expected)
+  expect(await fs.readFile(CREED_SKILLS[0], 'utf8')).toBe(expected)
 })
 
 test('adds template metadata to an existing skill without frontmatter', async () => {
   await setupFixture()
-  await fs.mkdir(path.dirname(CREED_SKILL_FILE), { recursive: true })
-  await fs.writeFile(CREED_SKILL_FILE, '# Local skill\n\nKeep this instruction.')
+  await fs.mkdir(path.dirname(CREED_SKILLS[0]), { recursive: true })
+  await fs.writeFile(CREED_SKILLS[0], '# Local skill\n\nKeep this instruction.')
   await creedSetup(true)
-  expect(await fs.readFile(CREED_SKILL_FILE, 'utf8')).toBe(`${METADATA}\n\n${BLOCK}\n\n# Local skill\n\nKeep this instruction.\n\n`)
+  expect(await fs.readFile(CREED_SKILLS[0], 'utf8')).toBe(`${METADATA}\n\n${BLOCK}\n\n# Local skill\n\nKeep this instruction.\n\n`)
 })
 
 test('handles empty files, literal first lines, CRLF, BOM and absent final newlines', async () => {
@@ -181,13 +181,13 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
 })
 
 test('manual mode asks once per destination and leaves declined existing and missing files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'y'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'y', 'n'])
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()
-  expect(prompts.length).toBe(5)
+  expect(prompts.length).toBe(6)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
-  expect(requests).toEqual([`${REMOTE_CREED_FILES_URL}ARCHITECTURE.md`, `${REMOTE_CREED_FILES_URL}${CREED_SKILL_FILE}`])
+  expect(requests).toEqual([`${REMOTE_CREED_FILES_URL}ARCHITECTURE.md`, `${REMOTE_CREED_FILES_URL}${CREED_SKILLS[0]}`])
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Untouched\nMy instructions')
   expect(await fs.readFile('ARCHITECTURE.md', 'utf8')).toBe(`# Custom architecture\n\n${BLOCK}\n\nUser body\n\n`)
   await expect(fs.access('SECURITY.md')).rejects.toMatchObject({ code: 'ENOENT' })
@@ -198,7 +198,7 @@ test('choosing automatic setup at the initial prompt suppresses per-file prompts
   const { prompts, requests } = await setupFixture(['yes'])
   await creedSetup()
   expect(prompts.length).toBe(1)
-  expect(requests.length).toBe(4)
+  expect(requests.length).toBe(CREED_FILES.length)
 })
 
 for (const [label, original, template, message] of [
@@ -225,11 +225,11 @@ for (const [label, original, template, message] of [
 test('rejects unterminated skill frontmatter without changing the skill', async () => {
   await setupFixture()
   const original = '---\nname: unfinished\nMy instructions'
-  await fs.mkdir(path.dirname(CREED_SKILL_FILE), { recursive: true })
-  await fs.writeFile(CREED_SKILL_FILE, original)
+  await fs.mkdir(path.dirname(CREED_SKILLS[0]), { recursive: true })
+  await fs.writeFile(CREED_SKILLS[0], original)
   await expect(creedSetup(true)).rejects.toThrow(/Unterminated skill frontmatter/)
-  expect(await fs.readFile(CREED_SKILL_FILE, 'utf8')).toBe(original)
-  await expect(fs.access(CREED_SKILL_FILE.replace('.md', '_temp.md'))).rejects.toMatchObject({ code: 'ENOENT' })
+  expect(await fs.readFile(CREED_SKILLS[0], 'utf8')).toBe(original)
+  await expect(fs.access(CREED_SKILLS[0].replace('.md', '_temp.md'))).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
 for (const exists of [false, true]) {

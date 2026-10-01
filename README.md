@@ -43,7 +43,7 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 
 ### Setup behavior
 
-Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.agents/skills/creed-dev/SKILL.md`. Missing files are copied from the complete templates, creating directories as needed.
+Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.agents/skills/creed-dev/SKILL.md` and `.agents/skills/creed-chat/SKILL.md`. Missing files are copied from the complete templates, creating directories as needed.
 
 Templates currently come from the GitHub `main` branch under `src/`. The displayed target version does not pin downloaded content; tag-based fetching is deferred.
 
