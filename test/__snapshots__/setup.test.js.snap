@@ -1,0 +1,151 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`adds template metadata to an existing skill without frontmatter 1`] = `
+"---
+name: creed-dev
+description: Template skill
+---
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+# Local skill
+
+Keep this instruction.
+"
+`;
+
+exports[`extracts first through last template markers without duplicating that span on reruns 1`] = `
+"# Custom
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+First section
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+Template middle
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+Last section
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+User body
+"
+`;
+
+exports[`handles empty files, literal first lines, CRLF, BOM and absent final newlines 1`] = `
+"# AGENTS.md
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+"
+`;
+
+exports[`handles empty files, literal first lines, CRLF, BOM and absent final newlines 2`] = `
+"A literal first line
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+"
+`;
+
+exports[`handles empty files, literal first lines, CRLF, BOM and absent final newlines 3`] = `
+"﻿# Security
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+  Keep spacing.  
+
+Second line
+"
+`;
+
+exports[`manual mode asks once per destination and leaves declined existing and missing files alone 1`] = `
+"# Custom architecture
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+User body
+"
+`;
+
+exports[`preserves custom skill metadata including comments, ordering and multiline values 1`] = `
+"---
+# Custom comment
+description: |
+  ---
+  My own description
+  ...
+name: local-skill
+custom: true
+---
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+Before
+After
+"
+`;
+
+exports[`preserves duplicate and one-line instructions through real helper calls and repeat runs 1`] = `
+"# My agents
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+Keep this instruction.
+
+
+  Preserve indentation.  
+Keep this instruction.
+"
+`;
+
+exports[`preserves duplicate and one-line instructions through real helper calls and repeat runs 2`] = `
+"# My architecture
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+Keep this instruction.
+"
+`;
+
+exports[`replaces separate old blocks while retaining intervening user content and inline markers 1`] = `
+"# Custom
+
+<!-- ↓↓↓ agentcreed ↓↓↓ -->
+
+Keep this instruction.
+
+<!-- ↑↑↑ agentcreed ↑↑↑ -->
+
+Before
+Between
+Treat <!-- ↓↓↓ agentcreed ↓↓↓ --> and <!-- ↑↑↑ agentcreed ↑↑↑ --> as inert text.
+"
+`;
