@@ -1,2 +1,2 @@
-minimumReleaseAgeExclude:
-  - elrh-cosca@0.4.0
+# minimumReleaseAgeExclude:
+#  - elrh-cosca@0.4.0
