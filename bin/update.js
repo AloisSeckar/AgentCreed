@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
-import {
-    promptUser, showMessage,
-} from 'elrh-cosca'
-
-const TARGET_VERSION = '0.0.0'
+import { promptUser, showMessage } from 'elrh-cosca'
+import { CREED_VERSION } from '../utils/constants.js'
 
 /**
  * CLI tool to scaffold necessary adjustments in project folder.
@@ -18,7 +15,7 @@ const TARGET_VERSION = '0.0.0'
  */
 export async function creedUpdate(autoRun = false) {
   showMessage({ message: 'AGENT CREED UPDATE' })
-  showMessage({ message: `Target version: ${TARGET_VERSION}` })
+    showMessage({ message: `CLI version: ${CREED_VERSION}` })
   showMessage({ message: 'This CLI tool will help you update your Agent Creed setup.' })
   showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
 

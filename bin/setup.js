@@ -5,10 +5,9 @@ import {
   createFileFromWebTemplate, pathExists, promptUser, showMessage, updateTextFile,
 } from 'elrh-cosca'
 import {
-  CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
+  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, 
+  CREED_SKILLS, CREED_VERSION,
 } from '../utils/constants.js'
-
-const TARGET_VERSION = '0.0.0'
 
 function splitDocument(text, isSkill) {
   const content = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
@@ -114,7 +113,7 @@ async function mergeFile(file, template) {
  */
 export async function creedSetup(autoRun = false) {
   showMessage({ message: 'AGENT CREED SETUP' })
-  showMessage({ message: `Target version: ${TARGET_VERSION}` })
+  showMessage({ message: `CLI version: ${CREED_VERSION}` })
   showMessage({ message: 'This CLI tool will help you establishing Agent Creed AI-assisted development in your project.' })
   showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
 
@@ -126,7 +125,7 @@ export async function creedSetup(autoRun = false) {
       showMessage({ message: `Setup of '${file}' skipped.` })
       continue
     }
-    const url = `${REMOTE_CREED_FILES_URL}${file}`
+    const url = `${CREED_FILES_URL}${file}`
     try {
       if (pathExists({ targetPath: file })) {
         const templateDirectory = await fs.mkdtemp('.agentcreed-')

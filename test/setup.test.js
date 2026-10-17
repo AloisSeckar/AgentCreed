@@ -11,7 +11,7 @@ import { Readable } from 'node:stream'
 import { expect, onTestFinished, test, vi } from 'vitest'
 import { creedSetup } from '../bin/setup.js'
 import {
-  CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_BLOCK_BEGIN, REMOTE_CREED_FILES_URL,
+  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS, 
 } from '../utils/constants.js'
 
 const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
@@ -32,7 +32,7 @@ async function setupFixture(answers = []) {
     }
   })
   const templates = new Map(CREED_FILES.map(file => [
-    `${REMOTE_CREED_FILES_URL}${file}`, `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
+    `${CREED_FILES_URL}${file}`, `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
   ]))
   const requests = []
   vi.spyOn(https, 'get').mockImplementation((url, callback) => {
@@ -88,11 +88,11 @@ test('preserves duplicate and one-line instructions through real helper calls an
 test('scaffolds all four full templates from main in order without prompting', async () => {
   const { templates, requests, prompts, exit } = await setupFixture()
   await creedSetup(true)
-  expect(requests).toEqual(CREED_FILES.map(file => `${REMOTE_CREED_FILES_URL}${file}`))
+  expect(requests).toEqual(CREED_FILES.map(file => `${CREED_FILES_URL}${file}`))
   expect(prompts).toEqual([])
   expect(exit.mock.calls).toEqual([[0]])
   for (const file of CREED_FILES) {
-    expect(await fs.readFile(file, 'utf8')).toBe(templates.get(`${REMOTE_CREED_FILES_URL}${file}`))
+    expect(await fs.readFile(file, 'utf8')).toBe(templates.get(`${CREED_FILES_URL}${file}`))
     await expect(fs.access(file.replace(/\.md$/, '_temp.md'))).rejects.toMatchObject({ code: 'ENOENT' })
   }
 })
@@ -101,7 +101,7 @@ test('downloads existing-file templates through COSCA and removes them after pro
   const { templates } = await setupFixture()
   for (const file of CREED_FILES) {
     await fs.mkdir(path.dirname(file), { recursive: true })
-    await fs.writeFile(file, templates.get(`${REMOTE_CREED_FILES_URL}${file}`))
+    await fs.writeFile(file, templates.get(`${CREED_FILES_URL}${file}`))
   }
   const downloads = []
   const readFile = fs.readFile.bind(fs)
@@ -116,7 +116,7 @@ test('downloads existing-file templates through COSCA and removes them after pro
   expect(downloads.length).toBe(CREED_FILES.length)
   expect(new Set(downloads.map(download => download.file)).size).toBe(CREED_FILES.length)
   for (const [index, download] of downloads.entries()) {
-    expect(download.content).toBe(templates.get(`${REMOTE_CREED_FILES_URL}${CREED_FILES[index]}`))
+    expect(download.content).toBe(templates.get(`${CREED_FILES_URL}${CREED_FILES[index]}`))
     expect(writes.mock.calls.some(call => call[0] === path.resolve(download.file))).toBe(true)
     await expect(fs.access(download.file)).rejects.toMatchObject({ code: 'ENOENT' })
   }
@@ -136,7 +136,7 @@ test('replaces separate old blocks while retaining intervening user content and 
 test('extracts first through last template markers without duplicating that span on reruns', async () => {
   const { templates } = await setupFixture()
   const block = `${CREED_BLOCK_BEGIN}\nFirst section\n${CREED_BLOCK_END}\nTemplate middle\n${CREED_BLOCK_BEGIN}\nLast section\n${CREED_BLOCK_END}`
-  templates.set(`${REMOTE_CREED_FILES_URL}AGENTS.md`, `# Template\nExcluded intro\n${block}\nExcluded outro`)
+  templates.set(`${CREED_FILES_URL}AGENTS.md`, `# Template\nExcluded intro\n${block}\nExcluded outro`)
   await fs.writeFile('AGENTS.md', '# Custom\nUser body')
   await creedSetup(true)
   const expected = await fs.readFile('AGENTS.md', 'utf8')
@@ -167,7 +167,7 @@ test('adds template metadata to an existing skill without frontmatter', async ()
 
 test('handles empty files, literal first lines, CRLF, BOM and absent final newlines', async () => {
   const { templates } = await setupFixture()
-  templates.set(`${REMOTE_CREED_FILES_URL}SECURITY.md`, templates.get(`${REMOTE_CREED_FILES_URL}SECURITY.md`).replaceAll('\n', '\r\n'))
+  templates.set(`${CREED_FILES_URL}SECURITY.md`, templates.get(`${CREED_FILES_URL}SECURITY.md`).replaceAll('\n', '\r\n'))
   await fs.writeFile('AGENTS.md', '')
   await fs.writeFile('ARCHITECTURE.md', 'A literal first line')
   await fs.writeFile('SECURITY.md', '\uFEFF# Security\r\n\r\n  Keep spacing.  \r\n\r\nSecond line')
@@ -188,7 +188,7 @@ test('manual mode asks once per destination and leaves declined existing and mis
   await creedSetup()
   expect(prompts.length).toBe(6)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
-  expect(requests).toEqual([`${REMOTE_CREED_FILES_URL}ARCHITECTURE.md`, `${REMOTE_CREED_FILES_URL}${CREED_SKILLS[0]}`])
+  expect(requests).toEqual([`${CREED_FILES_URL}ARCHITECTURE.md`, `${CREED_FILES_URL}${CREED_SKILLS[0]}`])
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Untouched\nMy instructions')
   expect(await fs.readFile('ARCHITECTURE.md', 'utf8')).toMatchSnapshot()
   await expect(fs.access('SECURITY.md')).rejects.toMatchObject({ code: 'ENOENT' })
@@ -213,7 +213,7 @@ for (const [label, original, template, message] of [
 ]) {
   test(`rejects ${label} without replacing the original`, async () => {
     const { templates, output, exit } = await setupFixture()
-    if (template !== null) templates.set(`${REMOTE_CREED_FILES_URL}AGENTS.md`, template)
+    if (template !== null) templates.set(`${CREED_FILES_URL}AGENTS.md`, template)
     await fs.writeFile('AGENTS.md', original)
     await expect(creedSetup(true)).rejects.toThrow(message)
     expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(original)
@@ -237,13 +237,13 @@ for (const exists of [false, true]) {
   for (const failure of ['HTTP', 'network']) {
     test(`reports ${failure} failure for an ${exists ? 'existing' : 'absent'} file without fallback`, async () => {
       const { templates, requests, output } = await setupFixture()
-      if (failure === 'HTTP') templates.delete(`${REMOTE_CREED_FILES_URL}AGENTS.md`)
-      else templates.set(`${REMOTE_CREED_FILES_URL}AGENTS.md`, new Error('Network unavailable'))
+      if (failure === 'HTTP') templates.delete(`${CREED_FILES_URL}AGENTS.md`)
+      else templates.set(`${CREED_FILES_URL}AGENTS.md`, new Error('Network unavailable'))
       if (exists) await fs.writeFile('AGENTS.md', '# Original\nUntouched')
       await expect(creedSetup(true)).rejects.toThrow(/Could not set up 'AGENTS.md'.*(404|Network unavailable)/s)
       if (exists) expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Original\nUntouched')
       else await expect(fs.access('AGENTS.md')).rejects.toMatchObject({ code: 'ENOENT' })
-      expect(requests).toEqual([`${REMOTE_CREED_FILES_URL}AGENTS.md`])
+      expect(requests).toEqual([`${CREED_FILES_URL}AGENTS.md`])
       expect(output.join('')).not.toContain('SETUP COMPLETE')
       await expect(fs.access('AGENTS_temp.md')).rejects.toMatchObject({ code: 'ENOENT' })
     })

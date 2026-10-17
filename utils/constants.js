@@ -1,12 +1,11 @@
+// AgentCreed constants
 
 /** Current AgentCreed version */
-// TODO uncomment and use when first version with tag is released
-// export const CURRENT_VERSION = '0.0.0'
-
-// export const REMOTE_CREED_FILES_VERSION = '0.0.0'
+// TODO start using in CREED_FILES_URL when first version with tag is released
+export const CREED_VERSION = '0.0.0'
 
 /** GitHub URL hosting AgentCreed files */
-export const REMOTE_CREED_FILES_URL = 'https://raw.githubusercontent.com/AloisSeckar/AgentCreed/refs/heads/main/src/'
+export const CREED_FILES_URL = 'https://raw.githubusercontent.com/AloisSeckar/AgentCreed/refs/heads/main/src/'
 
 /** Structural marker in instruction files - begin */
 export const CREED_BLOCK_BEGIN = '<!-- \u2193\u2193\u2193 agentcreed \u2193\u2193\u2193 -->'
