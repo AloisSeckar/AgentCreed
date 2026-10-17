@@ -16,10 +16,10 @@
 
 ## CLI
 
-- [ ] remotely executable (`npx agentcreed setup`) Node script for establishing this in any project
-  - [ ] scaffolding files from `/src` (if not exist yet)
-  - [ ] appending relevant part into existing `.md` files
+- [x] remotely executable (`npx agentcreed setup`) Node script for establishing this in any project
+  - [x] scaffolding files from `/src` (if not exist yet)
+  - [x] appending relevant part into existing `.md` files
   - [ ] add `.creed` folder into `.gitignore`
-- [ ] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established
-  - [ ] replace relevant part in existing `.md` files
-  - [ ] overwrite skills
+- [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established
+  - [x] replace relevant part in existing `.md` files
+  - [x] overwrite skills
