@@ -48,4 +48,9 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Inside code, only add comments to explain business logic **why**, never try to describe what, 3 lines maximum.
 - When fixing existing code based on a ticket, add a comment with the ticket number for later reference.
 
+## Debugging
+
+- When failure is reported, always try to isolate the root cause first. If it is not apparent (user provided vague definition), ask for clarification - challenge user to provide error log message or at least to describe steps to reproduce the issue.
+- If the solution isn't straightforward based on your knowledge, try to search the error message. If likely source of the error is a public hosted open-source project, look for the issues in the project repo (i.e. on GitHub).
+
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
