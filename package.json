@@ -36,5 +36,8 @@
     "software",
     "methodology"
   ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "packageManager": "pnpm@12.14.0"
 }
