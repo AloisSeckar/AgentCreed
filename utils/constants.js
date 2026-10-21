@@ -14,7 +14,16 @@ export const CREED_BLOCK_BEGIN = '<!-- \u2193\u2193\u2193 agentcreed \u2193\u219
 export const CREED_BLOCK_END = '<!-- \u2191\u2191\u2191 agentcreed \u2191\u2191\u2191 -->'
 
 /** Paths to the AgentCreed skill files */
-export const CREED_SKILLS = ['.agents/skills/creed-dev/SKILL.md', '.agents/skills/creed-chat/SKILL.md']
+export const CREED_SKILLS = [
+    '.agents/skills/creed-dev/SKILL.md', 
+    '.agents/skills/creed-chat/SKILL.md', 
+    '.agents/skills/creed-scan/SKILL.md',
+]
 
 /** List of AgentCreed instruction files */
-export const CREED_FILES = ['AGENTS.md', 'ARCHITECTURE.md', 'SECURITY.md', ...CREED_SKILLS]
+export const CREED_FILES = [
+    'AGENTS.md', 
+    'ARCHITECTURE.md', 
+    'SECURITY.md', 
+    ...CREED_SKILLS,
+]
