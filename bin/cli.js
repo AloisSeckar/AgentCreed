@@ -13,16 +13,17 @@ const args = process.argv.slice(2);
 // additional params might be passed into the called functions
 (async () => {
   let status = 0
+  const autoRun = args[1] === 'true'
   try {
     switch (args[0]) {  
       case 'setup':
-        await (await import('./setup.js')).creedSetup(args[1] ?? false)
+        await (await import('./setup.js')).creedSetup(autoRun)
         break
       case 'update':
-        await (await import('./update.js')).creedUpdate(args[1] ?? false)
+        await (await import('./update.js')).creedUpdate(autoRun)
         break
       default:
-        console.log(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update\``)
+        console.log(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update [true|false]\``)
         status = 1
     }
   } catch (error) {
