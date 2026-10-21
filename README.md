@@ -39,7 +39,7 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 ## Usage
 
 - to start, just use `npx agentcreed setup` - CLI will run a wizard to create/adjust necessary files
-- to update existing instance, use `npx agendcreed update` - CLI will update existing instruction files to latest versions (while preserving project-specific sections) and create new files if needed
+- to update existing instance, use `npx agentcreed update` - CLI will update existing instruction files to latest versions (while preserving project-specific sections) and create new files if needed
 
 ### Setup behavior
 
