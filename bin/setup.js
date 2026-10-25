@@ -1,108 +1,8 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import {
-  createFileFromWebTemplate, pathExists, promptUser, showMessage, updateTextFile,
-} from 'elrh-cosca'
-import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, 
-  CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
-} from '../utils/constants.js'
-
-function splitDocument(text, isSkill) {
-  const content = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
-  const lines = content.split('\n')
-  if (isSkill) {
-    if (!/^---[ \t]*$/.test(lines[0])) return { prefix: null, body: content }
-    const closing = lines.findIndex((line, index) => index > 0 && /^(---|\.\.\.)[ \t]*$/.test(line))
-    if (closing === -1) throw new Error('Unterminated skill frontmatter')
-    return { prefix: lines.slice(0, closing + 1).join('\n'), body: lines.slice(closing + 1).join('\n') }
-  }
-  if ([CREED_BLOCK_BEGIN, CREED_BLOCK_END].includes(lines[0].trim())) {
-    throw new Error('Expected a headline before Agent Creed markers')
-  }
-  return { prefix: content ? lines[0] : null, body: lines.slice(1).join('\n') }
-}
-
-export function findManagedBlocks(body) {
-  const lines = body.split('\n')
-  const blocks = []
-  let opening = -1
-  for (const [index, line] of lines.entries()) {
-    if (line.trim() === CREED_BLOCK_BEGIN) {
-      if (opening !== -1) throw new Error('Nested Agent Creed opening marker')
-      opening = index
-    } else if (line.trim() === CREED_BLOCK_END) {
-      if (opening === -1) throw new Error('Agent Creed closing marker without an opening marker')
-      blocks.push({ start: opening, end: index })
-      opening = -1
-    }
-  }
-  if (opening !== -1) throw new Error('Agent Creed opening marker without a closing marker')
-  return { lines, blocks }
-}
-
-function trimBlankLines(text) {
-  const lines = text.split('\n')
-  let start = 0
-  let end = lines.length
-  while (start < end && !lines[start].trim()) start++
-  while (end > start && !lines[end - 1].trim()) end--
-  return lines.slice(start, end).join('\n')
-}
-
-function getMergeSections(original, template, isSkill) {
-  const source = splitDocument(template, isSkill)
-  if (source.prefix === null) throw new Error('Template is missing its headline or skill frontmatter')
-  const managed = findManagedBlocks(source.body)
-  if (!managed.blocks.length) throw new Error('Template is missing Agent Creed markers')
-  const block = managed.lines.slice(managed.blocks[0].start, managed.blocks.at(-1).end + 1).join('\n')
-  const existing = splitDocument(original, isSkill)
-  let body = trimBlankLines(existing.body)
-  if (body === block || body.startsWith(`${block}\n`)) {
-    body = body.slice(block.length)
-  }
-  const previous = findManagedBlocks(body)
-  const remaining = []
-  let cursor = 0
-  for (const range of previous.blocks) {
-    remaining.push(...previous.lines.slice(cursor, range.start))
-    cursor = range.end + 1
-  }
-  remaining.push(...previous.lines.slice(cursor))
-  return {
-    prefix: (original.startsWith('\uFEFF') ? '\uFEFF' : '') + (existing.prefix ?? source.prefix),
-    block,
-    body: trimBlankLines(remaining.join('\n')),
-  }
-}
-
-async function mergeFile(file, template) {
-  const original = await fs.readFile(file, 'utf8')
-  const { prefix, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
-  const tempFile = file.replace(/\.md$/, '_temp.md')
-  let ownsTemp = false
-  try {
-    const handle = await fs.open(tempFile, 'wx')
-    ownsTemp = true
-    try {
-      await handle.writeFile(`${prefix}\n`, 'utf8')
-    } finally {
-      await handle.close()
-    }
-    await updateTextFile({ targetFile: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true })
-    if (body) await updateTextFile({ targetFile: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true })
-    const expected = `${prefix}\n\n${block}\n${body ? `\n${body}\n` : ''}`
-    if (await fs.readFile(tempFile, 'utf8') !== expected) {
-      throw new Error('Temporary file did not preserve the expected content')
-    }
-    await fs.rename(tempFile, file)
-    ownsTemp = false
-  } finally {
-    if (ownsTemp) await fs.rm(tempFile, { force: true })
-  }
-}
+import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
+import { CREED_FILES, CREED_FILES_URL, CREED_VERSION } from '../utils/constants.js'
+import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
 
 /**
  * Scaffold the root instruction documents and skills from GitHub main.
@@ -129,14 +29,7 @@ export async function creedSetup(autoRun = false) {
     const url = `${CREED_FILES_URL}${file}`
     try {
       if (pathExists({ targetPath: file })) {
-        const templateDirectory = await fs.mkdtemp('.agentcreed-')
-        try {
-          const templateFile = `${templateDirectory}/template.md`
-          await createFileFromWebTemplate({ url, targetFile: templateFile, force: true })
-          await mergeFile(file, await fs.readFile(templateFile, 'utf8'))
-        } finally {
-          await fs.rm(templateDirectory, { recursive: true, force: true })
-        }
+        await mergeFile(file, await fetchTemplate(url))
       } else {
         await createFileFromWebTemplate({ url, targetFile: file, force: true })
       }
@@ -146,13 +39,12 @@ export async function creedSetup(autoRun = false) {
   }
 
   // file with version info
-  await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
-  await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}\n`, 'utf8')
+  await writeVersionFile()
 
   // inform user
   showMessage({ message: '' })
   showMessage({ message: 'AGENT CREED SETUP COMPLETE', linesAfter: 2 })
 
-  // force exit to prevent #20
+  // force exit to prevent process from hanging
   process.exit(0)
 }
