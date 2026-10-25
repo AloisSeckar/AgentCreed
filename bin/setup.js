@@ -25,7 +25,7 @@ function splitDocument(text, isSkill) {
   return { prefix: content ? lines[0] : null, body: lines.slice(1).join('\n') }
 }
 
-function findManagedBlocks(body) {
+export function findManagedBlocks(body) {
   const lines = body.split('\n')
   const blocks = []
   let opening = -1

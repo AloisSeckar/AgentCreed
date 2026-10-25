@@ -25,10 +25,13 @@ npx agentcreed <cmd> [auto]
    bin/cli.js ──► bin/setup.js  ──► download src/<file> from GitHub (CREED_FILES_URL)
               │                      ├─ missing file → create from template
               │                      └─ existing file → merge managed blocks via <file>_temp.md, then rename
-              └─► bin/update.js (stub, not implemented yet)
+              └─► bin/update.js ──► download src/<file> from GitHub (CREED_FILES_URL)
+                                     ├─ missing file → create from template
+                                     ├─ markers present → replace first..last marker span in place
+                                     └─ no markers → insert block after H1 (or at top / below skill frontmatter)
 ```
 
-Setup also writes `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
+Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
 Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines; content outside them is preserved on merge.
 
@@ -37,9 +40,9 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - `bin/` - CLI entry (`cli.js`) and command implementations (`setup.js`, `update.js`)
 - `utils/` - shared constants (version, template URL, markers, managed file list)
 - `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.agents/skills/*`); also act as this repo's own agent instructions
-- `test/` - Vitest suite for setup (temp dirs, mocked `https.get` and `readline`) plus snapshots
+- `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
-- `.creed/` - git-ignored agent work files (`SUGGESTIONS.md`); `version` is written by setup
+- `.creed/` - git-ignored agent work files (`SUGGESTIONS.md`); `version` is written by setup and update
 
 ## Entry Points
 

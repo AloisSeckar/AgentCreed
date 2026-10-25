@@ -26,6 +26,7 @@
   - [x] appending relevant part into existing `.md` files
   - [ ] scaffold `.creed/SUGGESTIONS.md`
   - [ ] add `.creed` folder into `.gitignore`
+  - [x] scaffold `.creed/version`
 - [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established
-  - [ ] replace relevant part in existing `.md` files
-  - [ ] overwrite skills
+  - [x] replace relevant part in existing `.md` files
+  - [x] update `.creed/version`
