@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs/promises'
+import path from 'node:path'
 import {
   createFileFromWebTemplate, pathExists, promptUser, showMessage, updateTextFile,
 } from 'elrh-cosca'
 import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, 
-  CREED_SKILLS, CREED_VERSION,
+  CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
 
 function splitDocument(text, isSkill) {
@@ -143,6 +144,10 @@ export async function creedSetup(autoRun = false) {
       throw new Error(`Could not set up '${file}' from ${url}: ${error.message}`, { cause: error })
     }
   }
+
+  // file with version info
+  await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
+  await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}\n`, 'utf8')
 
   // inform user
   showMessage({ message: '' })

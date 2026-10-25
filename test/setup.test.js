@@ -11,7 +11,8 @@ import { Readable } from 'node:stream'
 import { expect, onTestFinished, test, vi } from 'vitest'
 import { creedSetup } from '../bin/setup.js'
 import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS, 
+  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
+  CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
 
 const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
@@ -95,6 +96,15 @@ test('scaffolds all four full templates from main in order without prompting', a
     expect(await fs.readFile(file, 'utf8')).toBe(templates.get(`${CREED_FILES_URL}${file}`))
     await expect(fs.access(file.replace(/\.md$/, '_temp.md'))).rejects.toMatchObject({ code: 'ENOENT' })
   }
+})
+
+test('writes the CLI version to the version file on every run', async () => {
+  await setupFixture()
+  await creedSetup(true)
+  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(`${CREED_VERSION}\n`)
+  await fs.writeFile(CREED_VERSION_FILE, 'stale')
+  await creedSetup(true)
+  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(`${CREED_VERSION}\n`)
 })
 
 test('downloads existing-file templates through COSCA and removes them after processing', async () => {
@@ -182,11 +192,11 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
 })
 
 test('manual mode asks once per destination and leaves declined existing and missing files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'y', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'y', 'n', 'n'])
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()
-  expect(prompts.length).toBe(6)
+  expect(prompts.length).toBe(CREED_FILES.length + 1)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
   expect(requests).toEqual([`${CREED_FILES_URL}ARCHITECTURE.md`, `${CREED_FILES_URL}${CREED_SKILLS[0]}`])
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Untouched\nMy instructions')

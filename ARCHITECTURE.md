@@ -28,6 +28,8 @@ npx agentcreed <cmd> [auto]
               └─► bin/update.js (stub, not implemented yet)
 ```
 
+Setup also writes `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
+
 Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines; content outside them is preserved on merge.
 
 ## Key Directories
@@ -37,7 +39,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.agents/skills/*`); also act as this repo's own agent instructions
 - `test/` - Vitest suite for setup (temp dirs, mocked `https.get` and `readline`) plus snapshots
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
-- `.creed/` - git-ignored agent work files (`SUGGESTIONS.md`)
+- `.creed/` - git-ignored agent work files (`SUGGESTIONS.md`); `version` is written by setup
 
 ## Entry Points
 
@@ -52,7 +54,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - No semicolons, single quotes, 2-space indentation
 - Exported functions documented with JSDoc; constants with one-line `/** */` comments
 - Conventional Commits (`feat:`, `docs:`, `build:` ...), trunk-based on `main`
-- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`)
+- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`)
 
 ## Quick Commands
 

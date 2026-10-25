@@ -1,5 +1,10 @@
 # Project roadmap
 
+## Internal files
+
+- [x] `.creed/SUGGESTIONS.md` - dedicated file where agents store their findings
+- [x] `.creed/version` - tracker of currently installed version
+
 ## Instruction files
 
 - [x] `AGENTS.md` - basic context with progressive disclosure (enforce `creed-dev` skill and link to other instruction files)
