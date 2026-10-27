@@ -2,7 +2,7 @@
 
 /** Current AgentCreed version */
 // TODO start using in CREED_FILES_URL when first version with tag is released
-export const CREED_VERSION = '0.0.0'
+export const CREED_VERSION = '0.0.1'
 
 /** GitHub URL hosting AgentCreed files */
 export const CREED_FILES_URL = 'https://raw.githubusercontent.com/AloisSeckar/AgentCreed/refs/heads/main/src/'

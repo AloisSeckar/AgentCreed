@@ -1,6 +1,6 @@
 {
   "name": "agentcreed",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Methodology for adding AI agents' instructions into SW projects",
   "license": "MIT",
   "author": {
