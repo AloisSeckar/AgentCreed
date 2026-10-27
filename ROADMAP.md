@@ -24,7 +24,7 @@
 - [x] remotely executable (`npx agentcreed setup`) Node script for establishing this in any project
   - [x] scaffolding files from `/src` (if not exist yet)
   - [x] appending relevant part into existing `.md` files
-  - [ ] scaffold `.creed/SUGGESTIONS.md`
+  - [x] scaffold `.creed/SUGGESTIONS.md`
   - [ ] add `.creed` folder into `.gitignore`
   - [x] scaffold `.creed/version`
 - [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established

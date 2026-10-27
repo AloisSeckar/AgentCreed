@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
-import { CREED_FILES, CREED_FILES_URL, CREED_VERSION } from '../utils/constants.js'
-import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
+import { CREED_FILES, CREED_FILES_URL, CREED_SUGGESTIONS_FILE, CREED_VERSION } from '../utils/constants.js'
+import { fetchTemplate, mergeFile, writeSuggestionsFile, writeVersionFile } from '../utils/install.js'
 
 /**
- * Scaffold the root instruction documents and skills from GitHub main.
+ * Scaffold the root instruction documents, skills and aux files.
  * Existing headlines, skill metadata and instructions outside managed blocks are preserved.
  * Manual mode requests consent once per file; automatic mode suppresses prompts.
  *
@@ -37,6 +37,9 @@ export async function creedSetup(autoRun = false) {
       throw new Error(`Could not set up '${file}' from ${url}: ${error.message}`, { cause: error })
     }
   }
+
+  // file for suggestions
+  await writeSuggestionsFile()
 
   // file with version info
   await writeVersionFile()

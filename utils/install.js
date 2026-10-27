@@ -4,7 +4,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { createFileFromWebTemplate, updateTextFile } from 'elrh-cosca'
 import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
+  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES_URL, CREED_SKILLS, 
+  CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
 
 /** Index of the closing frontmatter line, or -1 when the document has no frontmatter. */
@@ -153,6 +154,17 @@ export function applyManagedBlock(original, template) {
   }
   return bom + lines.join(eol)
 }
+
+/** Scaffold suggestions file into `CREED_SUGGESTIONS_FILE`. */
+export async function writeSuggestionsFile() {
+  await fs.mkdir(path.dirname(CREED_SUGGESTIONS_FILE), { recursive: true })
+  await createFileFromWebTemplate({
+    url: `${CREED_FILES_URL}SUGGESTIONS.md`,
+    targetFile: CREED_SUGGESTIONS_FILE,
+    force: true,
+  })
+}
+
 
 /** Write the installed AgentCreed version into `CREED_VERSION_FILE`. */
 export async function writeVersionFile() {
