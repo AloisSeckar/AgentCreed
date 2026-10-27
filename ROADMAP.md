@@ -25,7 +25,7 @@
   - [x] scaffolding files from `/src` (if not exist yet)
   - [x] appending relevant part into existing `.md` files
   - [x] scaffold `.creed/SUGGESTIONS.md`
-  - [ ] add `.creed` folder into `.gitignore`
+  - [x] add `.creed` folder into `.gitignore`
   - [x] scaffold `.creed/version`
 - [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established
   - [x] replace relevant part in existing `.md` files

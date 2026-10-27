@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { createFileFromWebTemplate, updateTextFile } from 'elrh-cosca'
+import { createFileFromWebTemplate, pathExists, updateTextFile } from 'elrh-cosca'
 import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES_URL, CREED_SKILLS, 
   CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
@@ -165,9 +165,14 @@ export async function writeSuggestionsFile() {
   })
 }
 
-
 /** Write the installed AgentCreed version into `CREED_VERSION_FILE`. */
 export async function writeVersionFile() {
   await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
   await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}\n`, 'utf8')
+}
+
+/** Add `.creed/` to an existing `.gitignore` (no duplicates); skip when there is no `.gitignore`. */
+export async function ignoreCreedFolder() {
+  if (!pathExists({ targetPath: '.gitignore' })) return
+  await updateTextFile({ targetFile: '.gitignore', rowsToAdd: ['.creed/'], force: true })
 }

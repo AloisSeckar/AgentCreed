@@ -35,6 +35,8 @@ Setup additionally downloads `src/SUGGESTIONS.md` into `.creed/SUGGESTIONS.md` (
 
 Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
+Setup finally appends `.creed/` to an existing `.gitignore` (skipped when none exists or the folder is already ignored).
+
 Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines; content outside them is preserved on merge.
 
 ## Key Directories
@@ -66,7 +68,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 | Action  | Command                             |
 | ------- | ----------------------------------- |
 | Install | `pnpm install`                      |
-| Test    | `pnpm test` (verified: 30/30 pass)  |
+| Test    | `pnpm test` (verified: 68/68 pass)  |
 | Try CLI | `node playground/test.js setup`     |
 
 No lint, format, build or git-hook tooling is configured.

@@ -2,7 +2,7 @@
 
 import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
 import { CREED_FILES, CREED_FILES_URL, CREED_SUGGESTIONS_FILE, CREED_VERSION } from '../utils/constants.js'
-import { fetchTemplate, mergeFile, writeSuggestionsFile, writeVersionFile } from '../utils/install.js'
+import { fetchTemplate, ignoreCreedFolder, mergeFile, writeSuggestionsFile, writeVersionFile } from '../utils/install.js'
 
 /**
  * Scaffold the root instruction documents, skills and aux files.
@@ -43,6 +43,10 @@ export async function creedSetup(autoRun = false) {
 
   // file with version info
   await writeVersionFile()
+
+  // keep internal folder out of git 
+  // (if .gitignore exists)
+  await ignoreCreedFolder()
 
   // inform user
   showMessage({ message: '' })

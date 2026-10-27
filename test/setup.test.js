@@ -109,6 +109,24 @@ test('writes the CLI version to the version file on every run', async () => {
   expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(`${CREED_VERSION}\n`)
 })
 
+test('adds .creed to an existing .gitignore once and skips when .gitignore is missing', async () => {
+  await setupFixture()
+  await creedSetup(true)
+  await expect(fs.access('.gitignore')).rejects.toMatchObject({ code: 'ENOENT' })
+  await fs.writeFile('.gitignore', 'node_modules')
+  await creedSetup(true)
+  expect(await fs.readFile('.gitignore', 'utf8')).toBe('node_modules\n.creed/\n')
+  await creedSetup(true)
+  expect(await fs.readFile('.gitignore', 'utf8')).toBe('node_modules\n.creed/\n')
+})
+
+test('does not duplicate an existing .creed/ entry in .gitignore', async () => {
+  await setupFixture()
+  await fs.writeFile('.gitignore', 'node_modules\r\n.creed/\r\n')
+  await creedSetup(true)
+  expect(await fs.readFile('.gitignore', 'utf8')).toBe('node_modules\r\n.creed/\r\n')
+})
+
 test('downloads existing-file templates through COSCA and removes them after processing', async () => {
   const { templates } = await setupFixture()
   for (const file of CREED_FILES) {
