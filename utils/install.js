@@ -157,5 +157,5 @@ export function applyManagedBlock(original, template) {
 /** Write the installed AgentCreed version into `CREED_VERSION_FILE`. */
 export async function writeVersionFile() {
   await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
-  await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}\n`, 'utf8')
+  await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}`, 'utf8')
 }
