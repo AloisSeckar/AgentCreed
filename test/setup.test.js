@@ -17,8 +17,7 @@ import {
 
 const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
 const BLOCK = `${CREED_BLOCK_BEGIN}\n\nKeep this instruction.\n\n${CREED_BLOCK_END}`
-const SETUP_FILES = [...CREED_FILES, CREED_SUGGESTIONS_FILE]
-const templateUrl = file => `${CREED_FILES_URL}${file === CREED_SUGGESTIONS_FILE ? 'SUGGESTIONS.md' : file}`
+const templateUrl = file => `${CREED_FILES_URL}${file}`
 
 async function setupFixture(answers = []) {
   const cwd = process.cwd()
@@ -34,7 +33,7 @@ async function setupFixture(answers = []) {
       await fs.rm(directory, { recursive: true, force: true })
     }
   })
-  const templates = new Map(SETUP_FILES.map(file => [
+  const templates = new Map(CREED_FILES.map(file => [
     templateUrl(file), `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
   ]))
   const requests = []
@@ -91,10 +90,10 @@ test('preserves duplicate and one-line instructions through real helper calls an
 test('scaffolds all full templates from main in order without prompting', async () => {
   const { templates, requests, prompts, exit } = await setupFixture()
   await creedSetup(true)
-  expect(requests).toEqual(SETUP_FILES.map(templateUrl))
+  expect(requests).toEqual(CREED_FILES.map(templateUrl))
   expect(prompts).toEqual([])
   expect(exit.mock.calls).toEqual([[0]])
-  for (const file of SETUP_FILES) {
+  for (const file of CREED_FILES) {
     expect(await fs.readFile(file, 'utf8')).toBe(templates.get(templateUrl(file)))
     await expect(fs.access(file.replace(/\.md$/, '_temp.md'))).rejects.toMatchObject({ code: 'ENOENT' })
   }
@@ -107,24 +106,6 @@ test('writes the CLI version to the version file on every run', async () => {
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
   await creedSetup(true)
   expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(`${CREED_VERSION}\n`)
-})
-
-test('adds .creed to an existing .gitignore once and skips when .gitignore is missing', async () => {
-  await setupFixture()
-  await creedSetup(true)
-  await expect(fs.access('.gitignore')).rejects.toMatchObject({ code: 'ENOENT' })
-  await fs.writeFile('.gitignore', 'node_modules')
-  await creedSetup(true)
-  expect(await fs.readFile('.gitignore', 'utf8')).toBe('node_modules\n.creed/\n')
-  await creedSetup(true)
-  expect(await fs.readFile('.gitignore', 'utf8')).toBe('node_modules\n.creed/\n')
-})
-
-test('does not duplicate an existing .creed/ entry in .gitignore', async () => {
-  await setupFixture()
-  await fs.writeFile('.gitignore', 'node_modules\r\n.creed/\r\n')
-  await creedSetup(true)
-  expect(await fs.readFile('.gitignore', 'utf8')).toBe('node_modules\r\n.creed/\r\n')
 })
 
 test('downloads existing-file templates through COSCA and removes them after processing', async () => {
@@ -212,36 +193,35 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
 })
 
 test('manual mode asks once per destination and leaves declined existing and missing files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'y', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'y', 'n', 'n'])
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()
   expect(prompts.length).toBe(CREED_FILES.length + 1)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
-  expect(requests).toEqual([
-    `${CREED_FILES_URL}ARCHITECTURE.md`, `${CREED_FILES_URL}${CREED_SKILLS[0]}`, templateUrl(CREED_SUGGESTIONS_FILE),
-  ])
+  expect(requests).toEqual([`${CREED_FILES_URL}ARCHITECTURE.md`, `${CREED_FILES_URL}${CREED_SKILLS[0]}`])
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Untouched\nMy instructions')
   expect(await fs.readFile('ARCHITECTURE.md', 'utf8')).toMatchSnapshot()
   await expect(fs.access('SECURITY.md')).rejects.toMatchObject({ code: 'ENOENT' })
   await expect(fs.access('AGENTS_temp.md')).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
-test('always overwrites the suggestions file without prompting, even when every file is declined', async () => {
-  const { templates, requests, prompts } = await setupFixture(['n', ...CREED_FILES.map(() => 'n')])
+test('merges an existing suggestions file and preserves its entries on reruns', async () => {
+  await setupFixture()
   await fs.mkdir(path.dirname(CREED_SUGGESTIONS_FILE), { recursive: true })
-  await fs.writeFile(CREED_SUGGESTIONS_FILE, '# My suggestions\nExisting entry')
-  await creedSetup()
-  expect(prompts.length).toBe(CREED_FILES.length + 1)
-  expect(requests).toEqual([templateUrl(CREED_SUGGESTIONS_FILE)])
-  expect(await fs.readFile(CREED_SUGGESTIONS_FILE, 'utf8')).toBe(templates.get(templateUrl(CREED_SUGGESTIONS_FILE)))
+  await fs.writeFile(CREED_SUGGESTIONS_FILE, '# My suggestions\n- Existing entry')
+  await creedSetup(true)
+  const merged = await fs.readFile(CREED_SUGGESTIONS_FILE, 'utf8')
+  expect(merged).toBe(`# My suggestions\n\n${BLOCK}\n\n- Existing entry\n`)
+  await creedSetup(true)
+  expect(await fs.readFile(CREED_SUGGESTIONS_FILE, 'utf8')).toBe(merged)
 })
 
 test('choosing automatic setup at the initial prompt suppresses per-file prompts', async () => {
   const { prompts, requests } = await setupFixture(['yes'])
   await creedSetup()
   expect(prompts.length).toBe(1)
-  expect(requests.length).toBe(SETUP_FILES.length)
+  expect(requests.length).toBe(CREED_FILES.length)
 })
 
 for (const [label, original, template, message] of [

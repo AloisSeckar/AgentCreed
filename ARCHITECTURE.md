@@ -31,22 +31,18 @@ npx agentcreed <cmd> [auto]
                                      └─ no markers → insert block after H1 (or at top / below skill frontmatter)
 ```
 
-Setup additionally downloads `src/SUGGESTIONS.md` into `.creed/SUGGESTIONS.md` (`CREED_SUGGESTIONS_FILE`) on every run, always overwriting it and without prompting; the template sits directly in `src/` because `.creed` is git-ignored. Update does not touch it.
-
 Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
-
-Setup finally appends `.creed/` to an existing `.gitignore` (skipped when none exists or the folder is already ignored).
 
 Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines; content outside them is preserved on merge.
 
 ## Key Directories
 
 - `bin/` - CLI entry (`cli.js`) and command implementations (`setup.js`, `update.js`)
-- `utils/` - shared constants (version, template URL, markers, managed file list) and `install.js` (template download, merge/replace of managed blocks, suggestions and version file writing)
-- `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `SUGGESTIONS.md`, `.agents/skills/*`); also act as this repo's own agent instructions
+- `utils/` - shared constants (version, template URL, markers, managed file list) and `install.js` (template download, merge/replace of managed blocks, version file writing)
+- `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.agents/skills/*`); also act as this repo's own agent instructions
 - `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
-- `.creed/` - git-ignored agent work files; `SUGGESTIONS.md` is overwritten by setup, `version` is written by setup and update
+- `.creed/` - versioned agent work files; `SUGGESTIONS.md` is merged/updated by setup and update like other managed files, `version` is written by setup and update
 
 ## Entry Points
 
@@ -68,7 +64,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 | Action  | Command                             |
 | ------- | ----------------------------------- |
 | Install | `pnpm install`                      |
-| Test    | `pnpm test` (verified: 68/68 pass)  |
+| Test    | `pnpm test` (verified: 67/67 pass)  |
 | Try CLI | `node playground/test.js setup`     |
 
 No lint, format, build or git-hook tooling is configured.

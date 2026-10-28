@@ -10,7 +10,7 @@ import { Readable } from 'node:stream'
 import { expect, onTestFinished, test, vi } from 'vitest'
 import { creedUpdate } from '../bin/update.js'
 import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
+  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS, CREED_SUGGESTIONS_FILE,
   CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
 
@@ -147,6 +147,13 @@ test('scaffolds only the missing files and updates the existing ones', async () 
   for (const file of CREED_FILES.slice(1)) expect(await read(file)).toBe(templates.get(url(file)))
 })
 
+test('updates the managed block of an existing suggestions file and keeps its entries', async () => {
+  await setupFixture()
+  await writeFile(CREED_SUGGESTIONS_FILE, `# Suggestions\n\n${OLD}\n\n- Existing entry\n`)
+  await creedUpdate(true)
+  expect(await read(CREED_SUGGESTIONS_FILE)).toBe(`# Suggestions\n\n${NEW}\n\n- Existing entry\n`)
+})
+
 for (const [label, original, expected] of [
   ['after the H1 heading', '# My project\n\nCustom rule.\n', `# My project\n\n${NEW}\n\nCustom rule.\n`],
   ['after the H1 heading without a blank line', '# My project\nCustom rule.', `# My project\n\n${NEW}\n\nCustom rule.`],
@@ -212,7 +219,7 @@ test('writes the CLI version to the version file on every run', async () => {
 })
 
 test('manual mode asks once per file and leaves declined files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'y', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'y', 'n', 'n'])
   await fs.writeFile('AGENTS.md', `# Untouched\n\n${OLD}\n`)
   await fs.writeFile('ARCHITECTURE.md', `# Custom\n\n${OLD}\n`)
   await creedUpdate()

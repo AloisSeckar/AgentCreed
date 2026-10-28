@@ -10,7 +10,7 @@ export const CREED_FILES_URL = 'https://raw.githubusercontent.com/AloisSeckar/Ag
 /** Path to the generated file holding the installed AgentCreed version */
 export const CREED_VERSION_FILE = '.creed/version'
 
-/** Path to the generated file for storing agent suggestions */
+/** Path to the file for storing agent suggestions */
 export const CREED_SUGGESTIONS_FILE = '.creed/SUGGESTIONS.md'
 
 /** Structural marker in instruction files - begin */
@@ -31,5 +31,6 @@ export const CREED_FILES = [
     'AGENTS.md', 
     'ARCHITECTURE.md', 
     'SECURITY.md', 
+    CREED_SUGGESTIONS_FILE,
     ...CREED_SKILLS,
 ]
