@@ -47,6 +47,5 @@ export async function creedUpdate(autoRun = false) {
   // file with version info
   await writeVersionFile()
 
-  // force exit to prevent process from hanging
-  process.exit(0)
+  showMessage({ message: 'UPDATE COMPLETE', linesAfter: 2 })
 }

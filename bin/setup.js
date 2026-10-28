@@ -38,7 +38,6 @@ export async function creedSetup(autoRun = false) {
 
   // file with version info
   await writeVersionFile()
-
-  // force exit to prevent process from hanging
-  //process.exit(0)
+  
+  showMessage({ message: 'SETUP COMPLETE', linesAfter: 2 })
 }

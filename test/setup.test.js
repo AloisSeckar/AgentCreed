@@ -92,7 +92,7 @@ test('scaffolds all full templates from main in order without prompting', async 
   await creedSetup(true)
   expect(requests).toEqual(CREED_FILES.map(templateUrl))
   expect(prompts).toEqual([])
-  expect(exit.mock.calls).toEqual([[0]])
+  expect(exit.mock.calls).toEqual([])
   for (const file of CREED_FILES) {
     expect(await fs.readFile(file, 'utf8')).toBe(templates.get(templateUrl(file)))
     await expect(fs.access(file.replace(/\.md$/, '_temp.md'))).rejects.toMatchObject({ code: 'ENOENT' })

@@ -86,7 +86,7 @@ test('replaces the managed block in place and keeps surrounding user content', a
   await creedUpdate(true)
   const expected = `# My project\n\nAbove\n\n${NEW}\n\nBelow\n`
   expect(await read('AGENTS.md')).toBe(expected)
-  expect(exit.mock.calls).toEqual([[0]])
+  expect(exit.mock.calls).toEqual([])
   expect(output.join('')).toContain('UPDATE COMPLETE')
   await creedUpdate(true)
   expect(await read('AGENTS.md')).toBe(expected)
@@ -135,7 +135,7 @@ test('scaffolds every missing file from its template in order', async () => {
   await creedUpdate(true)
   expect(requests).toEqual(CREED_FILES.map(url))
   expect(prompts).toEqual([])
-  expect(exit.mock.calls).toEqual([[0]])
+  expect(exit.mock.calls).toEqual([])
   for (const file of CREED_FILES) expect(await read(file)).toBe(templates.get(url(file)))
 })
 
