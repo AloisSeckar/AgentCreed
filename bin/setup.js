@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
-import { CREED_FILES, CREED_FILES_URL, CREED_VERSION } from '../utils/constants.js'
+import { CREED_FILES, CREED_FILES_URL } from '../utils/constants.js'
 import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
 
 /**
@@ -13,8 +13,6 @@ import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
  * @returns {Promise<void>} Completes setup and exits on success; rejects on failure.
  */
 export async function creedSetup(autoRun = false) {
-  showMessage({ message: 'AGENT CREED SETUP' })
-  showMessage({ message: `CLI version: ${CREED_VERSION}` })
   showMessage({ message: 'This CLI tool will help you establishing Agent Creed AI-assisted development in your project.' })
   showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
 
@@ -41,10 +39,6 @@ export async function creedSetup(autoRun = false) {
   // file with version info
   await writeVersionFile()
 
-  // inform user
-  showMessage({ message: '' })
-  showMessage({ message: 'AGENT CREED SETUP COMPLETE', linesAfter: 2 })
-
   // force exit to prevent process from hanging
-  process.exit(0)
+  //process.exit(0)
 }

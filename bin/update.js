@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises'
 import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
-import { CREED_FILES, CREED_FILES_URL, CREED_VERSION } from '../utils/constants.js'
+import { CREED_FILES, CREED_FILES_URL } from '../utils/constants.js'
 import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/install.js'
 
 /**
@@ -18,8 +18,6 @@ import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/ins
  * @param {boolean} autoRun - Whether to run the update automatically without any prompts (defaults to false).
  */
 export async function creedUpdate(autoRun = false) {
-  showMessage({ message: 'AGENT CREED UPDATE' })
-  showMessage({ message: `CLI version: ${CREED_VERSION}` })
   showMessage({ message: 'This CLI tool will help you update your Agent Creed setup.' })
   showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
 
@@ -48,10 +46,6 @@ export async function creedUpdate(autoRun = false) {
 
   // file with version info
   await writeVersionFile()
-
-  // inform user
-  showMessage({ message: '' })
-  showMessage({ message: 'AGENT CREED UPDATE COMPLETE', linesAfter: 2 })
 
   // force exit to prevent process from hanging
   process.exit(0)

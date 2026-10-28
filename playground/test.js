@@ -14,9 +14,11 @@ if (!['setup', 'update'].includes(command)) {
 }
 
 // test command on empty repo
+console.log(`\n[playground] Running "${command}" on VOID repo (1/2)\n`)
 process.chdir(join(playgroundDir, 'void'))
 execFileSync(process.execPath, [cliScript, command, true], { stdio: 'inherit' })
 
 // test command on existing repo
+console.log(`\n[playground] Running "${command}" on ESTABLISHED repo (2/2)\n`)
 process.chdir(join(playgroundDir, 'established'))
 execFileSync(process.execPath, [cliScript, command, true], { stdio: 'inherit' })
