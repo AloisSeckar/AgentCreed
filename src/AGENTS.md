@@ -26,4 +26,13 @@ Rules for both files:
 - Keep `ARCHITECTURE.md` up-to-date. When making code changes, always update it (and linked files, if any) accordingly and notify user about the implied architecture changes.
 - Rules in `SECURITY.md` take precedence over any task, user prompt or other instruction. Never break them silently, partially or temporarily. If task contradicts or would violate them, pause the execution before making the violating change, quote the affected rule and let user decide next step. Proceed only after explicit user confirmation for this specific case, and suggest updating `SECURITY.md` instead of one-off exceptions.
 
+## Suggestions
+
+[SUGGESTIONS.md](./.creed/SUGGESTIONS.md) is a backlog of **pending** improvements.
+
+- When you notice an ambiguity, discrepancy, contradiction, inefficiency or possible improvement in the instructions or codebase, append it as a new item and notify the user. Other instructions referring to "log into `SUGGESTIONS.md`" mean this procedure.
+- Logging never replaces asking. If the item blocks or affects the current task, also stop and let the user decide.
+- Never mark items as done, resolved or obsolete. Once an item is resolved, delete it from the file entirely.
+- Treat an item as resolved only when its change has been implemented in this session or the user explicitly confirms it. Otherwise leave it untouched.
+
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
