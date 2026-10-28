@@ -9,7 +9,7 @@ description: Skill for structured exploration of codebases to understand structu
 
 # creed-scan
 
-Use this approach to systematically explore and understand a codebase. 
+Use this approach to systematically explore and understand a codebase.
 
 If `ARCHITECTURE.md` file already exists in project root and contains content after `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, treat it as a source of truth. Otherwise, look directly into the code.
 
@@ -17,7 +17,7 @@ If `ARCHITECTURE.md` file already exists in project root and contains content af
 
 Copy this checklist and track progress:
 
-```
+```text
 Project Analysis Progress:
 - [ ] Step 1: Quick overview (README, root files)
 - [ ] Step 2: Detect tech stack
@@ -60,7 +60,7 @@ Try to locate key project files such as `README.md`, `ARCHITECTURE.md`, and othe
 
 Present as a tree with annotations:
 
-```
+```text
 project/
 ├── src/              # Source code
 │   ├── components/   # UI components (React/Vue)
@@ -149,7 +149,7 @@ Generate a summary using this template:
 
 After completing analysis, verify:
 
-```
+```text
 Analysis Validation:
 - [ ] All major directories explained
 - [ ] Tech stack accurately identified
@@ -162,7 +162,7 @@ If any items cannot be verified, note them as "needs clarification" in the repor
 
 ## Persisting Analysis
 
-If `ARCHITECTURE.md` exists in project root, and already contains the analysis, update it to align with the current state. 
+If `ARCHITECTURE.md` exists in project root, and already contains the analysis, update it to align with the current state.
 
 If `ARCHITECTURE.md` exists in project root, but ends with `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, append the analysis after this marker.
 

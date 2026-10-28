@@ -9,7 +9,7 @@ description: 'Interviewing skill that must be run when clarifying the task given
 
 Before starting an interview with user, analyze the input and abstract the steps that should lead to the result.
 
-For each step, consider what the required information are. 
+For each step, consider what the required information are.
 
 For each required information, consider if it can be obtained from the instructions, docs, codebase or the previous answers. If yes, use the obtained knowledge.
 
