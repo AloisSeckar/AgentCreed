@@ -168,4 +168,8 @@ If `ARCHITECTURE.md` exists in project root, but ends with `<!-- ↑↑↑ agent
 
 If `ARCHITECTURE.md` does not exist in project root, create the file, use project name as a H1 headline and insert the analysis afterwards.
 
+## Consistency
+
+`ARCHITECTURE.md` should capture project-specific context and conventions, but it must not override instructions from `AGENTS.md`, `SECURITY.md`, or other instruction files loaded in your context. After persisting the analysis, check the whole `ARCHITECTURE.md` for conflicts with these sources. If you find any, append a notice to `.creed/SUGGESTIONS.md` that quotes the conflicting statements and names their source files.
+
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
