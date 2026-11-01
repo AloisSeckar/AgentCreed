@@ -102,10 +102,10 @@ test('scaffolds all full templates from main in order without prompting', async 
 test('writes the CLI version to the version file on every run', async () => {
   await setupFixture()
   await creedSetup(true)
-  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(`${CREED_VERSION}\n`)
+  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
   await creedSetup(true)
-  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(`${CREED_VERSION}\n`)
+  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
 })
 
 test('downloads existing-file templates through COSCA and removes them after processing', async () => {

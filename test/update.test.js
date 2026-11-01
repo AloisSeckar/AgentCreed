@@ -214,10 +214,10 @@ test('preserves a byte order mark and CRLF templates', async () => {
 test('writes the CLI version to the version file on every run', async () => {
   await setupFixture()
   await creedUpdate(true)
-  expect(await read(CREED_VERSION_FILE)).toBe(`${CREED_VERSION}\n`)
+  expect(await read(CREED_VERSION_FILE)).toBe(CREED_VERSION)
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
   await creedUpdate(true)
-  expect(await read(CREED_VERSION_FILE)).toBe(`${CREED_VERSION}\n`)
+  expect(await read(CREED_VERSION_FILE)).toBe(CREED_VERSION)
 })
 
 test('manual mode asks once per file and leaves declined files alone', async () => {
@@ -232,7 +232,7 @@ test('manual mode asks once per file and leaves declined files alone', async () 
   expect(await read('ARCHITECTURE.md')).toBe(`# Custom\n\n${NEW}\n`)
   await expect(fs.access('SECURITY.md')).rejects.toMatchObject({ code: 'ENOENT' })
   expect(await read(CREED_SKILLS[0])).toBe(`${METADATA}\n\n${NEW}\n`)
-  expect(await read(CREED_VERSION_FILE)).toBe(`${CREED_VERSION}\n`)
+  expect(await read(CREED_VERSION_FILE)).toBe(CREED_VERSION)
 })
 
 test('choosing automatic update at the initial prompt suppresses per-file prompts', async () => {
@@ -316,7 +316,7 @@ test('the CLI updates files and exits successfully', async () => {
   expect(result.status).toBe(0)
   expect(await read('AGENTS.md')).toBe(`# Mine\n\n${NEW}\n`)
   expect(await read('SECURITY.md')).toBe(`# T\n\n${NEW}\n`)
-  expect(await read(CREED_VERSION_FILE)).toBe(`${CREED_VERSION}\n`)
+  expect(await read(CREED_VERSION_FILE)).toBe(CREED_VERSION)
 })
 
 test('the CLI reports update failures and exits nonzero', async () => {
