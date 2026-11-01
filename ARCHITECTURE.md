@@ -39,10 +39,10 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 
 - `bin/` - CLI entry (`cli.js`) and command implementations (`setup.js`, `update.js`)
 - `utils/` - shared constants (version, template URL, markers, managed file list) and `install.js` (template download, merge/replace of managed blocks, version file writing)
-- `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.agents/skills/*`); also act as this repo's own agent instructions
+- `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md`, `.agents/skills/*`); also act as this repo's own agent instructions
 - `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
-- `.creed/` - versioned agent work files; `SUGGESTIONS.md` is merged/updated by setup and update like other managed files, `version` is written by setup and update
+- `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `version` is written by setup and update
 
 ## Entry Points
 
@@ -57,7 +57,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - No semicolons, single quotes, 2-space indentation
 - Exported functions documented with JSDoc; constants with one-line `/** */` comments
 - Conventional Commits (`feat:`, `docs:`, `build:` ...), trunk-based on `main`
-- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`)
+- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`)
 
 ## Quick Commands
 

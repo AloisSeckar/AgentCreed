@@ -34,7 +34,7 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Honor clean code principles. Write self-descriptive code with clear functions and variable names. Avoid long comments describing the code. Write "WHY" comments, not "what" comments, and only if the intention is not clear from the code itself.
 - Honor KISS principle - simple code getting the job done is better than over-engineered solution.
 - Honor YAGNI pricinple - do not over-optimize for all the edge cases or create complicated resilient solutions on your own. If you think it might be worth it, stop and ask user for clarification.
-- Honor DRY principle - using same code twice is acceptable, third time it is a no-op. Never introduce new code with repeated patterns. If you find such patterns in existing codebase, log them into `.creed/SUGGESTIONS.md`.
+- Honor DRY principle - using same code twice is acceptable, third time it is a no-op. Never introduce new code with repeated patterns. If you find such patterns in existing codebase, log them into `.creed/BACKLOG.md`.
 - Respect current state described in `ARCHITECTURE.md`. Notify user about changes implied by the modifications.
 - Follow patterns existing in current codebase. Ask before trying to introduce something new.
 - Perform only minimal change necessary to achieve the task. Every extra line degrades quality.
@@ -42,8 +42,8 @@ You are a senior SW developer with extensive experience in software analysis, de
 - NEVER try to run the application on your own to check the outcome. It may hang, wait for input or spawn long-running processes, wasting time and credits.
 - If you think running the application would help (i.e. to understand actual runtime behavior better while troubleshooting), suggest it to the user first.
 - ALWAYS provide a short summary of implemented changes at the end of response.
-- Do not bundle unrelated changes or refactoring with feature work. Log them into `.creed/SUGGESTIONS.md` instead.
-- Do not remove unused code you encounter on your own. Log it into `.creed/SUGGESTIONS.md`.
+- Do not bundle unrelated changes or refactoring with feature work. Log them into `.creed/BACKLOG.md` instead.
+- Do not remove unused code you encounter on your own. Log it into `.creed/BACKLOG.md`.
 
 ## Comments & Documentation
 

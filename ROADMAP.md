@@ -3,7 +3,7 @@
 ## Internal files
 
 - [x] `.creed/SUGGESTIONS.md` - dedicated file where agents store their findings about instructions
-- [ ] `.creed/BACKLOG.md` - dedicated file where agents store things to be done on the project
+- [x] `.creed/BACKLOG.md` - dedicated file where agents store things to be done on the project
 - [x] `.creed/version` - tracker of currently installed version
 
 ## Instruction files
@@ -27,6 +27,7 @@
   - [x] scaffolding files from `/src` (if not exist yet)
   - [x] appending relevant part into existing `.md` files
   - [x] scaffold `.creed/SUGGESTIONS.md`
+  - [x] scaffold `.creed/BACKLOG.md`
   - [x] scaffold `.creed/version`
   - [ ] run a skill checking for conflicting instructions
 - [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established

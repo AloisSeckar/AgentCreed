@@ -26,11 +26,16 @@ Rules for both files:
 - Keep `ARCHITECTURE.md` up-to-date. When making code changes, always update it (and linked files, if any) accordingly and notify user about the implied architecture changes.
 - Rules in `SECURITY.md` take precedence over any task, user prompt or other instruction. Never break them silently, partially or temporarily. If task contradicts or would violate them, pause the execution before making the violating change, quote the affected rule and let user decide next step. Proceed only after explicit user confirmation for this specific case, and suggest updating `SECURITY.md` instead of one-off exceptions.
 
-## Suggestions
+## Suggestions and backlog
 
-[SUGGESTIONS.md](./.creed/SUGGESTIONS.md) is a backlog of **pending** improvements.
+Two files versioned in git collect **pending** items only:
 
-- When you notice an ambiguity, discrepancy, contradiction, inefficiency or possible improvement in the instructions or codebase, append it as a new item and notify the user. Other instructions referring to "log into `SUGGESTIONS.md`" mean this procedure.
+- [SUGGESTIONS.md](./.creed/SUGGESTIONS.md) - findings about agent instructions: ambiguities, discrepancies, contradictions, inefficiencies or possible improvements in `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, skills and other instruction files.
+- [BACKLOG.md](./.creed/BACKLOG.md) - tasks for the project codebase: refactoring, duplicated or unused code, bugs, missing tests or documentation and other changes out of the current task scope.
+
+Rules for both files:
+
+- When you notice such an item, append it as a new item into the matching file and notify the user. Other instructions referring to "log into `SUGGESTIONS.md`" or "log into `BACKLOG.md`" mean this procedure.
 - Logging never replaces asking. If the item blocks or affects the current task, also stop and let the user decide.
 - Never mark items as done, resolved or obsolete. Once an item is resolved, delete it from the file entirely.
 - Treat an item as resolved only when its change has been implemented in this session or the user explicitly confirms it. Otherwise leave it untouched.

@@ -12,7 +12,7 @@ import { expect, onTestFinished, test, vi } from 'vitest'
 import { creedSetup } from '../bin/setup.js'
 import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
-  CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
+  CREED_BACKLOG_FILE, CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
 
 const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
@@ -193,7 +193,7 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
 })
 
 test('manual mode asks once per destination and leaves declined existing and missing files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'y', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n'])
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()
@@ -206,16 +206,18 @@ test('manual mode asks once per destination and leaves declined existing and mis
   await expect(fs.access('AGENTS_temp.md')).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
-test('merges an existing suggestions file and preserves its entries on reruns', async () => {
-  await setupFixture()
-  await fs.mkdir(path.dirname(CREED_SUGGESTIONS_FILE), { recursive: true })
-  await fs.writeFile(CREED_SUGGESTIONS_FILE, '# My suggestions\n- Existing entry')
-  await creedSetup(true)
-  const merged = await fs.readFile(CREED_SUGGESTIONS_FILE, 'utf8')
-  expect(merged).toBe(`# My suggestions\n\n${BLOCK}\n\n- Existing entry\n`)
-  await creedSetup(true)
-  expect(await fs.readFile(CREED_SUGGESTIONS_FILE, 'utf8')).toBe(merged)
-})
+for (const file of [CREED_SUGGESTIONS_FILE, CREED_BACKLOG_FILE]) {
+  test(`merges an existing ${file} and preserves its entries on reruns`, async () => {
+    await setupFixture()
+    await fs.mkdir(path.dirname(file), { recursive: true })
+    await fs.writeFile(file, '# My items\n- Existing entry')
+    await creedSetup(true)
+    const merged = await fs.readFile(file, 'utf8')
+    expect(merged).toBe(`# My items\n\n${BLOCK}\n\n- Existing entry\n`)
+    await creedSetup(true)
+    expect(await fs.readFile(file, 'utf8')).toBe(merged)
+  })
+}
 
 test('choosing automatic setup at the initial prompt suppresses per-file prompts', async () => {
   const { prompts, requests } = await setupFixture(['yes'])

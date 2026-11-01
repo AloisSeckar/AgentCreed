@@ -1,0 +1,6 @@
+# Backlog
+
+- `update` replaces the span from the first to the last marker, so user text between several managed blocks is dropped. `setup` instead removes only the blocks and keeps intervening text. Consider aligning the two.
+- `test/update.test.js` duplicates the fixture from `test/setup.test.js`; extracting a shared test helper would reduce drift.
+- `README.md` "Setup behavior" lists only `creed-dev` and `creed-chat` skills; `creed-scan` (in `CREED_SKILLS`) is missing.
+- 4 tests fail on `main`: `writeVersionFile()` in `utils/install.js` writes `CREED_VERSION` without a trailing newline, while setup/update tests expect `${CREED_VERSION}\n`. Align code or tests; `ARCHITECTURE.md` still claims 67/67 passing.

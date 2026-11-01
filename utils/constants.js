@@ -13,6 +13,9 @@ export const CREED_VERSION_FILE = '.creed/version'
 /** Path to the file for storing agent suggestions */
 export const CREED_SUGGESTIONS_FILE = '.creed/SUGGESTIONS.md'
 
+/** Path to the file for storing pending project tasks */
+export const CREED_BACKLOG_FILE = '.creed/BACKLOG.md'
+
 /** Structural marker in instruction files - begin */
 export const CREED_BLOCK_BEGIN = '<!-- \u2193\u2193\u2193 agentcreed \u2193\u2193\u2193 -->'
 
@@ -32,5 +35,6 @@ export const CREED_FILES = [
     'ARCHITECTURE.md', 
     'SECURITY.md', 
     CREED_SUGGESTIONS_FILE,
+    CREED_BACKLOG_FILE,
     ...CREED_SKILLS,
 ]
