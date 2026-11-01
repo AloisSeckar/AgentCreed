@@ -77,7 +77,7 @@ For each item of `documented-facts` list, verify it is:
 After all items are checked:
 
 1. If `questions` is not empty, stop and ask user for clarification of all of them at once. Make appropriate changes to reflect user info, note them into `fixes` and empty `questions`.
-2. If `fixes` is not empty, gather the lists again (chapter 1) and start over with this chapter. If the same passage would be changed back and forth, stop and ask user instead.
+2. If `fixes` is not empty (including changes made after user's answers), the consistency must be re-assessed: gather the lists again (chapter 1) and start over with this chapter. Repeat this loop at most 3 times. If `fixes` is still not empty after the 3rd repetition, stop and ask user how to proceed, listing the remaining changes.
 3. Once a pass ends with empty `fixes` and `questions`, proceed to next chapter.
 
 ## 3. Report
