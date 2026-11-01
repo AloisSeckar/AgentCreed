@@ -193,7 +193,7 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
 })
 
 test('manual mode asks once per destination and leaves declined existing and missing files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n', 'n'])
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()

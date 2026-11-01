@@ -221,7 +221,7 @@ test('writes the CLI version to the version file on every run', async () => {
 })
 
 test('manual mode asks once per file and leaves declined files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n', 'n'])
   await fs.writeFile('AGENTS.md', `# Untouched\n\n${OLD}\n`)
   await fs.writeFile('ARCHITECTURE.md', `# Custom\n\n${OLD}\n`)
   await creedUpdate()
