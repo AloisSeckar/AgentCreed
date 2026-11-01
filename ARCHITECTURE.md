@@ -1,5 +1,7 @@
 # AgentCreed
 
+Generic content shipped to target projects is in [src/ARCHITECTURE.md](./src/ARCHITECTURE.md). Rules for handling this file are defined in [src/AGENTS.md](./src/AGENTS.md).
+
 ## Overview
 
 Methodology framework for AI-assisted development, shipped as an NPM CLI (`agentcreed`) that scaffolds and merges instruction files (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`) and agent skills into a target project.
@@ -9,9 +11,9 @@ Methodology framework for AI-assisted development, shipped as an NPM CLI (`agent
 | Category        | Technology                                                    |
 | --------------- | ------------------------------------------------------------- |
 | Language        | JavaScript (ES modules, `"type": "module"`)                   |
-| Runtime         | Node.js (no `engines` constraint - needs clarification)       |
-| Package manager | pnpm 12.14.0 (`packageManager` field)                         |
-| Dependencies    | `elrh-cosca` ^0.4.0 (CLI helpers: prompts, messages, file IO) |
+| Runtime         | Node.js >=22.12.0 (`engines` field)                           |
+| Package manager | pnpm 12.15.0 (`packageManager` field)                         |
+| Dependencies    | `elrh-cosca` ^0.4.3 (CLI helpers: prompts, messages, file IO) |
 | Testing         | Vitest ^5 with Vitest snapshots                               |
 | Infrastructure  | None (no CI workflows, no containers)                         |
 
@@ -39,7 +41,8 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 
 - `bin/` - CLI entry (`cli.js`) and command implementations (`setup.js`, `update.js`)
 - `utils/` - shared constants (version, template URL, markers, managed file list) and `install.js` (template download, merge/replace of managed blocks, version file writing)
-- `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md`, `.agents/skills/*`); also act as this repo's own agent instructions
+- `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md`, `.agents/skills/*`); root `AGENTS.md`, `ARCHITECTURE.md` and `SECURITY.md` point to them and add project-specific content
+- `.agents/skills/` - stub skills pointing to `src/.agents/skills/` so agent harnesses discover them in this repo; running `setup` or `update` here would merge full template content into them
 - `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
 - `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `version` is written by setup and update
@@ -64,7 +67,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 | Action  | Command                             |
 | ------- | ----------------------------------- |
 | Install | `pnpm install`                      |
-| Test    | `pnpm test` (verified: 67/67 pass)  |
+| Test    | `pnpm test`                         |
 | Try CLI | `node playground/test.js setup`     |
 
 No lint, format, build or git-hook tooling is configured.

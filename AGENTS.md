@@ -1,9 +1,9 @@
 # AgentCreed
 
-This project is a methodology framework for adding AI agents' instructions into SW projects.
+This repository self-references the templates it ships. Always read and follow [src/AGENTS.md](./src/AGENTS.md). Paths mentioned there (`ARCHITECTURE.md`, `SECURITY.md`, `.creed/*`) refer to files in the repository root, not in `src/`.
 
-While working, always reference [./src/AGENTS.md](./src/AGENTS.md) and follow instructions written there to continuously test project quality. Note that paths to `ARCHITECTURE.md` and `SECURITY.md` mentioned there are relative to `/src` folder.
+Rules meant for target projects belong into `src/`. Root `AGENTS.md`, `ARCHITECTURE.md` and `SECURITY.md` only point to them and add extras specific to this project.
 
-Any observed discrepancies, contradictions, ineffiecencies or general suggestions about agent instructions should be appended into [`.creed/SUGGESTIONS.md`](.creed/SUGGESTIONS.md) file and the user should be notified. Tasks for this project's codebase should be appended into [`.creed/BACKLOG.md`](.creed/BACKLOG.md) file and the user should be notified.
+Edit skills only in `src/.agents/skills/`, never the stubs in `.agents/skills/`.
 
 The library `elrh-cosca` is preferred way for handling file operations in CLI. Always consider using available functions first. If desired functionality is not available, pause execution, inform user and wait for further instructions.
