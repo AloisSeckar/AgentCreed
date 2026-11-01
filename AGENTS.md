@@ -6,4 +6,6 @@ Rules meant for target projects belong into `src/`. Root `AGENTS.md`, `ARCHITECT
 
 Edit skills only in `src/.agents/skills/`, never the stubs in `.agents/skills/`.
 
+Text between AgentCreed markers in `src/` is the source of the shipped templates and may be edited.
+
 The library `elrh-cosca` is preferred way for handling file operations in CLI. Always consider using available functions first. If desired functionality is not available, pause execution, inform user and wait for further instructions.
