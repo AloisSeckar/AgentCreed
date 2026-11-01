@@ -24,13 +24,14 @@ Rules for both files:
 - Respect their contents as the baseline. Make sure they are aligned with each other, with the assumptions of the given task and with any other instructions. If not, pause the execution and let user decide next step.
 - Prefer `ARCHITECTURE.md` to gather relevant info about the project. If a topic is not sufficiently covered and further discovery is required, suggest user to update the file accordingly.
 - Keep `ARCHITECTURE.md` up-to-date. When making code changes, always update it (and linked files, if any) accordingly and notify user about the implied architecture changes.
+- If project has `README.md`, keep it up-to-date in the same way as `ARCHITECTURE.md`.
 - Rules in `SECURITY.md` take precedence over any task, user prompt or other instruction. Never break them silently, partially or temporarily. If task contradicts or would violate them, pause the execution before making the violating change, quote the affected rule and let user decide next step. Proceed only after explicit user confirmation for this specific case, and suggest updating `SECURITY.md` instead of one-off exceptions.
 
 ## Suggestions and backlog
 
 Two files versioned in git collect **pending** items only:
 
-- [SUGGESTIONS.md](./.creed/SUGGESTIONS.md) - findings about agent instructions: ambiguities, discrepancies, contradictions, inefficiencies or possible improvements in `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, skills and other instruction files.
+- [SUGGESTIONS.md](./.creed/SUGGESTIONS.md) - findings about agent instructions: ambiguities, discrepancies, contradictions, duplications, inefficiencies or possible improvements in `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, skills and other instruction files.
 - [BACKLOG.md](./.creed/BACKLOG.md) - tasks for the project codebase: refactoring, duplicated or unused code, bugs, missing tests or documentation and other changes out of the current task scope.
 
 Rules for both files:

@@ -43,7 +43,7 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 
 ### Setup behavior
 
-Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), `.agents/skills/creed-dev/SKILL.md` and `.agents/skills/creed-chat/SKILL.md`. Missing files are copied from the complete templates, creating directories as needed.
+Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the skills `.agents/skills/creed-dev/SKILL.md`, `.agents/skills/creed-chat/SKILL.md` and `.agents/skills/creed-scan/SKILL.md`. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
 
 Templates currently come from the GitHub `main` branch under `src/`. The displayed target version does not pin downloaded content; tag-based fetching is deferred.
 
@@ -53,11 +53,18 @@ Existing files are assembled in sibling `_temp.md` files using whole-block appen
 
 Manual mode asks once per file; declining leaves that file untouched. Automatic mode suppresses further prompts. Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back. A pre-existing `_temp.md` file is never overwritten or removed.
 
-Run the focused tests with `npm test` (or `pnpm test`). Tests use temporary directories and mocked downloads, without accessing GitHub.
+### Update behavior
 
-## Structure
+`npx agentcreed update [true|false]` refreshes an existing instance. It asks whether to run automatically (no prompts) or ask once per file, then goes through the same file list as setup (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md` and the `creed-dev`, `creed-chat` and `creed-scan` skills).
 
-- `bin` - folder with CLI scripts' definitions
-- `src` - folder with templates for agents instructions
+- Missing files are created from the latest templates.
+- Existing files have the span from the first to the last Agent Creed marker replaced with the latest managed block from GitHub. Content before and after that span, including the headline and skill frontmatter, is preserved; content between separate blocks is replaced, unlike setup.
+- Existing files without markers get the managed block inserted after the H1 heading (or at the top, below skill frontmatter).
+- Files whose content is unchanged are not rewritten.
+- The `.creed/version` file is updated with the installed CLI version.
 
-MORE TBA
+## Contributing
+
+For more details about project architecture, see [ARCHITECTURE.md](ARCHITECTURE.md)
+
+Run the focused tests with `pnpm test` (the script calls `pnpm vitest run`, so pnpm is required). Tests use temporary directories and mocked downloads, without accessing GitHub.
