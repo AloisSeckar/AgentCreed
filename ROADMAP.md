@@ -2,7 +2,8 @@
 
 ## Internal files
 
-- [x] `.creed/SUGGESTIONS.md` - dedicated file where agents store their findings
+- [x] `.creed/SUGGESTIONS.md` - dedicated file where agents store their findings about instructions
+- [ ] `.creed/BACKLOG.md` - dedicated file where agents store things to be done on the project
 - [x] `.creed/version` - tracker of currently installed version
 
 ## Instruction files
