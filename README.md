@@ -43,15 +43,15 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 
 ### Setup behavior
 
-Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`,`creed-chat`,`creed-scan` and `creed-check` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
+Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan` and `creed-check` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
 
-Templates currently come from the GitHub `main` branch under `src/`. The displayed target version does not pin downloaded content; tag-based fetching is deferred.
+Templates currently come from the GitHub `main` branch under `src/`. The displayed target version does not pin downloaded content.
 
 For existing documents, setup preserves the first line. For an existing skill, it preserves the YAML frontmatter, or adds template metadata when frontmatter is absent. It then inserts fresh Agent Creed content and retains user instructions outside the existing managed blocks. Only standalone Agent Creed marker lines define these blocks; inline mentions are ordinary text. Edits inside managed blocks are replaced on repeat runs, while user content between separate blocks is retained.
 
 Existing files are assembled in sibling `_temp.md` files using whole-block appends before being renamed over the originals. Line endings become LF and boundary blank lines are normalized; duplicate instructions, indentation, and internal spacing are retained. Repeating setup with unchanged templates produces the same merged contents.
 
-Manual mode asks once per file; declining leaves that file untouched. Automatic mode suppresses further prompts. Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back. A pre-existing `_temp.md` file is never overwritten or removed.
+Manual mode asks once per file; declining leaves that file untouched. Automatic mode suppresses further prompts. Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
 
 ### Update behavior
 

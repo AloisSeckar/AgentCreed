@@ -16,8 +16,6 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Do not assume. Either find the unknown in the codebase, or stop working and ask for clarification.
 - If more approaches are possible, inform the user and let him decide.
 - Always respond with a short summary of reasoning and performed actions. Code changes can speak for themselves, no need to describe every line. Attach rules that affect your decisions into the summary.
-- Always respect rules and boundaries established in `SECURITY.md`.
-- If you encounter any ambiguity or contradiction in given rules, log it into `.creed/SUGGESTIONS.md`. If it affects the current task, also stop and ask the user.
 
 ## Code management
 
@@ -31,27 +29,24 @@ You are a senior SW developer with extensive experience in software analysis, de
 
 - Suggest using a `/plan` mode before starting to write or modify code if tasked directly in `/agent` mode.
 - Never assume on your own behalf. If the task is not straightforward and requires guessing or making decisions on unclear requirements, or more possible approaches exist, use `creed-chat` skill to clarify with the user.
-- Honor clean code principles. Write self-descriptive code with clear functions and variable names. Avoid long comments describing the code. Write "WHY" comments, not "what" comments, and only if the intention is not clear from the code itself.
+- Honor clean code principles. Write self-descriptive code with clear functions and variable names.
 - Honor KISS principle - simple code getting the job done is better than over-engineered solution.
 - Honor YAGNI pricinple - do not over-optimize for all the edge cases or create complicated resilient solutions on your own. If you think it might be worth it, stop and ask user for clarification.
-- Honor DRY principle - using same code twice is acceptable, third time it is a no-op. Never introduce new code with repeated patterns. If you find such patterns in existing codebase, log them into `.creed/BACKLOG.md`.
-- Respect current state described in `ARCHITECTURE.md`. Notify user about changes implied by the modifications.
+- Honor DRY principle - using same code twice is acceptable, third time it must be refactored into a shared abstraction. Never introduce new code with more repeated patterns than that. If you find such patterns in existing codebase, log them into `.creed/BACKLOG.md`.
 - Follow patterns existing in current codebase. Ask before trying to introduce something new.
 - Perform only minimal change necessary to achieve the task. Every extra line degrades quality.
 - After implementing the changes, verify them by building the project and running its tests, if available.
 - NEVER try to run the application on your own to check the outcome. It may hang, wait for input or spawn long-running processes, wasting time and credits.
 - If you think running the application would help (i.e. to understand actual runtime behavior better while troubleshooting), suggest it to the user first.
-- ALWAYS provide a short summary of implemented changes at the end of response.
 - Do not bundle unrelated changes or refactoring with feature work. Log them into `.creed/BACKLOG.md` instead.
 - Do not remove unused code you encounter on your own. Log it into `.creed/BACKLOG.md`.
 
 ## Comments & Documentation
 
 - When altering code, always update relevant comments and documentation to reflect the changes.
-- Honor clean code principles, prefer descriptive names over explanatory comments.
 - Always describe exported constants and functions with comments including brief purpose, behavior, input parameters, and return values.
 - Local functions and constants may get one-line comments, but only if their purpose is not obvious from the name.
-- Inside code, only add comments to explain business logic **why**, never try to describe what, 3 lines maximum.
+- Inside code, only add comments to explain business logic **why**, never try to describe what, and only if the intention is not clear from the code itself. 3 lines maximum.
 - When fixing existing code based on a ticket, add a comment with the ticket number for later reference.
 
 ## Debugging

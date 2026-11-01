@@ -59,7 +59,6 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - ESM imports, `node:` prefix for built-ins
 - No semicolons, single quotes, 2-space indentation
 - Exported functions documented with JSDoc; constants with one-line `/** */` comments
-- Conventional Commits (`feat:`, `docs:`, `build:` ...), trunk-based on `main`
 - Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`)
 
 ## Quick Commands
