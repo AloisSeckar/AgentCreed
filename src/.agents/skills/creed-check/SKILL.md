@@ -21,7 +21,7 @@ For the purpose of this skill, consider:
 
 Split a passage into separate items only where it holds independent rules. Keep a condition together with its consequence (e.g. "do X and notify the user" is one item).
 
-Text between AgentCreed markers is managed by AgentCreed and gets overwritten on `agentcreed update`. Do not edit it, unless `AGENTS.md` allows it. Log the finding into `.creed/SUGGESTIONS.md` instead.
+Text between AgentCreed markers is managed by AgentCreed and gets overwritten on `agentcreed update`. Each file has a single managed block and project-specific content belongs AFTER it. Do not edit the managed text, unless `AGENTS.md` allows it. Log the finding into `.creed/SUGGESTIONS.md` instead.
 
 When moving or rephrasing a `source`, move text word for word by default and keep its strength words (MUST, ALWAYS, NEVER, pause, make sure). Before applying such a change, compare each old rule with its new wording and mark it kept / merged / strengthened / weakened / dropped for the final report.
 

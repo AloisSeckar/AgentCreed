@@ -6,7 +6,7 @@ import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
 
 /**
  * Scaffold the root instruction documents, skills and aux files.
- * Existing headlines, skill metadata and instructions outside managed blocks are preserved.
+ * Existing files get their single managed block (and skill metadata) replaced from the template; a custom H1 and the content after the block are preserved.
  * Manual mode requests consent once per file; automatic mode suppresses prompts.
  *
  * @param {boolean} autoRun - Whether to run the setup automatically without any prompts (defaults to false).

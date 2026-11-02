@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises'
 import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
-import { CREED_FILES, CREED_FILES_URL } from '../utils/constants.js'
+import { CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.js'
 import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/install.js'
 
 /**
@@ -11,8 +11,9 @@ import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/ins
  * It first asks whether to run in "auto" mode (no prompts) or "manual" mode (with prompts).
  *
  * Then it:
- *  1) replaces content between Agent Creed markers in each instruction file with the latest from GitHub
- *     (missing files are created from the template, files without markers get the block added after H1)
+ *  1) replaces the single Agent Creed block in each instruction file with the latest from GitHub, keeping a custom H1
+ *     and the user content after the block (missing files are created from the template, skill metadata is always
+ *     replaced, files without a block get it added below the headline)
  *  2) updates the file with installed version
  *
  * @param {boolean} autoRun - Whether to run the update automatically without any prompts (defaults to false).
@@ -37,7 +38,7 @@ export async function creedUpdate(autoRun = false) {
       }
       const template = await fetchTemplate(url)
       const original = await fs.readFile(file, 'utf8')
-      const updated = applyManagedBlock(original, template)
+      const updated = applyManagedBlock(original, template, CREED_SKILLS.includes(file))
       if (updated !== original) await fs.writeFile(file, updated, 'utf8')
     } catch (error) {
       throw new Error(`Could not update '${file}' from ${url}: ${error.message}`, { cause: error })

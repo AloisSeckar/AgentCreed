@@ -15,22 +15,20 @@ function findFrontmatterEnd(lines) {
   return closing
 }
 
+/** Split a document into its header (H1 headline or skill frontmatter, null when absent) and the remaining lines. */
 function splitDocument(text, isSkill) {
-  const content = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n')
-  const lines = content.split('\n')
+  const lines = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n')
   if (isSkill) {
     const closing = findFrontmatterEnd(lines)
-    if (closing === -1) return { prefix: null, body: content }
-    return { prefix: lines.slice(0, closing + 1).join('\n'), body: lines.slice(closing + 1).join('\n') }
+    return { header: closing === -1 ? null : lines.slice(0, closing + 1).join('\n'), body: lines.slice(closing + 1) }
   }
-  if ([CREED_BLOCK_BEGIN, CREED_BLOCK_END].includes(lines[0].trim())) {
-    throw new Error('Expected a headline before Agent Creed markers')
-  }
-  return { prefix: content ? lines[0] : null, body: lines.slice(1).join('\n') }
+  const first = lines.findIndex(line => line.trim())
+  if (first !== -1 && /^# /.test(lines[first])) return { header: lines[first], body: lines.slice(first + 1) }
+  return { header: null, body: lines }
 }
 
-function findManagedBlocks(body) {
-  const lines = body.split('\n')
+/** Range of the single managed block in `lines`, or null when there is none. */
+function findManagedBlock(lines) {
   const blocks = []
   let opening = -1
   for (const [index, line] of lines.entries()) {
@@ -44,13 +42,8 @@ function findManagedBlocks(body) {
     }
   }
   if (opening !== -1) throw new Error('Agent Creed opening marker without a closing marker')
-  return { lines, blocks }
-}
-
-/** Lines from the first opening to the last closing marker of a template. */
-function getManagedSpan(managed) {
-  if (!managed.blocks.length) throw new Error('Template is missing Agent Creed markers')
-  return managed.lines.slice(managed.blocks[0].start, managed.blocks.at(-1).end + 1)
+  if (blocks.length > 1) throw new Error('Expected a single Agent Creed block per file')
+  return blocks[0] ?? null
 }
 
 function trimBlankLines(text) {
@@ -62,28 +55,29 @@ function trimBlankLines(text) {
   return lines.slice(start, end).join('\n')
 }
 
+/**
+ * Sections of the merged document: header, the template block and the user content (everything outside the block).
+ * Only a custom H1 headline is kept in front of the block; skill frontmatter always comes from the template.
+ */
 function getMergeSections(original, template, isSkill) {
   const source = splitDocument(template, isSkill)
-  if (source.prefix === null) throw new Error('Template is missing its headline or skill frontmatter')
-  const block = getManagedSpan(findManagedBlocks(source.body)).join('\n')
+  if (source.header === null) throw new Error('Template is missing its headline or skill frontmatter')
+  const sourceBlock = findManagedBlock(source.body)
+  if (!sourceBlock) throw new Error('Template is missing Agent Creed markers')
   const existing = splitDocument(original, isSkill)
-  let body = trimBlankLines(existing.body)
-  if (body === block || body.startsWith(`${block}\n`)) {
-    body = body.slice(block.length)
-  }
-  const previous = findManagedBlocks(body)
-  const remaining = []
-  let cursor = 0
-  for (const range of previous.blocks) {
-    remaining.push(...previous.lines.slice(cursor, range.start))
-    cursor = range.end + 1
-  }
-  remaining.push(...previous.lines.slice(cursor))
+  const found = findManagedBlock(existing.body)
+  const before = found ? existing.body.slice(0, found.start) : existing.body
+  const after = found ? existing.body.slice(found.end + 1) : []
   return {
-    prefix: (original.startsWith('\uFEFF') ? '\uFEFF' : '') + (existing.prefix ?? source.prefix),
-    block,
-    body: trimBlankLines(remaining.join('\n')),
+    bom: original.startsWith('\uFEFF') ? '\uFEFF' : '',
+    header: (isSkill ? null : existing.header) ?? source.header,
+    block: source.body.slice(sourceBlock.start, sourceBlock.end + 1).join('\n'),
+    body: [before, after].map(part => trimBlankLines(part.join('\n'))).filter(Boolean).join('\n\n'),
   }
+}
+
+function composeDocument({ header, block, body }) {
+  return `${header}\n\n${block}\n${body ? `\n${body}\n` : ''}`
 }
 
 /** Download a template from `url` and return its text. */
@@ -98,10 +92,11 @@ export async function fetchTemplate(url) {
   }
 }
 
-/** Merge the managed block of `template` into `file`, keeping the headline, frontmatter and unmanaged content. */
+/** Replace the managed block in `file` with the one from `template`, keeping a custom H1 headline and the content after the block. */
 export async function mergeFile(file, template) {
   const original = await fs.readFile(file, 'utf8')
-  const { prefix, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
+  const { bom, header, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
+  const prefix = bom + header
   const tempFile = file.replace(/\.md$/, '_temp.md')
   let ownsTemp = false
   try {
@@ -114,7 +109,7 @@ export async function mergeFile(file, template) {
     }
     await updateTextFile({ targetFile: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true, silent: true })
     if (body) await updateTextFile({ targetFile: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true, silent: true })
-    const expected = `${prefix}\n\n${block}\n${body ? `\n${body}\n` : ''}`
+    const expected = bom + composeDocument({ header, block, body })
     if (await fs.readFile(tempFile, 'utf8') !== expected) {
       throw new Error('Temporary file did not preserve the expected content')
     }
@@ -127,32 +122,13 @@ export async function mergeFile(file, template) {
 }
 
 /**
- * Replace the managed span (first opening to last closing marker) of `original` with the one from `template`.
- * Without markers, the block is inserted after the H1 heading (or at the top, below any skill frontmatter).
+ * Same merge as `mergeFile`, returned as text. Keeps the BOM and CRLF line endings of `original`.
+ * Skill frontmatter is replaced from the template; content before the block moves after it.
  */
-export function applyManagedBlock(original, template) {
-  const bom = original.startsWith('\uFEFF') ? '\uFEFF' : ''
-  const text = original.slice(bom.length)
-  const eol = text.includes('\r\n') ? '\r\n' : '\n'
-  const block = getManagedSpan(findManagedBlocks(template.replace(/\r\n/g, '\n')))
-  const target = findManagedBlocks(text.replace(/\r\n/g, '\n'))
-  let lines
-  if (target.blocks.length) {
-    lines = [
-      ...target.lines.slice(0, target.blocks[0].start),
-      ...block,
-      ...target.lines.slice(target.blocks.at(-1).end + 1),
-    ]
-  } else {
-    const start = findFrontmatterEnd(target.lines) + 1
-    const heading = target.lines.findIndex((line, index) => index >= start && /^# /.test(line))
-    const at = heading === -1 ? start : heading + 1
-    const before = target.lines.slice(0, at)
-    const after = target.lines.slice(at)
-    while (after.length && !after[0].trim()) after.shift()
-    lines = [...before, ...(before.length ? [''] : []), ...block, ...(after.length ? ['', ...after] : [''])]
-  }
-  return bom + lines.join(eol)
+export function applyManagedBlock(original, template, isSkill = false) {
+  const { bom, ...sections } = getMergeSections(original, template, isSkill)
+  const eol = original.includes('\r\n') ? '\r\n' : '\n'
+  return bom + composeDocument(sections).replaceAll('\n', eol)
 }
 
 /** Write the installed AgentCreed version into `CREED_VERSION_FILE`. */

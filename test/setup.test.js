@@ -9,7 +9,7 @@ import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
   CREED_BACKLOG_FILE, CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
-import { block, setupFixture, templateUrl } from './helpers.js'
+import { METADATA, block, setupFixture, templateUrl } from './helpers.js'
 
 const BLOCK = block('Keep this instruction.')
 
@@ -75,37 +75,32 @@ test('downloads existing-file templates through COSCA and removes them after pro
   }
 })
 
-test('replaces separate old blocks while retaining intervening user content and inline markers', async () => {
+test('replaces the single old block, moves text before it behind it and retains inline markers', async () => {
   await setupFixture()
   const inline = `Treat ${CREED_BLOCK_BEGIN} and ${CREED_BLOCK_END} as inert text.`
-  await fs.writeFile('AGENTS.md', `# Custom\nBefore\n${CREED_BLOCK_BEGIN}\nOld one\n${CREED_BLOCK_END}\nBetween\n${CREED_BLOCK_BEGIN}\nOld two\n${CREED_BLOCK_END}\n${inline}`)
+  await fs.writeFile('AGENTS.md', `# Custom\nBefore\n${CREED_BLOCK_BEGIN}\nOld one\n${CREED_BLOCK_END}\nAfter\n${inline}`)
   await creedSetup(true)
-  const expected = await fs.readFile('AGENTS.md', 'utf8')
-  expect(expected).toMatchSnapshot()
+  const expected = `# Custom\n\n${BLOCK}\n\nBefore\n\nAfter\n${inline}\n`
+  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(expected)
   await creedSetup(true)
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(expected)
 })
 
-test('extracts first through last template markers without duplicating that span on reruns', async () => {
-  const { templates } = await setupFixture()
-  const block = `${CREED_BLOCK_BEGIN}\nFirst section\n${CREED_BLOCK_END}\nTemplate middle\n${CREED_BLOCK_BEGIN}\nLast section\n${CREED_BLOCK_END}`
-  templates.set(`${CREED_FILES_URL}AGENTS.md`, `# Template\nExcluded intro\n${block}\nExcluded outro`)
-  await fs.writeFile('AGENTS.md', '# Custom\nUser body')
+test('uses the template headline when the file has no custom H1', async () => {
+  await setupFixture()
+  await fs.writeFile('AGENTS.md', `${CREED_BLOCK_BEGIN}\nOld\n${CREED_BLOCK_END}\nUser text`)
   await creedSetup(true)
-  const expected = await fs.readFile('AGENTS.md', 'utf8')
-  expect(expected).toMatchSnapshot()
-  await creedSetup(true)
-  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(expected)
+  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(`# AGENTS.md\n\n${BLOCK}\n\nUser text\n`)
 })
 
-test('preserves custom skill metadata including comments, ordering and multiline values', async () => {
+test('replaces custom skill metadata with the template one', async () => {
   await setupFixture()
   const metadata = '---\n# Custom comment\ndescription: |\n  ---\n  My own description\n  ...\nname: local-skill\ncustom: true\n---'
   await fs.mkdir(path.dirname(CREED_SKILLS[0]), { recursive: true })
   await fs.writeFile(CREED_SKILLS[0], `${metadata}\nBefore\n${CREED_BLOCK_BEGIN}\nOld skill\n${CREED_BLOCK_END}\nAfter`)
   await creedSetup(true)
-  const expected = await fs.readFile(CREED_SKILLS[0], 'utf8')
-  expect(expected).toMatchSnapshot()
+  const expected = `${METADATA}\n\n${BLOCK}\n\nBefore\n\nAfter\n`
+  expect(await fs.readFile(CREED_SKILLS[0], 'utf8')).toBe(expected)
   await creedSetup(true)
   expect(await fs.readFile(CREED_SKILLS[0], 'utf8')).toBe(expected)
 })
@@ -125,11 +120,10 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
   await fs.writeFile('ARCHITECTURE.md', 'A literal first line')
   await fs.writeFile('SECURITY.md', '\uFEFF# Security\r\n\r\n  Keep spacing.  \r\n\r\nSecond line')
   await creedSetup(true)
-  expect(await fs.readFile('AGENTS.md', 'utf8')).toMatchSnapshot()
-  expect(await fs.readFile('ARCHITECTURE.md', 'utf8')).toMatchSnapshot()
+  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(`# AGENTS.md\n\n${BLOCK}\n`)
+  expect(await fs.readFile('ARCHITECTURE.md', 'utf8')).toBe(`# ARCHITECTURE.md\n\n${BLOCK}\n\nA literal first line\n`)
   const expected = await fs.readFile('SECURITY.md', 'utf8')
-  expect(expected.startsWith('\uFEFF')).toBe(true)
-  expect(expected).toMatchSnapshot()
+  expect(expected).toBe(`\uFEFF# Security\n\n${BLOCK}\n\n  Keep spacing.  \n\nSecond line\n`)
   await creedSetup(true)
   expect(await fs.readFile('SECURITY.md', 'utf8')).toBe(expected)
 })
@@ -173,7 +167,8 @@ for (const [label, original, template, message] of [
   ['orphan closing', `# Custom\n${CREED_BLOCK_END}`, null, /without an opening marker/],
   ['reversed markers', `# Custom\n${CREED_BLOCK_END}\n${CREED_BLOCK_BEGIN}`, null, /without an opening marker/],
   ['nested markers', `# Custom\n${CREED_BLOCK_BEGIN}\n${CREED_BLOCK_BEGIN}\n${CREED_BLOCK_END}\n${CREED_BLOCK_END}`, null, /Nested/],
-  ['marker as headline', `${CREED_BLOCK_BEGIN}\nUser text\n${CREED_BLOCK_END}`, null, /Expected a headline/],
+  ['multiple blocks', `# Custom\n${BLOCK}\nUser text\n${BLOCK}`, null, /single Agent Creed block/],
+  ['multiple template blocks', '# Custom\nUser text', `# Template\n${BLOCK}\nMiddle\n${BLOCK}`, /single Agent Creed block/],
   ['unmarked template', '# Custom\nUser text', '# Template\nNo markers', /missing Agent Creed markers/],
   ['unclosed template', '# Custom\nUser text', `# Template\n${CREED_BLOCK_BEGIN}\nNew text`, /without a closing marker/],
 ]) {

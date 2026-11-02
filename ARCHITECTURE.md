@@ -26,16 +26,15 @@ npx agentcreed <cmd> [auto]
         │
    bin/cli.js ──► bin/setup.js  ──► download src/<file> from GitHub (CREED_FILES_URL)
               │                      ├─ missing file → create from template
-              │                      └─ existing file → merge managed blocks via <file>_temp.md, then rename
+              │                      └─ existing file → merge via <file>_temp.md, then rename
               └─► bin/update.js ──► download src/<file> from GitHub (CREED_FILES_URL)
                                      ├─ missing file → create from template
-                                     ├─ markers present → replace first..last marker span in place
-                                     └─ no markers → insert block after H1 (or at top / below skill frontmatter)
+                                     └─ existing file → merge in memory (same rules as setup), write if changed
 ```
 
 Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
-Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines; content outside them is preserved on merge.
+Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each file has exactly one managed block, which setup and update replace entirely with the template block. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
 
 ## Key Directories
 

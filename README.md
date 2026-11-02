@@ -47,7 +47,9 @@ Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current
 
 Templates currently come from the GitHub `main` branch under `src/`. The displayed target version does not pin downloaded content.
 
-For existing documents, setup preserves the first line. For an existing skill, it preserves the YAML frontmatter, or adds template metadata when frontmatter is absent. It then inserts fresh Agent Creed content and retains user instructions outside the existing managed blocks. Only standalone Agent Creed marker lines define these blocks; inline mentions are ordinary text. Edits inside managed blocks are replaced on repeat runs, while user content between separate blocks is retained.
+For existing documents, setup keeps a custom H1 headline (the first non-blank line, when it starts with `#`); otherwise the template headline is used. An existing skill always gets its YAML frontmatter replaced by the template metadata. The Agent Creed block is then replaced with the fresh template content and all other content is retained after it. Only standalone Agent Creed marker lines define the block; inline mentions are ordinary text. Edits inside the managed block are overwritten on repeat runs.
+
+**Each file must contain at most one managed block, and user content belongs after it.** Content found before the block (other than the H1) is moved after it. Files with more than one block are rejected with an error; remove the extra blocks manually.
 
 Existing files are assembled in sibling `_temp.md` files using whole-block appends before being renamed over the originals. Line endings become LF and boundary blank lines are normalized; duplicate instructions, indentation, and internal spacing are retained. Repeating setup with unchanged templates produces the same merged contents.
 
@@ -58,8 +60,9 @@ Manual mode asks once per file; declining leaves that file untouched. Automatic 
 `npx agentcreed update [true|false]` refreshes an existing instance. It asks whether to run automatically (no prompts) or ask once per file, then goes through the same file list as setup (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md` and the `creed-dev`, `creed-chat`, `creed-scan` and `creed-check` skills).
 
 - Missing files are created from the latest templates.
-- Existing files have the span from the first to the last Agent Creed marker replaced with the latest managed block from GitHub. Content before and after that span, including the headline and skill frontmatter, is preserved; content between separate blocks is replaced, unlike setup.
-- Existing files without markers get the managed block inserted after the H1 heading (or at the top, below skill frontmatter).
+- Existing files are handled exactly like in setup: the single Agent Creed block is replaced with the latest one from GitHub, skill frontmatter is replaced by the template metadata, a custom H1 headline is kept and all other user content is placed after the block.
+- Existing files without a block get it added below the headline (or below skill frontmatter).
+- Files with more than one block are rejected with an error.
 - Files whose content is unchanged are not rewritten.
 - The `.creed/version` file is updated with the installed CLI version.
 

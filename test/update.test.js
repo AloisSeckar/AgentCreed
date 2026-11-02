@@ -21,11 +21,11 @@ async function writeFile(file, content) {
   await fs.writeFile(file, content)
 }
 
-test('replaces the managed block in place and keeps surrounding user content', async () => {
+test('replaces the managed block and moves user content behind it', async () => {
   const { exit, output } = await setupFixture()
   await fs.writeFile('AGENTS.md', `# My project\n\nAbove\n\n${OLD}\n\nBelow\n`)
   await creedUpdate(true)
-  const expected = `# My project\n\nAbove\n\n${NEW}\n\nBelow\n`
+  const expected = `# My project\n\n${NEW}\n\nAbove\n\nBelow\n`
   expect(await read('AGENTS.md')).toBe(expected)
   expect(exit.mock.calls).toEqual([])
   expect(output.join('')).toContain('UPDATE COMPLETE')
@@ -43,32 +43,20 @@ test('does not rewrite files whose managed block is already current', async () =
   expect(await read('AGENTS.md')).toBe(current)
 })
 
-test('replaces the span from the first to the last local marker with the template span', async () => {
-  const { templates } = await setupFixture()
-  const span = `${CREED_BLOCK_BEGIN}\nFirst\n${CREED_BLOCK_END}\nTemplate middle\n${CREED_BLOCK_BEGIN}\nLast\n${CREED_BLOCK_END}`
-  templates.set(url('AGENTS.md'), `# Template\nExcluded intro\n${span}\nExcluded outro`)
-  await fs.writeFile('AGENTS.md', `# Custom\nBefore\n${OLD}\nDropped\n${OLD}\nAfter`)
-  await creedUpdate(true)
-  const expected = `# Custom\nBefore\n${span}\nAfter`
-  expect(await read('AGENTS.md')).toBe(expected)
-  await creedUpdate(true)
-  expect(await read('AGENTS.md')).toBe(expected)
-})
-
 test('keeps inline marker mentions outside of blocks untouched', async () => {
   await setupFixture()
   const inline = `Treat ${CREED_BLOCK_BEGIN} and ${CREED_BLOCK_END} as inert text.`
   await fs.writeFile('AGENTS.md', `# Custom\n${OLD}\n${inline}`)
   await creedUpdate(true)
-  expect(await read('AGENTS.md')).toBe(`# Custom\n${NEW}\n${inline}`)
+  expect(await read('AGENTS.md')).toBe(`# Custom\n\n${NEW}\n\n${inline}\n`)
 })
 
-test('replaces blocks in skill files without touching their metadata', async () => {
+test('replaces skill metadata with the template one and keeps content after the block', async () => {
   await setupFixture()
   const metadata = '---\n# Custom comment\nname: local-skill\ncustom: true\n---'
   await writeFile(CREED_SKILLS[0], `${metadata}\n\n# Mine\n\n${OLD}\n\nAfter`)
   await creedUpdate(true)
-  expect(await read(CREED_SKILLS[0])).toBe(`${metadata}\n\n# Mine\n\n${NEW}\n\nAfter`)
+  expect(await read(CREED_SKILLS[0])).toBe(`${METADATA}\n\n${NEW}\n\n# Mine\n\nAfter\n`)
 })
 
 test('scaffolds every missing file from its template in order', async () => {
@@ -99,12 +87,12 @@ for (const file of [CREED_SUGGESTIONS_FILE, CREED_BACKLOG_FILE]) {
 
 for (const [label, original, expected] of [
   ['after the H1 heading', '# My project\n\nCustom rule.\n', `# My project\n\n${NEW}\n\nCustom rule.\n`],
-  ['after the H1 heading without a blank line', '# My project\nCustom rule.', `# My project\n\n${NEW}\n\nCustom rule.`],
-  ['after a lone H1 heading', '# My project', `# My project\n\n${NEW}\n`],
-  ['after the first H1 heading when more are present', '# One\n\nText\n\n# Two\n', `# One\n\n${NEW}\n\nText\n\n# Two\n`],
-  ['at line 1 when the heading is missing', 'Literal first line\nMore\n', `${NEW}\n\nLiteral first line\nMore\n`],
-  ['into an empty file', '', `${NEW}\n`],
-  ['ignoring deeper headings', '## Sub\n\nText\n', `${NEW}\n\n## Sub\n\nText\n`],
+  ['below the H1 heading without a blank line', '# My project\nCustom rule.', `# My project\n\n${NEW}\n\nCustom rule.\n`],
+  ['below a lone H1 heading', '# My project', `# My project\n\n${NEW}\n`],
+  ['below the first H1 heading when more are present', '# One\n\nText\n\n# Two\n', `# One\n\n${NEW}\n\nText\n\n# Two\n`],
+  ['below the template headline when the H1 is missing', 'Literal first line\nMore\n', `# AGENTS.md\n\n${NEW}\n\nLiteral first line\nMore\n`],
+  ['into an empty file', '', `# AGENTS.md\n\n${NEW}\n`],
+  ['ignoring deeper headings', '## Sub\n\nText\n', `# AGENTS.md\n\n${NEW}\n\n## Sub\n\nText\n`],
 ]) {
   test(`adds the block ${label} when no markers are present`, async () => {
     await setupFixture()
@@ -116,20 +104,20 @@ for (const [label, original, expected] of [
   })
 }
 
-test('adds the block to a skill without markers below its frontmatter and H1', async () => {
+test('adds the block to a skill without markers below its template frontmatter', async () => {
   await setupFixture()
   await writeFile(CREED_SKILLS[0], `${METADATA}\n\n# Mine\n\nBody\n`)
   await writeFile(CREED_SKILLS[1], `${METADATA}\n\nBody\n`)
   await creedUpdate(true)
-  expect(await read(CREED_SKILLS[0])).toBe(`${METADATA}\n\n# Mine\n\n${NEW}\n\nBody\n`)
+  expect(await read(CREED_SKILLS[0])).toBe(`${METADATA}\n\n${NEW}\n\n# Mine\n\nBody\n`)
   expect(await read(CREED_SKILLS[1])).toBe(`${METADATA}\n\n${NEW}\n\nBody\n`)
 })
 
-test('does not mistake a comment inside skill frontmatter for the H1 heading', async () => {
+test('replaces skill frontmatter that contains comments', async () => {
   await setupFixture()
   await writeFile(CREED_SKILLS[0], '---\n# Custom comment\nname: x\n---\n\nBody')
   await creedUpdate(true)
-  expect(await read(CREED_SKILLS[0])).toBe(`---\n# Custom comment\nname: x\n---\n\n${NEW}\n\nBody`)
+  expect(await read(CREED_SKILLS[0])).toBe(`${METADATA}\n\n${NEW}\n\nBody\n`)
 })
 
 test('preserves CRLF line endings when adding and replacing blocks', async () => {
@@ -148,7 +136,7 @@ test('preserves a byte order mark and CRLF templates', async () => {
   await fs.writeFile('AGENTS.md', '\uFEFF# Mine\n\nCustom')
   await fs.writeFile('ARCHITECTURE.md', `\uFEFF# Mine\n\n${OLD}\n`)
   await creedUpdate(true)
-  expect(await read('AGENTS.md')).toBe(`\uFEFF# Mine\n\n${NEW}\n\nCustom`)
+  expect(await read('AGENTS.md')).toBe(`\uFEFF# Mine\n\n${NEW}\n\nCustom\n`)
   expect(await read('ARCHITECTURE.md')).toBe(`\uFEFF# Mine\n\n${NEW}\n`)
 })
 
@@ -188,6 +176,8 @@ for (const [label, original, template, message] of [
   ['orphan closing', `# Custom\n${CREED_BLOCK_END}`, null, /without an opening marker/],
   ['reversed markers', `# Custom\n${CREED_BLOCK_END}\n${CREED_BLOCK_BEGIN}`, null, /without an opening marker/],
   ['nested markers', `# Custom\n${CREED_BLOCK_BEGIN}\n${CREED_BLOCK_BEGIN}\n${CREED_BLOCK_END}\n${CREED_BLOCK_END}`, null, /Nested/],
+  ['multiple blocks', `# Custom\n${OLD}\nUser text\n${OLD}`, null, /single Agent Creed block/],
+  ['multiple template blocks', '# Custom\nUser text', `# Template\n${OLD}\nMiddle\n${OLD}`, /single Agent Creed block/],
   ['unmarked template', '# Custom\nUser text', '# Template\nNo markers', /missing Agent Creed markers/],
   ['unclosed template', '# Custom\nUser text', `# Template\n${CREED_BLOCK_BEGIN}\nNew text`, /without a closing marker/],
 ]) {
