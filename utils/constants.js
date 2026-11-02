@@ -1,7 +1,7 @@
 // AgentCreed constants
 
 /** Current AgentCreed version */
-export const CREED_VERSION = '0.0.2'
+export const CREED_VERSION = '0.0.3'
 
 /** GitHub URL hosting AgentCreed files, pinned to the release tag of CREED_VERSION */
 export const CREED_FILES_URL = `https://raw.githubusercontent.com/AloisSeckar/AgentCreed/refs/tags/v${CREED_VERSION}/src/`
