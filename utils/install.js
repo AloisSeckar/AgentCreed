@@ -91,7 +91,7 @@ export async function fetchTemplate(url) {
   const directory = await fs.mkdtemp('.agentcreed-')
   try {
     const templateFile = `${directory}/template.md`
-    await createFileFromWebTemplate({ url, targetFile: templateFile, force: true })
+    await createFileFromWebTemplate({ url, targetFile: templateFile, force: true, silent: true })
     return await fs.readFile(templateFile, 'utf8')
   } finally {
     await fs.rm(directory, { recursive: true, force: true })
@@ -112,13 +112,14 @@ export async function mergeFile(file, template) {
     } finally {
       await handle.close()
     }
-    await updateTextFile({ targetFile: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true })
-    if (body) await updateTextFile({ targetFile: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true })
+    await updateTextFile({ targetFile: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true, silent: true })
+    if (body) await updateTextFile({ targetFile: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true, silent: true })
     const expected = `${prefix}\n\n${block}\n${body ? `\n${body}\n` : ''}`
     if (await fs.readFile(tempFile, 'utf8') !== expected) {
       throw new Error('Temporary file did not preserve the expected content')
     }
     await fs.rename(tempFile, file)
+    console.log(`'${file}' file updated.`)
     ownsTemp = false
   } finally {
     if (ownsTemp) await fs.rm(tempFile, { force: true })
