@@ -49,6 +49,11 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Inside code, only add comments to explain business logic **why**, never try to describe what, and only if the intention is not clear from the code itself. 3 lines maximum.
 - When fixing existing code based on a ticket, add a comment with the ticket number for later reference.
 
+## Instruction files
+
+- Only edit `ARCHITECTURE.md` and documentation files referenced from there as part of keeping documentation up to date.
+- Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills and other agent instructions) on your own. If you detect a problem in `AGENTS.md`, `SECURITY.md` or a skill, log it into `.creed/SUGGESTIONS.md`.
+
 ## Debugging
 
 - When failure is reported, always try to isolate the root cause first. If it is not apparent (user provided vague definition), ask for clarification - challenge user to provide error log message or at least to describe steps to reproduce the issue.
