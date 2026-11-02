@@ -1,76 +1,17 @@
 import { spawnSync } from 'node:child_process'
-import { EventEmitter } from 'node:events'
 import fs from 'node:fs/promises'
-import https from 'node:https'
-import { syncBuiltinESMExports } from 'node:module'
-import os from 'node:os'
 import path from 'node:path'
-import readline from 'node:readline'
-import { Readable } from 'node:stream'
-import { expect, onTestFinished, test, vi } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { creedUpdate } from '../bin/update.js'
 import {
-  CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS, CREED_SUGGESTIONS_FILE,
+  CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_SUGGESTIONS_FILE,
   CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
+import { METADATA, block, setupFixture as baseFixture, templateUrl as url } from './helpers.js'
 
-const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
-const block = text => `${CREED_BLOCK_BEGIN}\n\n${text}\n\n${CREED_BLOCK_END}`
 const NEW = block('New instruction.')
 const OLD = block('Old instruction.')
-const url = file => `${CREED_FILES_URL}${file}`
-
-async function setupFixture(answers = []) {
-  const cwd = process.cwd()
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'agentcreed-update-test-'))
-  process.chdir(directory)
-  onTestFinished(async () => {
-    vi.restoreAllMocks()
-    syncBuiltinESMExports()
-    try {
-      expect((await fs.readdir(directory)).filter(name => name.startsWith('.agentcreed-'))).toEqual([])
-    } finally {
-      process.chdir(cwd)
-      await fs.rm(directory, { recursive: true, force: true })
-    }
-  })
-  const templates = new Map(CREED_FILES.map(file => [
-    url(file), `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${NEW}\n`,
-  ]))
-  const requests = []
-  vi.spyOn(https, 'get').mockImplementation((requestUrl, callback) => {
-    requests.push(requestUrl)
-    const request = new EventEmitter()
-    queueMicrotask(() => {
-      if (templates.get(requestUrl) instanceof Error) {
-        request.emit('error', templates.get(requestUrl))
-        return
-      }
-      const response = Readable.from([Buffer.from(templates.get(requestUrl) ?? '')])
-      response.statusCode = templates.has(requestUrl) ? 200 : 404
-      callback(response)
-    })
-    return request
-  })
-  const prompts = []
-  vi.spyOn(readline, 'createInterface').mockImplementation(() => {
-    const terminal = new EventEmitter()
-    terminal.close = () => {}
-    terminal.question = (question, callback) => {
-      prompts.push(question)
-      expect(answers.length, `Unexpected prompt: ${question}`).toBeGreaterThan(0)
-      queueMicrotask(() => callback(answers.shift()))
-    }
-    return terminal
-  })
-  const output = []
-  vi.spyOn(process.stdout, 'write').mockImplementation((message) => {
-    output.push(String(message))
-    return true
-  })
-  const exit = vi.spyOn(process, 'exit').mockImplementation(() => {})
-  return { templates, requests, prompts, output, exit }
-}
+const setupFixture = (answers = []) => baseFixture(answers, NEW)
 
 const read = file => fs.readFile(file, 'utf8')
 const missing = file => expect(fs.access(file)).rejects.toMatchObject({ code: 'ENOENT' })

@@ -1,75 +1,17 @@
 import { spawnSync } from 'node:child_process'
-import { EventEmitter } from 'node:events'
 import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
-import https from 'node:https'
 import { syncBuiltinESMExports } from 'node:module'
-import os from 'node:os'
 import path from 'node:path'
-import readline from 'node:readline'
-import { Readable } from 'node:stream'
-import { expect, onTestFinished, test, vi } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { creedSetup } from '../bin/setup.js'
 import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
   CREED_BACKLOG_FILE, CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
+import { block, setupFixture, templateUrl } from './helpers.js'
 
-const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
-const BLOCK = `${CREED_BLOCK_BEGIN}\n\nKeep this instruction.\n\n${CREED_BLOCK_END}`
-const templateUrl = file => `${CREED_FILES_URL}${file}`
-
-async function setupFixture(answers = []) {
-  const cwd = process.cwd()
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'agentcreed-test-'))
-  process.chdir(directory)
-  onTestFinished(async () => {
-    vi.restoreAllMocks()
-    syncBuiltinESMExports()
-    try {
-      expect((await fs.readdir(directory)).filter(name => name.startsWith('.agentcreed-'))).toEqual([])
-    } finally {
-      process.chdir(cwd)
-      await fs.rm(directory, { recursive: true, force: true })
-    }
-  })
-  const templates = new Map(CREED_FILES.map(file => [
-    templateUrl(file), `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${BLOCK}\n`,
-  ]))
-  const requests = []
-  vi.spyOn(https, 'get').mockImplementation((url, callback) => {
-    requests.push(url)
-    const request = new EventEmitter()
-    queueMicrotask(() => {
-      if (templates.get(url) instanceof Error) {
-        request.emit('error', templates.get(url))
-        return
-      }
-      const response = Readable.from([Buffer.from(templates.get(url) ?? '')])
-      response.statusCode = templates.has(url) ? 200 : 404
-      callback(response)
-    })
-    return request
-  })
-  const prompts = []
-  vi.spyOn(readline, 'createInterface').mockImplementation(() => {
-    const terminal = new EventEmitter()
-    terminal.close = () => {}
-    terminal.question = (question, callback) => {
-      prompts.push(question)
-      expect(answers.length, `Unexpected prompt: ${question}`).toBeGreaterThan(0)
-      queueMicrotask(() => callback(answers.shift()))
-    }
-    return terminal
-  })
-  const output = []
-  vi.spyOn(process.stdout, 'write').mockImplementation(message => {
-    output.push(String(message))
-    return true
-  })
-  const exit = vi.spyOn(process, 'exit').mockImplementation(() => {})
-  return { templates, requests, prompts, output, exit }
-}
+const BLOCK = block('Keep this instruction.')
 
 test('preserves duplicate and one-line instructions through real helper calls and repeat runs', async () => {
   await setupFixture()
