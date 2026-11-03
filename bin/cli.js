@@ -32,7 +32,6 @@ const args = process.argv.slice(2);
         status = 1
     }
     
-    showMessage({ message: '' })
     showMessage({ message: 'AGENT CREED CLI FINISHED' })
     showMessage({ message: `CLI version: ${CREED_VERSION}` })
     showMessage({ message: '=========================', linesAfter: 2 })

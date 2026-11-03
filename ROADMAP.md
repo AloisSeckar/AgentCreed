@@ -18,7 +18,6 @@
 - [x] `creed-chat` skill making agent asking more before working randomly based on <https://www.skills.sh/mattpocock/skills/grill-me>
 - [x] `creed-scan` skill helping agent to scaffold project-specific info based on <https://www.skills.sh/cloudai-x/claude-workflow-v2/analyzing-projects>
 - [x] `creed-check` skill checking consistency of instruction files and accuracy of the documentation
-- [ ] custom skill for checking for conflicting instructions
 - [ ] custom skill for converting pdf/docx (with specs) to `.md` files
 - [ ] custom skill for analyzing / design / planning
 
@@ -30,8 +29,8 @@
   - [x] scaffold `.creed/SUGGESTIONS.md`
   - [x] scaffold `.creed/BACKLOG.md`
   - [x] scaffold `.creed/version`
-  - [ ] run a skill checking for conflicting instructions
+  - [x] recommend running `creed-check` via the agent
 - [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established
   - [x] replace relevant part in existing `.md` files
   - [x] update `.creed/version`
-  - [ ] run a skill checking for conflicting instructions
+  - [x] recommend running `creed-check` via the agent

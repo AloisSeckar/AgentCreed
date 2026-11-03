@@ -38,6 +38,10 @@ export async function creedSetup(autoRun = false) {
 
   // file with version info
   await writeVersionFile()
-  
+
+  // inform user
+  showMessage({ message: '' })
   showMessage({ message: 'SETUP COMPLETE', linesAfter: 2 })
+  showMessage({ message: 'Proceed with running `creed-check` skill via your agent to make sure all instructions are consistent and up-to-date.', linesAfter: 2 })
+
 }
