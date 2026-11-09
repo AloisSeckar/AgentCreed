@@ -170,6 +170,6 @@ If `ARCHITECTURE.md` does not exist in project root, create the file, use projec
 
 ## Final Check
 
-Run `/creed-check` skill session to ensure consistency of all the newly documented facts.
+Run `creed-check` skill session to ensure consistency of all the newly documented facts.
 
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
