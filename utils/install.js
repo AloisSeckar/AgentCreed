@@ -85,7 +85,7 @@ export async function fetchTemplate(url) {
   const directory = await fs.mkdtemp('.agentcreed-')
   try {
     const templateFile = `${directory}/template.md`
-    await createFileFromWebTemplate({ url, targetFile: templateFile, force: true, silent: true })
+    await createFileFromWebTemplate({ url, targetPath: templateFile, force: true, silent: true })
     return await fs.readFile(templateFile, 'utf8')
   } finally {
     await fs.rm(directory, { recursive: true, force: true })
@@ -107,8 +107,8 @@ export async function mergeFile(file, template) {
     } finally {
       await handle.close()
     }
-    await updateTextFile({ targetFile: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true, silent: true })
-    if (body) await updateTextFile({ targetFile: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true, silent: true })
+    await updateTextFile({ targetPath: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true, silent: true })
+    if (body) await updateTextFile({ targetPath: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true, silent: true })
     const expected = bom + composeDocument({ header, block, body })
     if (await fs.readFile(tempFile, 'utf8') !== expected) {
       throw new Error('Temporary file did not preserve the expected content')

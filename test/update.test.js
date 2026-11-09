@@ -229,9 +229,11 @@ test('the CLI updates files and exits successfully', async () => {
     import { Readable } from 'node:stream'
     https.get = (url, callback) => {
       const request = new EventEmitter()
+      request.destroy = error => queueMicrotask(() => request.emit('error', error))
       queueMicrotask(() => {
         const response = Readable.from([Buffer.from(${JSON.stringify(`# T\n\n${NEW}\n`)})])
         response.statusCode = 200
+        response.headers = {}
         callback(response)
       })
       return request

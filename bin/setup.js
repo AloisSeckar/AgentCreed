@@ -29,7 +29,7 @@ export async function creedSetup(autoRun = false) {
       if (pathExists({ targetPath: file })) {
         await mergeFile(file, await fetchTemplate(url))
       } else {
-        await createFileFromWebTemplate({ url, targetFile: file, force: true })
+        await createFileFromWebTemplate({ url, targetPath: file, force: true })
       }
     } catch (error) {
       throw new Error(`Could not set up '${file}' from ${url}: ${error.message}`, { cause: error })

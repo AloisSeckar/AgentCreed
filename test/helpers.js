@@ -35,6 +35,7 @@ export async function setupFixture(answers = [], templateBlock = block('Keep thi
   vi.spyOn(https, 'get').mockImplementation((url, callback) => {
     requests.push(url)
     const request = new EventEmitter()
+    request.destroy = error => queueMicrotask(() => request.emit('error', error))
     queueMicrotask(() => {
       if (templates.get(url) instanceof Error) {
         request.emit('error', templates.get(url))
@@ -42,6 +43,7 @@ export async function setupFixture(answers = [], templateBlock = block('Keep thi
       }
       const response = Readable.from([Buffer.from(templates.get(url) ?? '')])
       response.statusCode = templates.has(url) ? 200 : 404
+      response.headers = {}
       callback(response)
     })
     return request

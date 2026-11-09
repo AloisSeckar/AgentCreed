@@ -33,7 +33,7 @@ export async function creedUpdate(autoRun = false) {
     const url = `${CREED_FILES_URL}${file}`
     try {
       if (!pathExists({ targetPath: file })) {
-        await createFileFromWebTemplate({ url, targetFile: file, force: true })
+        await createFileFromWebTemplate({ url, targetPath: file, force: true })
         continue
       }
       const template = await fetchTemplate(url)
