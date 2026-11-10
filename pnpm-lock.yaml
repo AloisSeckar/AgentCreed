@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       elrh-cosca:
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.5.1
+        version: 0.5.1
     devDependencies:
       vitest:
         specifier: ^5.1.0
@@ -323,8 +323,8 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
-  elrh-cosca@0.5.0:
-    resolution: {integrity: sha512-XvImWt4x3qF61wS+8C5Lv4cJJlIgzea4KEQwkB+QInjXwWwqQJysNPAKdGxOXOfITpm4WaRIdvWcQOR8raRGSw==}
+  elrh-cosca@0.5.1:
+    resolution: {integrity: sha512-9f+34h+F9IivTbcFKVw7ZPbMa6I1MFHiUhLCZn6HYFne3/VvLx5BqDfadtYc7YuIWe36HlwevZwdrkD56o1GQg==}
     engines: {node: '>=22.13.0'}
 
   es-module-lexer@2.3.2:
@@ -647,7 +647,7 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
-  elrh-cosca@0.5.0: {}
+  elrh-cosca@0.5.1: {}
 
   es-module-lexer@2.3.2: {}
 

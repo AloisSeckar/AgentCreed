@@ -1,2 +1,3 @@
-# minimumReleaseAgeExclude:
-#  - elrh-cosca@0.4.0
+minimumReleaseAgeExclude:
+  # build 2026-11-10
+  - elrh-cosca@0.5.1
