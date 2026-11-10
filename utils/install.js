@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { createFileFromWebTemplate, updateTextFile } from 'elrh-cosca'
+import { createFileFromWebTemplate, showDebug, updateTextFile } from 'elrh-cosca'
 import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
@@ -114,7 +114,7 @@ export async function mergeFile(file, template) {
       throw new Error('Temporary file did not preserve the expected content')
     }
     await fs.rename(tempFile, file)
-    console.log(`'${file}' file updated.`)
+    showDebug(`'${file}' file updated.`)
     ownsTemp = false
   } finally {
     if (ownsTemp) await fs.rm(tempFile, { force: true })

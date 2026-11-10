@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
-import { createFileFromWebTemplate, pathExists, promptUser, showMessage } from 'elrh-cosca'
+import { 
+  createFileFromWebTemplate, pathExists, promptUser, 
+  showDebug, showMessage, showSuccess 
+} from 'elrh-cosca'
 import { CREED_FILES, CREED_FILES_URL } from '../utils/constants.js'
 import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
 
@@ -14,14 +17,13 @@ import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
  */
 export async function creedSetup(autoRun = false) {
   showMessage({ message: 'This CLI tool will help you establishing Agent Creed AI-assisted development in your project.' })
-  showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 2 })
+  showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 1 })
 
-  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to set everything up automatically (no more prompts)?' })
-  showMessage({ message: '' })
+  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to set everything up automatically (no more prompts)?', linesAfter: 1 })
 
   for (const file of CREED_FILES) {
     if (!isAutoRun && !await promptUser({ question: `Set up '${file}' while preserving your instructions?` })) {
-      showMessage({ message: `Setup of '${file}' skipped.` })
+      showDebug(`Setup of '${file}' skipped.`)
       continue
     }
     const url = `${CREED_FILES_URL}${file}`
@@ -40,8 +42,7 @@ export async function creedSetup(autoRun = false) {
   await writeVersionFile()
 
   // inform user
-  showMessage({ message: '' })
-  showMessage({ message: 'SETUP COMPLETE', linesAfter: 2 })
-  showMessage({ message: 'Proceed with running `creed-scan` skill via your agent to make sure all instructions are consistent and up-to-date.', linesAfter: 2 })
+  showSuccess({ message: 'SETUP COMPLETE', linesBefore: 1, linesAfter: 1 })
+  showMessage({ message: 'Proceed with running `creed-scan` skill via your agent to make sure all instructions are consistent and up-to-date.' })
 
 }

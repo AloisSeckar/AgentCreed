@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
-import { getPackageManager, showMessage } from 'elrh-cosca'
+import { 
+  getPackageManager, showMessage, showError, showWarning, 
+  showDebug, showSuccess 
+} from 'elrh-cosca'
 import { CREED_VERSION } from '../utils/constants.js'
 
 /**
@@ -17,8 +20,8 @@ const args = process.argv.slice(2);
   const autoRun = args[1] === 'true'
   try {
     showMessage({ message: '=========================' })
-    showMessage({ message: 'AGENT CREED' })
-    showMessage({ message: `CLI version: ${CREED_VERSION}`, linesAfter: 2 })
+    showDebug({ message: `CLI version: ${CREED_VERSION}`, linesAfter: 1 })
+    showSuccess({ message: 'AGENT CREED CLI', linesAfter: 1 })
 
     switch (args[0]) {  
       case 'setup':
@@ -28,15 +31,16 @@ const args = process.argv.slice(2);
         await (await import('./update.js')).creedUpdate(autoRun)
         break
       default:
-        console.log(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update [true|false]\``)
+        showWarning(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update [true|false]\``)
         status = 1
     }
     
-    showMessage({ message: 'AGENT CREED CLI FINISHED' })
-    showMessage({ message: `CLI version: ${CREED_VERSION}` })
-    showMessage({ message: '=========================', linesAfter: 2 })
+    showSuccess({ message: 'AGENT CREED CLI FINISHED', linesBefore: 1, linesAfter: 1 })
+    showDebug({ message: `CLI version: ${CREED_VERSION}` })
+    showMessage({ message: '=========================', linesAfter: 1 })
   } catch (error) {
-    console.error('[agentcreed] CLI failed:', error.message)
+    showError(`[agentcreed] CLI failed: ${error.message}`)
+    showDebug(error.stack)
     status = 1
   }
   process.exit(status)
