@@ -19,7 +19,7 @@ const args = process.argv.slice(2);
   let status = 0
   const autoRun = args[1] === 'true'
   try {
-    showMessage({ message: '=========================' })
+    showMessage({ message: '========================================', color: 'yellow' })
     showDebug({ message: `CLI version: ${CREED_VERSION}`, linesAfter: 1 })
     showSuccess({ message: 'AGENT CREED CLI', linesAfter: 1 })
 
@@ -37,7 +37,7 @@ const args = process.argv.slice(2);
     
     showSuccess({ message: 'AGENT CREED CLI FINISHED', linesBefore: 1, linesAfter: 1 })
     showDebug({ message: `CLI version: ${CREED_VERSION}` })
-    showMessage({ message: '=========================', linesAfter: 1 })
+    showMessage({ message: '========================================', linesAfter: 1, color: 'yellow' })
   } catch (error) {
     showError(`[agentcreed] CLI failed: ${error.message}`)
     showDebug(error.stack)
