@@ -29,7 +29,7 @@ test('preserves duplicate and one-line instructions through real helper calls an
   await expect(fs.access('AGENTS_temp.md')).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
-test('scaffolds all full templates from main in order without prompting', async () => {
+test('scaffolds all full templates from the pinned release tag in order without prompting', async () => {
   const { templates, requests, prompts, exit } = await setupFixture()
   await creedSetup(true)
   expect(requests).toEqual(CREED_FILES.map(templateUrl))

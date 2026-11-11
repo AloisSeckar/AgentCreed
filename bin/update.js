@@ -9,7 +9,7 @@ import { CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.j
 import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/install.js'
 
 /**
- * Update Agent Creed managed content in project folder to the latest released templates.
+ * Update Agent Creed managed content in project folder to the templates of the current package version (`CREED_VERSION`).
  *
  * @param {boolean} autoRun - Whether to run the update automatically without any prompts (defaults to false).
  */
