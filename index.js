@@ -1,2 +1,2 @@
-console.log("AgentCreed")
-console.log("use: `npx agentcreed` to get started")
+console.log('AgentCreed')
+console.log('use: `npx agentcreed` to get started')
