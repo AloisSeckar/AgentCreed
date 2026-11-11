@@ -11,7 +11,7 @@ description: Skill for structured exploration of codebases to understand structu
 
 Use this approach to systematically explore and understand a codebase.
 
-If `ARCHITECTURE.md` file already exists in project root and contains content after `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, treat it as a source of truth. Otherwise, look directly into the code.
+If `ARCHITECTURE.md` file already exists in project root, treat it as a source of truth. Otherwise fallback to `README.md`. Verify available claims against the code and look directly into the code for anything it does not cover.
 
 ## Project Analysis Workflows
 
@@ -162,9 +162,9 @@ If any items cannot be verified, note them as "needs clarification" in the repor
 
 ## Persisting Analysis
 
-If `ARCHITECTURE.md` exists in project root, and already contains the analysis, update it to align with the current state.
+If `ARCHITECTURE.md` exists in project root and ends with `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, append the analysis after this marker.
 
-If `ARCHITECTURE.md` exists in project root, but ends with `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, append the analysis after this marker.
+If `ARCHITECTURE.md` exists in project root and has any other content (with or without `<!-- ↑↑↑ agentcreed ↑↑↑ -->` marker), merge the findings into its existing text instead.
 
 If `ARCHITECTURE.md` does not exist in project root, create the file, use project name as a H1 headline and insert the analysis afterwards.
 
