@@ -11,25 +11,25 @@ Methodology framework for AI-assisted development, shipped as an NPM CLI (`agent
 | Category        | Technology                                                    |
 | --------------- | ------------------------------------------------------------- |
 | Language        | JavaScript (ES modules, `"type": "module"`)                   |
-| Runtime         | Node.js >=22.12.0 (`engines` field)                           |
-| Package manager | pnpm 12.15.0 (`packageManager` field)                         |
-| Dependencies    | `elrh-cosca` ^0.4.3 (CLI helpers: prompts, messages, file IO) |
-| Testing         | Vitest ^5 with Vitest snapshots                               |
+| Runtime         | Node.js >=22.13.0 (`engines` field)                           |
+| Package manager | pnpm 12.18.0 (`packageManager` field)                         |
+| Dependencies    | `elrh-cosca` ^0.5.1 (CLI helpers: prompts, messages, file IO) |
+| Testing         | Vitest ^5.1.0 with Vitest snapshots                           |
 | Infrastructure  | None (no CI workflows, no containers)                         |
 
 ## Architecture
 
-Single-package CLI. Templates are not bundled - they are downloaded at runtime from GitHub `main` (`src/` folder).
+Single-package CLI. Templates are not bundled - they are downloaded at runtime from GitHub release tag `v<CREED_VERSION>` (`src/` folder).
 
 ```text
-npx agentcreed <cmd> [auto]
+npx agentcreed <cmd> [true|false]
         │
    bin/cli.js ──► bin/setup.js  ──► download src/<file> from GitHub (CREED_FILES_URL)
               │                      ├─ missing file → create from template
               │                      └─ existing file → merge via <file>_temp.md, then rename
               └─► bin/update.js ──► download src/<file> from GitHub (CREED_FILES_URL)
                                      ├─ missing file → create from template
-                                     └─ existing file → merge in memory (same rules as setup), write if changed
+                                     └─ existing file → merge in memory (same rules as setup, preserving CRLF), write if changed
 ```
 
 Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.

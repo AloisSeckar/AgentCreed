@@ -11,9 +11,9 @@ Following process is used to check and fix current state of agent instructions a
 
 For the purpose of this skill, consider:
 
-- `project root` is the folder with the top-level `AGENTS.md` (usually the repository root). If it redirects to instruction files elsewhere, follow the redirection.
-- `creed-files` are `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/BACKLOG.md` and `.creed/SUGGESTIONS.md` in `project root`. Files with the same names in other folders are ordinary `linked-files`.
-- `linked-files` are files a read file refers to by a link or by explicit name or path, including skills it requires to be used (e.g. `creed-dev`). Exclude `creed-files`. Read each file only once.
+- `project root` is the folder with the top-level `AGENTS.md` (usually the repository root).
+- `creed-files` are `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/BACKLOG.md` and `.creed/SUGGESTIONS.md` in `project root`. Other files with the same names in nested folders are ordinary `linked-files`.
+- `linked-files` are instruction or documentation files a read file links to or directs to read/use, including skills it requires to be used (e.g. `creed-dev`). Exclude `creed-files` and exclude source code, test or configuration files. Read each file only once.
 - `security-boundaries` impose limits on code or agent actions from a security perspective that must always be fulfilled.
 - `agent-instructions` describe how agents should (or shouldn't) interact with the code or behave when performing given tasks (excluding security rules).
 - `documented-facts` describe the project structure and its behavior (to be "documented", the fact must be written somewhere within the project).
@@ -21,7 +21,7 @@ For the purpose of this skill, consider:
 
 Split a passage into separate items only where it holds independent rules. Keep a condition together with its consequence (e.g. "do X and notify the user" is one item).
 
-Text between AgentCreed markers is managed by AgentCreed and gets overwritten on `agentcreed update`. Each file has a single managed block and project-specific content belongs AFTER it. Do not edit the managed text, unless `AGENTS.md` allows it. Log the finding into `.creed/SUGGESTIONS.md` instead.
+When a flaw is inside AgentCreed-managed text that `AGENTS.md` does not allow editing, do not edit it; log the finding into `.creed/SUGGESTIONS.md` instead.
 
 When moving or rephrasing a `source`, move text word for word by default and keep its strength words (MUST, ALWAYS, NEVER, pause, make sure). Before applying such a change, compare each old rule with its new wording and mark it kept / merged / strengthened / weakened / dropped for the final report.
 
@@ -39,11 +39,11 @@ Read `SECURITY.md` in `project root` and its `linked-files`. Append all claims e
 
 ### 1.2 Agent Instructions
 
-Read `AGENTS.md` in `project root` and its `linked-files`. Append all claims established by their content to `agent-instructions`.
+Read `AGENTS.md` in `project root` and its `linked-files`, and any remaining skills in `.agents/skills/`. Append all claims established by their content to `agent-instructions`.
 
 ### 1.3 Documented Facts
 
-Read `ARCHITECTURE.md` in `project root` and its `linked-files`, plus `README.md` if present. Append all claims established by their content to `documented-facts`.
+Read `ARCHITECTURE.md` in `project root` with its `linked-files` and `README.md` in `project root` with its `linked-files`, if present. Append all claims established by their content to `documented-facts`.
 
 ## 2. Verifying consistency
 

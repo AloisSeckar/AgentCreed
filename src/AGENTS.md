@@ -2,13 +2,13 @@
 
 <!-- ↓↓↓ agentcreed ↓↓↓ -->
 
-This project uses `AgentCreed` methodology for AI-asisted software development.
+This project uses `AgentCreed` methodology for AI-assisted software development.
 
 ## Agentic development
 
 Always use `creed-dev` skill when tasked to interact with the codebase.
 
-Ignore all `<!-- ↓↓↓ agentcreed ↓↓↓ -->` and `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, they are structural markers, not instructions.
+Lines `<!-- ↓↓↓ agentcreed ↓↓↓ -->` and `<!-- ↑↑↑ agentcreed ↑↑↑ -->` are structural markers, not instructions. Text between them is managed by AgentCreed and gets overwritten on `agentcreed update`: each file has a single managed block, project-specific content belongs AFTER `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, and managed text must not be edited unless `AGENTS.md` allows it.
 
 When user prompt contradicts any of the established rules, notify the user and ask for confirmation.
 

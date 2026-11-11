@@ -28,12 +28,12 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 
 ## Principles
 
-- This should be an univeral portable solution applicable to any AI harness tool used
+- This should be a universal portable solution applicable to any AI harness tool used
 - Thus the solution is centered around [`AGENTS.md`](https://agents.md/) file which became a de-facto standard lately
 - Repeatable actions and workflows are described using [`Agent skills`](https://agentskills.io/) which is also a well-established tool
 - On the contrary, this project is less focused on `Agents personas` as this seems to be fragmented and vendor-specific (as of August 2026)
-- As I am mostly JS/TS dev now, the output will be a NPM CLI tool that can be invoked in Node-like enviroments and help to scaffold everything
-- The project will carry on universal rules and priciples while having project-specific needs in mind (e.g. via a placeholders in instruction files)
+- As I am mostly JS/TS dev now, the output will be an NPM CLI tool that can be invoked in Node-like environments and help to scaffold everything
+- The project will carry on universal rules and principles while having project-specific needs in mind (via managed blocks in instruction files with project-specific content kept after them)
 - Instruction sets for specific languages and tools will be gradually added
 
 ## Usage
@@ -43,9 +43,9 @@ It is - at least not yet - oriented on fully autonomous agentic systems. It is n
 
 ### Setup behavior
 
-Setup processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan` and `creed-check` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
+The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan` and `creed-check` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
 
-Templates currently come from the GitHub `main` branch under `src/`. The displayed target version does not pin downloaded content.
+Templates come from the GitHub release tag matching the installed CLI version (`refs/tags/v<version>/src/`).
 
 For existing documents, setup keeps a custom H1 headline (the first non-blank line, when it starts with `#`); otherwise the template headline is used. An existing skill always gets its YAML frontmatter replaced by the template metadata. The Agent Creed block is then replaced with the fresh template content and all other content is retained after it. Only standalone Agent Creed marker lines define the block; inline mentions are ordinary text. Edits inside the managed block are overwritten on repeat runs.
 
@@ -53,18 +53,15 @@ For existing documents, setup keeps a custom H1 headline (the first non-blank li
 
 Existing files are assembled in sibling `_temp.md` files using whole-block appends before being renamed over the originals. Line endings become LF and boundary blank lines are normalized; duplicate instructions, indentation, and internal spacing are retained. Repeating setup with unchanged templates produces the same merged contents.
 
-Manual mode asks once per file; declining leaves that file untouched. Automatic mode suppresses further prompts. Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
+Unless `true` is passed, setup asks whether to run automatically or prompt once per file; declining a file leaves it untouched. Automatic mode suppresses further prompts. Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
 
 ### Update behavior
 
-`npx agentcreed update [true|false]` refreshes an existing instance. It asks whether to run automatically (no prompts) or ask once per file, then goes through the same file list as setup (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md` and the `creed-dev`, `creed-chat`, `creed-scan` and `creed-check` skills).
+The `npx agentcreed update [true|false]` command refreshes an existing instance using the same prompt flow, file list, merge rules, error checks, and `.creed/version` update as setup, with templates fetched from the installed CLI version's release tag:
 
-- Missing files are created from the latest templates.
-- Existing files are handled exactly like in setup: the single Agent Creed block is replaced with the latest one from GitHub, skill frontmatter is replaced by the template metadata, a custom H1 headline is kept and all other user content is placed after the block.
-- Existing files without a block get it added below the headline (or below skill frontmatter).
-- Files with more than one block are rejected with an error.
+- Missing files are created from the templates.
+- Existing files are merged in memory rather than via `_temp.md`, preserving CRLF line endings when present (including adding the block below the headline or skill frontmatter when markers are absent).
 - Files whose content is unchanged are not rewritten.
-- The `.creed/version` file is updated with the installed CLI version.
 
 ## Contributing
 
