@@ -45,6 +45,9 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
 - `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `version` is written by setup and update
+- `.vscode/` - editor file associations only
+
+Root documents: `README.md` (usage and merge behavior), [ROADMAP.md](./ROADMAP.md) (implemented and planned features).
 
 ## Entry Points
 
@@ -57,6 +60,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 
 - ESM imports, `node:` prefix for built-ins
 - No semicolons, single quotes, 2-space indentation
+- LF line endings in the repository (via `.gitattributes`)
 - Exported functions documented with JSDoc; constants with one-line `/** */` comments
 - Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`)
 

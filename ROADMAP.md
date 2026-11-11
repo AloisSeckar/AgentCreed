@@ -29,7 +29,7 @@
   - [x] scaffold `.creed/SUGGESTIONS.md`
   - [x] scaffold `.creed/BACKLOG.md`
   - [x] scaffold `.creed/version`
-  - [x] recommend running `creed-check` via the agent
+  - [x] recommend running `creed-scan` via the agent
 - [x] remotely executable (`npx agentcreed update`) Node script for updating instructions when already established
   - [x] replace relevant part in existing `.md` files
   - [x] update `.creed/version`
