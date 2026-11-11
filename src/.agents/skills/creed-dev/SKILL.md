@@ -35,6 +35,8 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Follow patterns existing in current codebase. Ask before trying to introduce something new.
 - Perform only minimal change necessary to achieve the task. Every extra line degrades quality.
 - After implementing the changes, verify them by building the project and running its tests, if available.
+- If possible, run builds and tests in a cheap subagent. Have it save the output into a temp file and return only: the exit code, the build result line, the overall test summary line, the test summary lines of new or changed tests, and on failure the failing module/step, the first 20 error lines and path to the full log - never the full log itself.
+- Do not re-run a build or test just to find out why it failed. Run it again only after a change that addresses the reported cause. If the same failure repeats after two fix attempts, or the output does not explain the cause, stop and report to the user with the error details and what has been tried, using `creed-chat` skill.
 - NEVER try to run the application on your own to check the outcome. It may hang, wait for input or spawn long-running processes, wasting time and credits.
 - If you think running the application would help (i.e. to understand actual runtime behavior better while troubleshooting), suggest it to the user first.
 - Do not bundle unrelated changes or refactoring with feature work. Log them into `.creed/BACKLOG.md` instead.
