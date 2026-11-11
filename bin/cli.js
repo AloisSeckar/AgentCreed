@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
+/**
+ * CLI tool to make necessary adjustments in target project folder.
+ */
+
 import { 
   getPackageManager, showMessage, showError, showWarning, 
   showDebug, showSuccess 
 } from 'elrh-cosca'
 import { CREED_VERSION } from '../utils/constants.js'
-
-/**
- * CLI tool to make necessary adjustments in target project folder.
- */
 
 // get parameters passed by user
 const args = process.argv.slice(2);

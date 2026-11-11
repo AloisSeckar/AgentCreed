@@ -7,7 +7,7 @@ import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
 
-/** Index of the closing frontmatter line, or -1 when the document has no frontmatter. */
+// Index of the closing frontmatter line, or -1 when the document has no frontmatter.
 function findFrontmatterEnd(lines) {
   if (!/^---[ \t]*$/.test(lines[0])) return -1
   const closing = lines.findIndex((line, index) => index > 0 && /^(---|\.\.\.)[ \t]*$/.test(line))
@@ -15,7 +15,8 @@ function findFrontmatterEnd(lines) {
   return closing
 }
 
-/** Split a document into its header (H1 headline or skill frontmatter, null when absent) and the remaining lines. */
+// Split a document into its header (H1 headline or skill frontmatter, null when absent)
+// and the remaining lines.
 function splitDocument(text, isSkill) {
   const lines = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n')
   if (isSkill) {
@@ -27,7 +28,7 @@ function splitDocument(text, isSkill) {
   return { header: null, body: lines }
 }
 
-/** Range of the single managed block in `lines`, or null when there is none. */
+// Range of the single managed block in `lines`, or null when there is none.
 function findManagedBlock(lines) {
   const blocks = []
   let opening = -1
@@ -55,10 +56,10 @@ function trimBlankLines(text) {
   return lines.slice(start, end).join('\n')
 }
 
-/**
- * Sections of the merged document: header, the template block and the user content (everything outside the block).
- * Only a custom H1 headline is kept in front of the block; skill frontmatter always comes from the template.
- */
+// Sections of the merged document: header, the template block
+// and the user content (everything outside the block).
+// Only a custom H1 headline is kept in front of the block; 
+// skill frontmatter always comes from the template.
 function getMergeSections(original, template, isSkill) {
   const source = splitDocument(template, isSkill)
   if (source.header === null) throw new Error('Template is missing its headline or skill frontmatter')
@@ -80,7 +81,12 @@ function composeDocument({ header, block, body }) {
   return `${header}\n\n${block}\n${body ? `\n${body}\n` : ''}`
 }
 
-/** Download a template from `url` and return its text. */
+/**
+ * Download a template from `url`.
+ *
+ * @param {string} url - URL of the template file.
+ * @returns {Promise<string>} Text content of the template.
+ */
 export async function fetchTemplate(url) {
   const directory = await fs.mkdtemp('.agentcreed-')
   try {
@@ -92,7 +98,12 @@ export async function fetchTemplate(url) {
   }
 }
 
-/** Replace the managed block in `file` with the one from `template`, keeping a custom H1 headline and the content after the block. */
+/**
+ * Replace the managed block in `file` with the one from `template`, keeping a custom H1 headline and the content after the block.
+ *
+ * @param {string} file - Path to the existing file to merge into.
+ * @param {string} template - Text of the template providing the managed block.
+ */
 export async function mergeFile(file, template) {
   const original = await fs.readFile(file, 'utf8')
   const { bom, header, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
@@ -122,8 +133,12 @@ export async function mergeFile(file, template) {
 }
 
 /**
- * Same merge as `mergeFile`, returned as text. Keeps the BOM and CRLF line endings of `original`.
- * Skill frontmatter is replaced from the template; content before the block moves after it.
+ * Same merge as `mergeFile`, returned as text.
+ *
+ * @param {string} original - Current text of the file.
+ * @param {string} template - Text of the template providing the managed block.
+ * @param {boolean} isSkill - Whether the file is a skill, so its frontmatter is taken from the template (defaults to false).
+ * @returns {string} Merged text of the file.
  */
 export function applyManagedBlock(original, template, isSkill = false) {
   const { bom, ...sections } = getMergeSections(original, template, isSkill)
@@ -131,7 +146,9 @@ export function applyManagedBlock(original, template, isSkill = false) {
   return bom + composeDocument(sections).replaceAll('\n', eol)
 }
 
-/** Write the installed AgentCreed version into `CREED_VERSION_FILE`. */
+/**
+ * Write the installed AgentCreed version into `CREED_VERSION_FILE`.
+ */
 export async function writeVersionFile() {
   await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
   await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}`, 'utf8')

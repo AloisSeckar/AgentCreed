@@ -9,11 +9,8 @@ import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
 
 /**
  * Scaffold the root instruction documents, skills and aux files.
- * Existing files get their single managed block (and skill metadata) replaced from the template; a custom H1 and the content after the block are preserved.
- * Manual mode requests consent once per file; automatic mode suppresses prompts.
  *
  * @param {boolean} autoRun - Whether to run the setup automatically without any prompts (defaults to false).
- * @returns {Promise<void>} Completes setup and exits on success; rejects on failure.
  */
 export async function creedSetup(autoRun = false) {
   showMessage({ message: 'This CLI tool will help you establishing Agent Creed AI-assisted development in your project.' })

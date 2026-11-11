@@ -9,11 +9,32 @@ import { Readable } from 'node:stream'
 import { expect, onTestFinished, vi } from 'vitest'
 import { CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.js'
 
+/** Skill frontmatter used by mocked templates */
 export const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
+
+/**
+ * Wrap text into the AgentCreed managed block markers.
+ *
+ * @param {string} text - Content of the block.
+ * @returns {string} Text surrounded by the begin and end markers.
+ */
 export const block = text => `${CREED_BLOCK_BEGIN}\n\n${text}\n\n${CREED_BLOCK_END}`
+
+/**
+ * Build the template URL of an AgentCreed file.
+ *
+ * @param {string} file - Path of the file relative to the templates root.
+ * @returns {string} Full URL of the template.
+ */
 export const templateUrl = file => `${CREED_FILES_URL}${file}`
 
-// Runs in a temp directory with mocked network, prompts, stdout and exit.
+/**
+ * Prepare an isolated test environment in a temp directory with mocked network, prompts, stdout and exit.
+ *
+ * @param {string[]} answers - Queued answers to prompts; an unexpected prompt fails the test.
+ * @param {string} templateBlock - Managed block put into every mocked template.
+ * @returns {Promise<{templates: Map<string, string|Error>, requests: string[], prompts: string[], output: string[], exit: object}>} Mutable templates by URL and the recorded requests, prompts, stdout output and the `process.exit` spy.
+ */
 export async function setupFixture(answers = [], templateBlock = block('Keep this instruction.')) {
   const cwd = process.cwd()
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'agentcreed-test-'))

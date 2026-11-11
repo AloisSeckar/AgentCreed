@@ -9,15 +9,7 @@ import { CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.j
 import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/install.js'
 
 /**
- * CLI tool to update Agent Creed managed content in project folder.
- *
- * It first asks whether to run in "auto" mode (no prompts) or "manual" mode (with prompts).
- *
- * Then it:
- *  1) replaces the single Agent Creed block in each instruction file with the latest from GitHub, keeping a custom H1
- *     and the user content after the block (missing files are created from the template, skill metadata is always
- *     replaced, files without a block get it added below the headline)
- *  2) updates the file with installed version
+ * Update Agent Creed managed content in project folder to the latest released templates.
  *
  * @param {boolean} autoRun - Whether to run the update automatically without any prompts (defaults to false).
  */
