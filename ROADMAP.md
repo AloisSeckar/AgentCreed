@@ -10,7 +10,7 @@
 
 - [x] `AGENTS.md` - basic context with progressive disclosure (enforce `creed-dev` skill and link to other instruction files)
 - [x] `ARCHITECTURE.md` - how to keep info about the project (tech stack, structure, workflows, etc)
-- [ ] `SECURITY.md` - core security boundaries
+- [x] `SECURITY.md` - core security boundaries
 
 ## Skills
 

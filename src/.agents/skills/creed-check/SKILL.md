@@ -14,8 +14,8 @@ For the purpose of this skill, consider:
 - `project root` is the folder with the top-level `AGENTS.md` (usually the repository root). If it redirects to instruction files elsewhere, follow the redirection.
 - `creed-files` are `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/BACKLOG.md` and `.creed/SUGGESTIONS.md` in `project root`. Files with the same names in other folders are ordinary `linked-files`.
 - `linked-files` are files a read file refers to by a link or by explicit name or path, including skills it requires to be used (e.g. `creed-dev`). Exclude `creed-files`. Read each file only once.
-- `security-boundaries` impose limits on code from security perspective that must always be fulfilled when making changes.
-- `agent-instructions` describe how agents should (or shouldn't) interact with the code or behave when performing given tasks.
+- `security-boundaries` impose limits on code or agent actions from a security perspective that must always be fulfilled.
+- `agent-instructions` describe how agents should (or shouldn't) interact with the code or behave when performing given tasks (excluding security rules).
 - `documented-facts` describe the project structure and its behavior (to be "documented", the fact must be written somewhere within the project).
 - `source` of an item is the exact file and passage it was taken from.
 
