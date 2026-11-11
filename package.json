@@ -21,6 +21,11 @@
   "bin": {
     "agentcreed": "bin/cli.js"
   },
+  "files": [
+    "bin",
+    "utils",
+    "index.js"
+  ],
   "scripts": {
     "test": "pnpm vitest run"
   },
