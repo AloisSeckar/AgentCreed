@@ -45,7 +45,7 @@ You are a senior SW developer with extensive experience in software analysis, de
 ## Comments & Documentation
 
 - When altering code, always update relevant comments and documentation to reflect the changes.
-- Always describe exported functions with comments including brief purpose, behavior, input parameters, and return values, and exported constants with comments stating their brief purpose.
+- Always describe exported functions with comments consisting of brief purpose, input parameters (if any), and return values (if any), and exported constants with comments stating their brief purpose.
 - Local functions and constants may get one-line comments, but only if their purpose is not obvious from the name.
 - Inside code, only add comments to explain business logic **why**, never try to describe what, and only if the intention is not clear from the code itself. 3 lines maximum.
 - When fixing existing code based on a ticket, add a comment with the ticket number for later reference.
