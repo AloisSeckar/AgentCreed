@@ -23,6 +23,8 @@ Split a passage into separate items only where it holds independent rules. Keep 
 
 When a flaw is inside AgentCreed-managed text that `AGENTS.md` does not allow editing, do not edit it; log the finding into `.creed/SUGGESTIONS.md` instead.
 
+Fix typos and grammar mistakes in any file you read and may edit right away, without asking and without adding them into `fixes`, provided the meaning does not change. If a correction could change the meaning, treat it as an ambiguity (add it into `questions`).
+
 When moving or rephrasing a `source`, move text word for word by default and keep its strength words (MUST, ALWAYS, NEVER, pause, make sure). Before applying such a change, compare each old rule with its new wording and mark it kept / merged / strengthened / weakened / dropped for the final report.
 
 ## 1. Gathering information
@@ -86,6 +88,7 @@ Respond with a summary of:
 
 - findings and changes made in the files, grouped by file
 - items logged into `.creed/SUGGESTIONS.md` and `.creed/BACKLOG.md`
+- typos and grammar mistakes fixed
 - every moved or rephrased rule with its old and new wording, marked as kept, merged, strengthened, weakened or dropped
 
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
