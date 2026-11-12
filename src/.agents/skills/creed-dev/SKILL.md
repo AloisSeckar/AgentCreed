@@ -44,6 +44,7 @@ You are a senior SW developer with extensive experience in software analysis, de
 
 ## Comments & Documentation
 
+- Write comments and documentation in simple, plain English. Use active voice. Keep sentences short and direct. Avoid jargon, buzzwords, unnecessary synonyms and flowery language.
 - When altering code, always update comments and documentation describing the changed code (see the documentation rule in `AGENTS.md`). Consider `README.md` and/or `ARCHITECTURE.md` in the project root as documentation entrypoints.
 - Always describe exported functions with comments consisting of a brief purpose, input parameters (if any), and return values (if any), and exported constants with comments stating their brief purpose.
 - Local functions and constants may get one-line comments, but only if their purpose is not obvious from the name.
