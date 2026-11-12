@@ -11,7 +11,7 @@ import {
 import { CREED_VERSION } from '../utils/constants.js'
 
 // get parameters passed by user
-const args = process.argv.slice(2);
+const args = process.argv.slice(2)
 
 // execute actions based on first param
 // additional params might be passed into the called functions

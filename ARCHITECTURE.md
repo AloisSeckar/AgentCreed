@@ -61,7 +61,7 @@ The [ROADMAP.md](./ROADMAP.md) lists implemented and planned features.
 ## Conventions
 
 - ESM imports, `node:` prefix for built-ins
-- No semicolons, single quotes, 2-space indentation
+- No semicolons (unless required by syntax), single quotes, 2-space indentation
 - LF line endings in the repository (via `.gitattributes`)
 - Exported functions documented with JSDoc; constants with one-line `/** */` comments
 - Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`)
