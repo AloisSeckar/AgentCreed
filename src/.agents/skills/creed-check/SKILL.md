@@ -21,7 +21,9 @@ For the purpose of this skill, consider:
 
 Split a passage into separate items only where it holds independent rules. Keep a condition together with its consequence (e.g. "do X and notify the user" is one item).
 
-When a flaw is inside AgentCreed-managed text that `AGENTS.md` does not allow editing, do not edit it; log the finding into `.creed/SUGGESTIONS.md` instead.
+For duplication checks, intentional documentation summaries and navigation are not duplicates to remove. Preserve them while consolidating redundant normative rules with the same scope and unnecessarily repeated documented facts. Summaries must stay consistent with their authoritative sources.
+
+When a flaw is in an instruction file or inside AgentCreed-managed text that `AGENTS.md` does not allow editing, do not edit it; log the finding into `.creed/SUGGESTIONS.md` instead. This restriction applies to every editing step below.
 
 Fix typos and grammar mistakes in any file you read and may edit right away, without asking and without adding them into `fixes`, provided the meaning does not change. If a correction could change the meaning, treat it as an ambiguity (add it into `questions`).
 

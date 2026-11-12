@@ -15,7 +15,7 @@
 ## Skills
 
 - [x] wrapping skill `creed-dev` for high level instructions about the way of working
-- [x] `creed-chat` skill making agent asking more before working randomly based on <https://www.skills.sh/mattpocock/skills/grill-me>
+- [x] `creed-chat` skill that makes agents ask more before working randomly, based on <https://www.skills.sh/mattpocock/skills/grill-me>
 - [x] `creed-scan` skill helping agent to scaffold project-specific info based on <https://www.skills.sh/cloudai-x/claude-workflow-v2/analyzing-projects>
 - [x] `creed-check` skill checking consistency of instruction files and accuracy of the documentation
 - [ ] custom skill for converting pdf/docx (with specs) to `.md` files

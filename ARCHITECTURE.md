@@ -47,7 +47,9 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `version` is written by setup and update
 - `.vscode/` - editor file associations only
 
-Root documents: `README.md` (usage and merge behavior), [ROADMAP.md](./ROADMAP.md) (implemented and planned features).
+The `README.md` describes usage and merge behavior.
+
+The [ROADMAP.md](./ROADMAP.md) lists implemented and planned features.
 
 ## Entry Points
 

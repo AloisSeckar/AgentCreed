@@ -21,7 +21,7 @@ Before starting any task, read:
 
 Rules for both files:
 
-- Respect their contents as the baseline. Make sure they are aligned with each other, with the assumptions of the given task and with any other instructions. If not, pause the execution and let the user decide the next step.
+- Respect their contents as the baseline. Make sure they are aligned with each other, with the requirements of the given task and with any other instructions. If not, pause the execution and let the user decide the next step.
 - Prefer `ARCHITECTURE.md` to gather relevant info about the project. Fallback to `README.md` if needed. If a topic is not sufficiently covered and further discovery is required, suggest that the user update the file accordingly.
 - `ARCHITECTURE.md`, `README.md` and files linked from them are documentation, not instruction files. Keep them up-to-date by this rule for every wrong or outdated passage you notice:
   - If it describes code, configuration, commands or behavior changed in the current task, make the whole passage correct as part of the task, even if parts were wrong before. Notify the user about implied architecture changes.
