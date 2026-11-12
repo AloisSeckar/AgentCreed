@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { createFileFromWebTemplate, showDebug, updateTextFile } from 'elrh-cosca'
+import { createFileFromWebTemplate, pathExists, showDebug, updateTextFile } from 'elrh-cosca'
 import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
@@ -82,6 +82,28 @@ function composeDocument({ header, block, body }) {
 }
 
 /**
+ * Make sure `file` stays inside the working directory after resolving symlinks and junctions in any part of its path.
+ *
+ * @param {string} file - Path relative to the working directory.
+ * @throws {Error} When the path is invalid or resolves outside of the working directory.
+ */
+export function assertContained(file) {
+  // elrh-cosca validates the path (including symlink resolution) and throws when it escapes the CWD
+  pathExists({ targetPath: file })
+}
+
+/**
+ * Overwrite an existing `file` with `text` after checking it is contained in the working directory.
+ *
+ * @param {string} file - Path relative to the working directory.
+ * @param {string} text - New content of the file.
+ */
+export async function writeContainedFile(file, text) {
+  assertContained(file)
+  await fs.writeFile(file, text, 'utf8')
+}
+
+/**
  * Download a template from `url`.
  *
  * @param {string} url - URL of the template file.
@@ -105,6 +127,7 @@ export async function fetchTemplate(url) {
  * @param {string} template - Text of the template providing the managed block.
  */
 export async function mergeFile(file, template) {
+  assertContained(file)
   const original = await fs.readFile(file, 'utf8')
   const { bom, header, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
   const prefix = bom + header
@@ -150,6 +173,7 @@ export function applyManagedBlock(original, template, isSkill = false) {
  * Write the installed AgentCreed version into `CREED_VERSION_FILE`.
  */
 export async function writeVersionFile() {
+  assertContained(CREED_VERSION_FILE)
   await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
-  await fs.writeFile(CREED_VERSION_FILE, `${CREED_VERSION}`, 'utf8')
+  await writeContainedFile(CREED_VERSION_FILE, `${CREED_VERSION}`)
 }

@@ -6,7 +6,7 @@ import {
   showMessage, showDebug, showSuccess 
 } from 'elrh-cosca'
 import { CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.js'
-import { applyManagedBlock, fetchTemplate, writeVersionFile } from '../utils/install.js'
+import { applyManagedBlock, fetchTemplate, writeContainedFile, writeVersionFile } from '../utils/install.js'
 
 /**
  * Update Agent Creed managed content in project folder to the templates of the current package version (`CREED_VERSION`).
@@ -33,7 +33,7 @@ export async function creedUpdate(autoRun = false) {
       const template = await fetchTemplate(url)
       const original = await fs.readFile(file, 'utf8')
       const updated = applyManagedBlock(original, template, CREED_SKILLS.includes(file))
-      if (updated !== original) await fs.writeFile(file, updated, 'utf8')
+      if (updated !== original) await writeContainedFile(file, updated)
     } catch (error) {
       throw new Error(`Could not update '${file}' from ${url}: ${error.message}`, { cause: error })
     }

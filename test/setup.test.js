@@ -9,7 +9,7 @@ import {
   CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
   CREED_BACKLOG_FILE, CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
-import { METADATA, block, setupFixture, templateUrl } from './helpers.js'
+import { METADATA, block, linkOutside, setupFixture, templateUrl } from './helpers.js'
 
 const BLOCK = block('Keep this instruction.')
 
@@ -48,6 +48,27 @@ test('writes the CLI version to the version file on every run', async () => {
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
   await creedSetup(true)
   expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
+})
+
+test('refuses to write the version file through a symlinked .creed directory', async ({ skip }) => {
+  await setupFixture(['n', ...CREED_FILES.map(() => 'n')])
+  const link = await linkOutside('.creed')
+  if (!link) skip()
+  await expect(creedSetup()).rejects.toThrow(/outside of CWD via symlink/)
+  expect(await fs.readdir(link.outside)).toEqual([])
+})
+
+test('refuses to merge managed files behind a symlinked directory pointing outside the project', async ({ skip }) => {
+  await setupFixture()
+  const link = await linkOutside('.agents')
+  if (!link) skip()
+  const skill = path.join(link.outside, 'skills/creed-dev/SKILL.md')
+  await fs.mkdir(path.dirname(skill), { recursive: true })
+  await fs.writeFile(skill, `${METADATA}\n\n${BLOCK}\n`)
+  await expect(creedSetup(true)).rejects.toThrow(/outside of CWD via symlink/)
+  expect(await fs.readFile(skill, 'utf8')).toBe(`${METADATA}\n\n${BLOCK}\n`)
+  expect(await fs.readdir(path.dirname(skill))).toEqual(['SKILL.md'])
+  await expect(fs.access(CREED_VERSION_FILE)).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
 test('downloads existing-file templates through COSCA and removes them after processing', async () => {

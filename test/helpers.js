@@ -88,3 +88,21 @@ export async function setupFixture(answers = [], templateBlock = block('Keep thi
   const exit = vi.spyOn(process, 'exit').mockImplementation(() => {})
   return { templates, requests, prompts, output, exit }
 }
+
+/**
+ * Create a directory outside of the test working directory and link `link` to it with a junction (symlink on POSIX).
+ *
+ * @param {string} link - Path of the link relative to the working directory.
+ * @returns {Promise<{outside: string}|null>} The outside directory, or null when the platform refuses to create the link.
+ */
+export async function linkOutside(link) {
+  const outside = await fs.mkdtemp(path.join(os.tmpdir(), 'agentcreed-outside-'))
+  onTestFinished(() => fs.rm(outside, { recursive: true, force: true }))
+  try {
+    await fs.symlink(outside, link, 'junction')
+  } catch (error) {
+    if (error.code === 'EPERM') return null
+    throw error
+  }
+  return { outside }
+}

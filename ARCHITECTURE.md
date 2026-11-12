@@ -34,6 +34,8 @@ npx agentcreed <cmd> [true|false]
 
 Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
+Before every write to an existing or new managed path, `assertContained()` in `utils/install.js` verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Update writes go through internal `writeContainedFile()`.
+
 Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each file has exactly one managed block, which setup and update replace entirely with the template block. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
 
 ## Key Directories

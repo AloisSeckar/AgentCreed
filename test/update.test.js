@@ -7,7 +7,7 @@ import {
   CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_SUGGESTIONS_FILE,
   CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
-import { METADATA, block, setupFixture as baseFixture, templateUrl as url } from './helpers.js'
+import { METADATA, block, linkOutside, setupFixture as baseFixture, templateUrl as url } from './helpers.js'
 
 const NEW = block('New instruction.')
 const OLD = block('Old instruction.')
@@ -218,6 +218,25 @@ for (const exists of [false, true]) {
     })
   }
 }
+
+test('refuses to write the version file through a symlinked .creed directory', async ({ skip }) => {
+  await setupFixture(['n', ...CREED_FILES.map(() => 'n')])
+  const link = await linkOutside('.creed')
+  if (!link) skip()
+  await expect(creedUpdate()).rejects.toThrow(/outside of CWD via symlink/)
+  expect(await fs.readdir(link.outside)).toEqual([])
+})
+
+test('refuses to update managed files behind a symlinked directory pointing outside the project', async ({ skip }) => {
+  await setupFixture()
+  const link = await linkOutside('.agents')
+  if (!link) skip()
+  await fs.mkdir(path.join(link.outside, 'skills/creed-dev'), { recursive: true })
+  await fs.writeFile(path.join(link.outside, 'skills/creed-dev/SKILL.md'), `${METADATA}\n\n${OLD}\n`)
+  await expect(creedUpdate(true)).rejects.toThrow(/outside of CWD via symlink/)
+  expect(await read(path.join(link.outside, 'skills/creed-dev/SKILL.md'))).toBe(`${METADATA}\n\n${OLD}\n`)
+  await missing(CREED_VERSION_FILE)
+})
 
 test('the CLI updates files and exits successfully', async () => {
   await setupFixture()
