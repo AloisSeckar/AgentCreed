@@ -37,7 +37,8 @@ Two files versioned in git collect **pending** items only:
 
 Rules for both files:
 
-- When you notice such an item, append it as a new item into the matching file and notify the user. Other instructions referring to "log into `SUGGESTIONS.md`" or "log into `BACKLOG.md`" mean this procedure.
+- Items are numbered list entries (`1.`, `2.`, ...) for easy reference by number.
+- When you notice applicable item, append it as a new numbered item into the matching file and notify the user. Other instructions referring to "log into `SUGGESTIONS.md`" or "log into `BACKLOG.md`" mean this procedure.
 - Logging never replaces asking. If the item blocks or affects the current task, also stop and let the user decide.
 - Never mark items as done, resolved or obsolete. Once an item is resolved, delete it from the file entirely.
 - Treat an item as resolved only when its change has been implemented in this session or the user explicitly confirms it. Otherwise leave it untouched.
