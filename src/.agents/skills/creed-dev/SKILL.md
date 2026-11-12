@@ -22,8 +22,8 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Assume Git is used; suggest using it if not yet established in the project.
 - If no other branching and commit rules are established, follow trunk-based development model with commits directly to the main branch.
 - If not stated otherwise, use **Conventional Commits** for commit messages (`feat:`, `fix:`, `refactor:`, `chore:`, `test:`, `docs:`, etc.).
-- Before starting any work, ensure the latest remote state is pulled.
-- Before committing any work, run `git pull` to avoid extra merge commits. If pull fails due to conflicts, use `git stash` to save local changes, pull the remote state, and then re-apply the stashed changes with `git stash pop`.
+- Before starting any work, check `git status`. If the worktree is clean, run `git pull --ff-only`. If there are uncommitted changes or the pull fails, stop and inform the user.
+- Before committing any work, run `git pull` to avoid extra merge commits. If pull fails due to conflicts, use `git stash` to save local changes, pull the remote state, and then re-apply the stashed changes with `git stash pop`. If stashing fails due to conflicts, stop and inform the user.
 
 ## Development
 
