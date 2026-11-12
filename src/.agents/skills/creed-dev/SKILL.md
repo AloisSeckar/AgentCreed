@@ -44,17 +44,17 @@ You are a senior SW developer with extensive experience in software analysis, de
 
 ## Comments & Documentation
 
-- When altering code, always update relevant comments and documentation to reflect the changes. Consider `README.md` and/or `ARCHITECTURE.md` in the project root as documentation entrypoints.
+- When altering code, always update comments and documentation describing the changed code (see the documentation rule in `AGENTS.md`). Consider `README.md` and/or `ARCHITECTURE.md` in the project root as documentation entrypoints.
 - Always describe exported functions with comments consisting of a brief purpose, input parameters (if any), and return values (if any), and exported constants with comments stating their brief purpose.
 - Local functions and constants may get one-line comments, but only if their purpose is not obvious from the name.
 - Inside code, only add comments to explain business logic **why**, never try to describe what, and only if the intention is not clear from the code itself. 3 lines maximum.
 - When fixing existing code based on a ticket, add a comment with the ticket number for later reference.
 
-## Instruction files
+## Instruction files and documentation
 
 - Only edit `ARCHITECTURE.md`, `README.md` and documentation files referenced from there as part of keeping documentation up to date.
 - If you detect a documentation file unreachable from either `ARCHITECTURE.md` or `README.md`, report it in `.creed/BACKLOG.md`.
-- Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills and other agent instructions) on your own. If you detect any issue in instruction files, report it in `.creed/SUGGESTIONS.md`.
+- Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills and other agent instructions) or AgentCreed-managed text in any file on your own. If you detect any issue in them, report it in `.creed/SUGGESTIONS.md`.
 
 ## Debugging
 
