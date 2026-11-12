@@ -44,7 +44,7 @@ You are a senior SW developer with extensive experience in software analysis, de
 
 ## Comments & Documentation
 
-- When altering code, always update relevant comments and documentation to reflect the changes.
+- When altering code, always update relevant comments and documentation to reflect the changes. Consider `README.md` and/or `ARCHITECTURE.md` in project root as documentation entrypoints.
 - Always describe exported functions with comments consisting of brief purpose, input parameters (if any), and return values (if any), and exported constants with comments stating their brief purpose.
 - Local functions and constants may get one-line comments, but only if their purpose is not obvious from the name.
 - Inside code, only add comments to explain business logic **why**, never try to describe what, and only if the intention is not clear from the code itself. 3 lines maximum.
@@ -52,7 +52,7 @@ You are a senior SW developer with extensive experience in software analysis, de
 
 ## Instruction files
 
-- Only edit `ARCHITECTURE.md`, `README.md`, documentation files referenced from there as part of keeping documentation up to date.
+- Only edit `ARCHITECTURE.md`, `README.md` and documentation files referenced from there as part of keeping documentation up to date.
 - If you detect documentation file unreachable from either `ARCHITECTURE.md` or `README.md`, report it in `.creed/BACKLOG.md`.
 - Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills and other agent instructions) on your own. If you detect any issue in instruction files, report it in `.creed/SUGGESTIONS.md`.
 
