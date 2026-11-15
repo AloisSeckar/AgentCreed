@@ -5,7 +5,8 @@ Refer to [/src/.creed/BACKLOG.md](../src/.creed/BACKLOG.md) for description and 
 List of active unresolved tasks for this project follows:
 
 1. `creed-dev` ("Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills ...) ... on your own") conflicts with `creed-check`, which moves rules between `AGENTS.md`/`SECURITY.md` and fixes typos in any file. Clarify that `creed-check` (user-invoked) may edit the project-specific parts of instruction files outside the managed block.
-2. No output during update despite files changed:
+2. Creed actions should self-record some kind of a internal train of thought and store it for possible reference - users should have chance to understand what happened and why
+3. No output during update despite files changed:
 
   ```text
 ========================================
