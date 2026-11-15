@@ -76,7 +76,7 @@ For each item of `documented-facts` list, verify it is:
 1. Really a documented fact. If it is imposing a security boundary, move its source into `SECURITY.md` (or appropriate nested file linked from there). If it is giving instructions that are not related to security, move its source into `AGENTS.md` (or appropriate nested file linked from there). If it is a pending task, TODO or open question, move it into `.creed/BACKLOG.md`.
 2. Clear and unambiguous. Rephrase the source if needed. If the intention is not clear to you, add it into `questions`.
 3. Not duplicated by any other item in any list. If yes, keep only one in the source.
-4. Accurate. Verify it against the codebase and configuration (e.g. package manifests, scripts, folder structure). Fix verifiably wrong facts, remove transient states (e.g. test counts) and add uncertain cases into `questions`.
+4. Accurate. Verify it against the project's own code and configuration (e.g. package manifests, scripts, folder structure). Do not dig into third-party libraries or other pulled-in code (e.g. `node_modules`); take it as fact that such code does what its name, documentation and usage suggest. If the behavior of third-party code is uncertain, add it into `questions`. Fix verifiably wrong facts, remove transient states (e.g. test counts) and add uncertain cases into `questions`.
 
 After all items are checked:
 
