@@ -33,7 +33,12 @@ export async function creedUpdate(autoRun = false) {
       const template = await fetchTemplate(url)
       const original = await fs.readFile(file, 'utf8')
       const updated = applyManagedBlock(original, template, CREED_SKILLS.includes(file))
-      if (updated !== original) await writeContainedFile(file, updated)
+      if (updated === original) {
+        showDebug(`'${file}' file already up to date.`)
+      } else {
+        await writeContainedFile(file, updated)
+        showDebug(`'${file}' file updated.`)
+      }
     } catch (error) {
       throw new Error(`Could not update '${file}' from ${url}: ${error.message}`, { cause: error })
     }
