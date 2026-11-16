@@ -25,7 +25,8 @@ For duplication checks, intentional documentation summaries and navigation are n
 
 All documentation files in this skill's reach (`ARCHITECTURE.md`, `README.md` and their `linked-files`) are part of the scope and you can edit them to fix every wrong or outdated passage directly.
 
-When a flaw is in an instruction file or inside AgentCreed-managed text that `AGENTS.md` does not allow editing, do not edit it; log the finding into `.creed/SUGGESTIONS.md` instead. This restriction applies to every editing step below.
+To fix minor flaws as described below,
+you are also allowed to edit project-specific parts of instruction files. This overrides the prohibition in `creed-dev`. Only when a flaw is detected inside AgentCreed-managed text, do not edit it; log the finding into `.creed/SUGGESTIONS.md` instead.
 
 Fix typos and grammar mistakes in any file you read and may edit right away, without asking and without adding them into `fixes`, provided the meaning does not change. If a correction could change the meaning, treat it as an ambiguity (add it into `questions`).
 
