@@ -139,10 +139,6 @@ Generate a summary using this template:
 | Dev     | `npm run dev`   |
 | Test    | `npm test`      |
 | Build   | `npm run build` |
-
-## Needs Clarification
-
-- [ ] Any assumptions made without evidence are noted
 ```
 
 ## Analysis Validation
@@ -158,7 +154,7 @@ Analysis Validation:
 - [ ] No assumptions made without evidence
 ```
 
-If any items cannot be verified, note them as "needs clarification" in the report.
+If any items cannot be verified, ask the user in the chat while offering to log them into `.creed/BACKLOG.md` if user cannot answer right away. Never persist open questions or assumptions into `ARCHITECTURE.md`.
 
 ## Persisting Analysis
 
