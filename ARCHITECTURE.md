@@ -53,7 +53,13 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 
 The `README.md` describes usage and merge behavior.
 
-The [ROADMAP.md](./ROADMAP.md) lists implemented and planned features.
+Skills shipped in `src/.agents/skills/`:
+
+- `creed-dev` - wrapping skill with high-level way of working
+- `creed-chat` - makes agents ask clarifying questions before working (based on <https://www.skills.sh/mattpocock/skills/grill-me>)
+- `creed-scan` - scaffolds project-specific info (based on <https://www.skills.sh/cloudai-x/claude-workflow-v2/analyzing-projects>)
+- `creed-check` - checks consistency of instruction files and accuracy of documentation
+- `creed-explain` - explains what the agent did in the last iteration and why
 
 ## Entry Points
 
