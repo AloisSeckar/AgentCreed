@@ -43,7 +43,7 @@ It is - at least not yet - oriented toward fully autonomous agentic systems. It 
 
 ### Setup behavior
 
-The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan` and `creed-check` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
+The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan`, `creed-check` and `creed-explain` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
 
 Templates come from the GitHub release tag matching the installed CLI version (`refs/tags/v<version>/src/`).
 

@@ -27,6 +27,7 @@ export const CREED_SKILLS = [
   '.agents/skills/creed-chat/SKILL.md', 
   '.agents/skills/creed-scan/SKILL.md',
   '.agents/skills/creed-check/SKILL.md',
+  '.agents/skills/creed-explain/SKILL.md',
 ]
 
 /** List of AgentCreed instruction files */
