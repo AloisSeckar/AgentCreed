@@ -24,7 +24,7 @@ To provide a set of instructions that can be quickly applied to any project, eit
 
 `AgentCreed` will work best for the short-circuit `human prompt -> agent response -> human review` workflow.
 
-It is - at least not yet - oriented toward fully autonomous agentic systems. It is not imposing boundaries on self-operating agents. This might be a subject of later improvement.
+It is not - at least not yet - oriented toward fully autonomous agentic systems. It is not imposing boundaries on self-operating agents. This might be a subject of later improvement.
 
 ## Principles
 
@@ -39,7 +39,7 @@ It is - at least not yet - oriented toward fully autonomous agentic systems. It 
 ## Usage
 
 - to start, just use `npx agentcreed setup` - CLI will run a wizard to create/adjust necessary files
-- to update existing instance, use `npx agentcreed update` - CLI will update existing instruction files to latest versions (while preserving project-specific sections) and create new files if needed
+- to update an existing instance, use `npx agentcreed update` - CLI will update existing instruction files to the latest versions (while preserving project-specific sections) and create new files if needed
 
 ### Setup behavior
 

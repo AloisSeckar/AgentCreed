@@ -36,9 +36,9 @@ Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly wit
 
 The `creed-check` skill (not the CLI) writes `.creed/check` with the timestamp of its last run. Setup does not create it; its absence lets the first `creed-check` run skip the git status and pull check of `creed-dev`.
 
-Before every write to an existing or new managed path, `assertContained()` in `utils/install.js` verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Update writes go through internal `writeContainedFile()`.
+Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup and update call `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `utils/install.js` repeats the check in `mergeFile()`, `writeContainedFile()` (used by update and for the version file) and `writeVersionFile()`.
 
-Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each file has exactly one managed block, which setup and update replace entirely with the template block. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
+Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each processed file ends up with exactly one managed block: setup and update replace an existing block entirely with the template block and add it when missing. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
 
 ## Key Directories
 

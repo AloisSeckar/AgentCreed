@@ -90,7 +90,7 @@ Check for:
 - `.eslintrc`, `.prettierrc` → Linting/Formatting
 - `.husky/` → Git hooks
 - `Makefile` → Build commands
-- `scripts/` in package.json → NPM scripts
+- `scripts` in `package.json` → NPM scripts
 
 ## Step 6: Output Format
 
@@ -154,7 +154,7 @@ Analysis Validation:
 - [ ] No assumptions made without evidence
 ```
 
-If any items cannot be verified, ask the user in the chat while offering to log them into `.creed/BACKLOG.md` if user cannot answer right away. Never persist open questions or assumptions into `ARCHITECTURE.md`.
+If any items cannot be verified, ask the user in the chat while offering to log them into `.creed/BACKLOG.md` if the user cannot answer right away. Never persist open questions or assumptions into `ARCHITECTURE.md`.
 
 ## Persisting Analysis
 

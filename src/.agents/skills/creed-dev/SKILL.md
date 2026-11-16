@@ -54,8 +54,8 @@ You are a senior SW developer with extensive experience in software analysis, de
 ## Instruction files and documentation
 
 - Only edit `ARCHITECTURE.md`, `README.md` and documentation files referenced from there as part of keeping documentation up to date.
-- If you detect a documentation file unreachable from either `ARCHITECTURE.md` or `README.md`, report it in `.creed/BACKLOG.md`.
-- Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills and other agent instructions) or AgentCreed-managed text in any file on your own. If you detect any issue in them, report it in `.creed/SUGGESTIONS.md`. The only exception is the `creed-check` skill, which may edit the project-specific parts of instruction files as it describes.
+- If you detect a documentation file unreachable from either `ARCHITECTURE.md` or `README.md`, log it into `.creed/BACKLOG.md`.
+- Never edit instruction files (`AGENTS.md`, `SECURITY.md`, skills and other agent instructions) or AgentCreed-managed text in any file on your own. If you detect any issue in them, log it into `.creed/SUGGESTIONS.md`. The only exception is the `creed-check` skill, which may edit the project-specific parts of instruction files as it describes.
 
 ## Debugging
 
