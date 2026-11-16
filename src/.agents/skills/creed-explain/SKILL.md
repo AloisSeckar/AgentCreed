@@ -18,7 +18,7 @@ Explain the last `iteration` before the prompt that invoked this skill. If the u
 
 ## Rules
 
-- This skill only reports. Skip the `git status` and `git pull` check required by `creed-dev`. Do not edit files, do not run commands that change anything and do not redo or fix the work. The only allowed writes are logging into `.creed/SUGGESTIONS.md` and `.creed/BACKLOG.md`.
+- This skill only reports. Skip the `git status` and `git pull --ff-only` check required by `creed-dev`. Do not edit files, do not run commands that change anything and do not redo or fix the work. The only allowed writes are logging into `.creed/SUGGESTIONS.md` and `.creed/BACKLOG.md`.
 - Build the explanation from `evidence` only. Re-read the session, do not rely on your impression of it. You may re-read files to quote a rule or to check the current state.
 - You cannot replay your past reasoning. Mark every stated reason as `recorded` (you wrote it down in the session at that time) or `reconstructed` (you infer it now from `evidence`). Never present a `reconstructed` reason as certain.
 - If a part of the `iteration` is not visible to you (new session, summarized or truncated history, subagent that returned only a report), say so and do not fill the gap by guessing.
