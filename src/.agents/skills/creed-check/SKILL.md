@@ -32,6 +32,10 @@ Fix typos and grammar mistakes in any file you read and may edit right away, wit
 
 When moving or rephrasing a `source`, move text word for word by default and keep its strength words (MUST, ALWAYS, NEVER, pause, make sure). Before applying such a change, compare each old rule with its new wording and mark it kept / merged / strengthened / weakened / dropped for the final report.
 
+## 0. Preparation
+
+If and only if `.creed/check` is not present in `project root` (the first run after installation), skip the `git status` and `git pull` check required by `creed-dev` and continue right away.
+
 ## 1. Gathering information
 
 First read the key files line by line to get the full picture of the current status.
@@ -95,5 +99,7 @@ Respond with a summary of:
 - items logged into `.creed/SUGGESTIONS.md` and `.creed/BACKLOG.md`
 - typos and grammar mistakes fixed
 - every moved or rephrased rule with its old and new wording, marked as kept, merged, strengthened, weakened or dropped
+
+Finally, write the current timestamp (ISO 8601) into `.creed/check` in `project root`. Create the file if missing. Overwrite it if exists.
 
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
