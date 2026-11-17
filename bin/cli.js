@@ -5,8 +5,8 @@
  */
 
 import { 
-  getPackageManager, showMessage, showError, showWarning, 
-  showDebug, showSuccess 
+  getPackageManager, showMessage, showError, 
+  showDebug, showSuccess
 } from 'elrh-cosca'
 import { CREED_VERSION } from '../utils/constants.js'
 
@@ -31,7 +31,7 @@ const args = process.argv.slice(2); // semicolon required
         await (await import('./update.js')).creedUpdate(autoRun)
         break
       default:
-        showWarning(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update [true|false]\``)
+        showError(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update [true|false]\``)
         status = 1
     }
     
