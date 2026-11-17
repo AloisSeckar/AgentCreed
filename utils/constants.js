@@ -9,6 +9,9 @@ export const CREED_FILES_URL = `https://raw.githubusercontent.com/AloisSeckar/Ag
 /** Path to the generated file holding the installed AgentCreed version */
 export const CREED_VERSION_FILE = '.creed/version'
 
+/** Path to the file with the timestamp of the last `creed-check` run */
+export const CREED_CHECK_FILE = '.creed/check'
+
 /** Path to the file for storing agent suggestions */
 export const CREED_SUGGESTIONS_FILE = '.creed/SUGGESTIONS.md'
 

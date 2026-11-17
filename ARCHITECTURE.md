@@ -34,7 +34,7 @@ npx agentcreed <cmd> [true|false]
 
 Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
-The `creed-check` skill (not the CLI) writes `.creed/check` with the timestamp of its last run. Setup does not create it; its absence lets the first `creed-check` run skip the git status and pull check of `creed-dev`.
+The `creed-check` skill (not the CLI) writes `.creed/check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
 
 Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup and update call `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `utils/install.js` repeats the check in `mergeFile()`, `writeContainedFile()` (used by update and for the version file) and `writeVersionFile()`.
 

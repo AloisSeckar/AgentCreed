@@ -5,7 +5,7 @@ import {
   showDebug, showMessage, showSuccess 
 } from 'elrh-cosca'
 import { CREED_FILES, CREED_FILES_URL } from '../utils/constants.js'
-import { fetchTemplate, mergeFile, writeVersionFile } from '../utils/install.js'
+import { fetchTemplate, mergeFile, removeCheckFile, writeVersionFile } from '../utils/install.js'
 
 /**
  * Scaffold the root instruction documents, skills and aux files.
@@ -35,8 +35,9 @@ export async function creedSetup(autoRun = false) {
     }
   }
 
-  // file with version info
+  // .creed folder adjustments
   await writeVersionFile()
+  await removeCheckFile()
 
   // inform user
   showSuccess({ message: 'SETUP COMPLETE', linesBefore: 1, linesAfter: 1 })

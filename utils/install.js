@@ -2,9 +2,9 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { createFileFromWebTemplate, pathExists, showDebug, updateTextFile } from 'elrh-cosca'
+import { createFileFromWebTemplate, deletePath, pathExists, showDebug, updateTextFile } from 'elrh-cosca'
 import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
+  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_CHECK_FILE, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
 
 // Index of the closing frontmatter line, or -1 when the document has no frontmatter.
@@ -176,4 +176,12 @@ export async function writeVersionFile() {
   assertContained(CREED_VERSION_FILE)
   await fs.mkdir(path.dirname(CREED_VERSION_FILE), { recursive: true })
   await writeContainedFile(CREED_VERSION_FILE, `${CREED_VERSION}`)
+}
+
+/**
+ * Delete `CREED_CHECK_FILE` so the next `creed-scan` or `creed-check` run can skip the clean git workspace check.
+ */
+export async function removeCheckFile() {
+  assertContained(CREED_CHECK_FILE)
+  await deletePath({ targetPath: CREED_CHECK_FILE, force: true, silent: true })
 }
