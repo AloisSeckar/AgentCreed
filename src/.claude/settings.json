@@ -1,0 +1,15 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(git status)",
+            "Bash(git pull --ff-only)",
+            "Bash(git stash)",
+            "Bash(git stash pop)"
+        ],
+        "ask": [
+            "Bash(git stash drop *)",
+            "Bash(git stash drop)",
+            "Bash(git stash clear)"
+        ]
+    }
+}

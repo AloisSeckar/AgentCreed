@@ -1,0 +1,10 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "git status": true,
+        "git pull --ff-only": true,
+        "git stash": true,
+        "git stash pop": true,
+        "git stash drop": false,
+        "git stash clear": false
+    }
+}

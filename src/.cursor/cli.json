@@ -1,0 +1,14 @@
+{
+    "permissions": {
+        "allow": [
+            "Shell(git:status)",
+            "Shell(git:pull --ff-only)",
+            "Shell(git:stash)",
+            "Shell(git:stash pop)"
+        ],
+        "deny": [
+            "Shell(git:stash drop)",
+            "Shell(git:stash clear)"
+        ]
+    }
+}
