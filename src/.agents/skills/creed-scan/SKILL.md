@@ -13,6 +13,10 @@ Use this approach to systematically explore and understand a codebase.
 
 If the `ARCHITECTURE.md` file already exists in the project root, treat it as a source of truth. Otherwise, fall back to `README.md`. Verify available claims against the code and look directly into the code for anything it does not cover.
 
+## Preparation
+
+If and only if `.creed/check` is not present in `project root` yet (the first run after installation), skip the `git status` and `git pull --ff-only` check required by `creed-dev` and continue right away.
+
 ## Project Analysis Workflows
 
 Copy this checklist and track progress:

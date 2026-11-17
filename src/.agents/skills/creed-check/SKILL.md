@@ -33,7 +33,7 @@ When moving or rephrasing a `source`, move text word for word by default and kee
 
 ## 0. Preparation
 
-If and only if `.creed/check` is not present in `project root` (the first run after installation), skip the `git status` and `git pull --ff-only` check required by `creed-dev` and continue right away.
+If and only if `.creed/check` is not present in `project root` yet (the first run after installation), skip the `git status` and `git pull --ff-only` check required by `creed-dev` and continue right away.
 
 ## 1. Gathering information
 
