@@ -19,7 +19,7 @@ For the purpose of this skill, consider:
 - `documented-facts` describe the project structure and its behavior (to be "documented", the fact must be written somewhere within the project). This includes coding conventions phrased as a description of the existing code, e.g. "Functions are documented with JSDoc comments".
 - `source` of an item is the exact file and passage it was taken from.
 
-Every coding convention must be documented in both forms: as a fact in `ARCHITECTURE.md` and as a derived rule in `AGENTS.md`. These pairs are intentional, not duplicates. Both must say aligned.
+Every coding convention must be documented in both forms: as a fact in `ARCHITECTURE.md` and as a derived rule in `AGENTS.md`. These pairs are intentional, not duplicates. Both must stay aligned.
 
 Split a passage into separate items only where it holds independent rules. Keep a condition together with its consequence (e.g. "do X and notify the user" is one item).
 

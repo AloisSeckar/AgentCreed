@@ -12,7 +12,7 @@ Methodology framework for AI-assisted development, shipped as an NPM CLI (`agent
 | --------------- | ------------------------------------------------------------- |
 | Language        | JavaScript (ES modules, `"type": "module"`)                   |
 | Runtime         | Node.js >=22.13.0 (`engines` field)                           |
-| Package manager | pnpm 12.18.0 (`packageManager` field)                         |
+| Package manager | pnpm 12.21.0 (`packageManager` field)                         |
 | Dependencies    | `elrh-cosca` ^0.5.2 (CLI helpers: prompts, messages, file IO) |
 | Testing         | Vitest ^5.1.0 with Vitest snapshots                           |
 | Infrastructure  | None (no CI workflows, no containers)                         |
@@ -75,8 +75,9 @@ Skills shipped in `src/.agents/skills/`:
 - ESM imports, `node:` prefix for built-ins
 - No semicolons (unless required by syntax), single quotes, 2-space indentation
 - LF line endings in the repository (via `.gitattributes`)
-- Exported functions documented with JSDoc; constants with one-line `/** */` comments
-- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`, `CREED_AGENT_SETTINGS`)
+- Exported functions are documented with JSDoc; exported constants have one-line `/** */` comments.
+- Managed file paths are defined in `utils/constants.js`.
+- The CLI prefers `elrh-cosca` helpers for file operations and also uses Node.js filesystem APIs.
 
 ## Quick Commands
 

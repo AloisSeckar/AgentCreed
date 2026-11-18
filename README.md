@@ -65,7 +65,7 @@ The `npx agentcreed update [true|false]` command refreshes an existing instance 
 
 ### Agent command permissions
 
-Before writing `.creed/version`, both setup and update offer to pre-approve a short list of safe commands (e.g. `git status`, `git pull --ff-only`) for individual agent tools, and to force a confirmation or refusal for risky ones (e.g. `git stash drop`). These prompts are **always shown, even in automatic mode**, because the files change what agents may do without asking. Each tool is asked separately, so you pick none to all four:
+Before writing `.creed/.version`, both setup and update offer to pre-approve a short list of safe commands (e.g. `git status`, `git pull --ff-only`) for individual agent tools, and to force a confirmation or refusal for risky ones (e.g. `git stash drop`). These prompts are **always shown, even in automatic mode**, because the files change what agents may do without asking. You can enable permissions for any combination of the four tools:
 
 | Tool | File |
 | ---- | ---- |
