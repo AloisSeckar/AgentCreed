@@ -30,7 +30,7 @@
     "test": "pnpm vitest run"
   },
   "dependencies": {
-    "elrh-cosca": "^0.5.1"
+    "elrh-cosca": "^0.5.2"
   },
   "devDependencies": {
     "vitest": "^5.1.0"
@@ -44,5 +44,5 @@
   "engines": {
     "node": ">=22.13.0"
   },
-  "packageManager": "pnpm@12.18.0"
+  "packageManager": "pnpm@12.21.0"
 }
