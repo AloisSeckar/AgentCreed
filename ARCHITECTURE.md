@@ -32,9 +32,9 @@ npx agentcreed <cmd> [true|false]
                                      └─ existing file → merge in memory (same rules as setup, preserving CRLF), write if changed
 ```
 
-Setup and update also write `.creed/version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
+Setup and update also write `.creed/.version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
-The `creed-check` skill (not the CLI) writes `.creed/check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
+The `creed-check` skill (not the CLI) writes `.creed/.check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
 
 Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup and update call `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `utils/install.js` repeats the check in `mergeFile()`, `writeContainedFile()` (used by update and for the version file) and `writeVersionFile()`.
 
@@ -48,7 +48,7 @@ Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker l
 - `.agents/skills/` - stub skills pointing to `src/.agents/skills/` so agent harnesses discover them in this repo; running `setup` or `update` here would merge full template content into them
 - `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
-- `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `version` is written by setup and update
+- `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `.version` is written by setup and update
 - `.vscode/` - editor file associations only
 
 The `README.md` describes usage and merge behavior.

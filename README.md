@@ -43,7 +43,7 @@ It is not - at least not yet - oriented toward fully autonomous agentic systems.
 
 ### Setup behavior
 
-The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan`, `creed-check` and `creed-explain` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/version`.
+The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan`, `creed-check` and `creed-explain` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/.version`.
 
 Templates come from the GitHub release tag matching the installed CLI version (`refs/tags/v<version>/src/`).
 
@@ -57,7 +57,7 @@ Unless `true` is passed, setup asks whether to run automatically or prompt once 
 
 ### Update behavior
 
-The `npx agentcreed update [true|false]` command refreshes an existing instance using the same prompt flow, file list, merge rules, marker/frontmatter validation, download error handling, and `.creed/version` update as setup, with templates fetched from the installed CLI version's release tag:
+The `npx agentcreed update [true|false]` command refreshes an existing instance using the same prompt flow, file list, merge rules, marker/frontmatter validation, download error handling, and `.creed/.version` update as setup, with templates fetched from the installed CLI version's release tag:
 
 - Missing files are created from the templates.
 - Existing files are merged in memory rather than via `_temp.md`, preserving CRLF line endings when present (including adding the block below the headline or skill frontmatter when markers are absent).
