@@ -19,7 +19,7 @@ export async function creedUpdate(autoRun = false) {
   showMessage({ message: 'This CLI tool will help you update your Agent Creed setup.' })
   showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 1 })
 
-  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to update everything automatically (no more prompts)?', linesAfter: 1 })
+  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to update everything automatically (no individual prompts)?', linesAfter: 1 })
 
   for (const file of CREED_FILES) {
     if (!isAutoRun && !await promptUser({ question: `Update '${file}'?` })) {

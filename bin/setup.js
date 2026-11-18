@@ -16,7 +16,7 @@ export async function creedSetup(autoRun = false) {
   showMessage({ message: 'This CLI tool will help you establishing Agent Creed AI-assisted development in your project.' })
   showMessage({ message: 'Refer to the documentation for more information.', linesAfter: 1 })
 
-  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to set everything up automatically (no more prompts)?', linesAfter: 1 })
+  const isAutoRun = autoRun || await promptUser({ question: 'Do you want to set everything up automatically (no individual prompts)?', linesAfter: 1 })
 
   for (const file of CREED_FILES) {
     if (!isAutoRun && !await promptUser({ question: `Set up '${file}' while preserving your instructions?` })) {
