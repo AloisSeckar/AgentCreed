@@ -53,7 +53,7 @@ For existing documents, setup keeps a custom H1 headline (the first non-blank li
 
 Existing files are assembled in sibling `_temp.md` files using whole-block appends before being renamed over the originals. Line endings become LF and boundary blank lines are normalized; duplicate instructions, indentation, and internal spacing are retained. Repeating setup with unchanged templates produces the same merged contents.
 
-Unless `true` is passed, setup asks whether to run automatically or prompt once per file; declining a file leaves it untouched. Automatic mode suppresses further prompts. Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
+Unless `true` is passed, setup asks whether to run automatically or prompt once per file; declining a file leaves it untouched. Automatic mode suppresses further per-file prompts (excluding the [agent command permissions](#agent-command-permissions)). Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
 
 ### Update behavior
 
@@ -62,6 +62,19 @@ The `npx agentcreed update [true|false]` command refreshes an existing instance 
 - Missing files are created from the templates.
 - Existing files are merged in memory rather than via `_temp.md`, preserving CRLF line endings when present (including adding the block below the headline or skill frontmatter when markers are absent).
 - Files whose content is unchanged are not rewritten.
+
+### Agent command permissions
+
+Before writing `.creed/version`, both setup and update offer to pre-approve a short list of safe commands (e.g. `git status`, `git pull --ff-only`) for individual agent tools, and to force a confirmation or refusal for risky ones (e.g. `git stash drop`). These prompts are **always shown, even in automatic mode**, because the files change what agents may do without asking. Each tool is asked separately, so you pick none to all four:
+
+| Tool | File |
+| ---- | ---- |
+| VS Code | `.vscode/settings.json` |
+| Claude Code | `.claude/settings.json` |
+| Gemini CLI | `.gemini/settings.json` |
+| Cursor CLI | `.cursor/cli.json` |
+
+Values come from the template of the same path. Existing files are merged, not overwritten: only the relevant keys are touched, other settings stay, objects are merged key by key and missing array items are appended. Files must be plain JSON (comments are not supported); an invalid file stops the run with an error and stays unchanged.
 
 ## Contributing
 

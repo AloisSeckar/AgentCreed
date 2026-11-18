@@ -13,7 +13,7 @@ Methodology framework for AI-assisted development, shipped as an NPM CLI (`agent
 | Language        | JavaScript (ES modules, `"type": "module"`)                   |
 | Runtime         | Node.js >=22.13.0 (`engines` field)                           |
 | Package manager | pnpm 12.18.0 (`packageManager` field)                         |
-| Dependencies    | `elrh-cosca` ^0.5.1 (CLI helpers: prompts, messages, file IO) |
+| Dependencies    | `elrh-cosca` ^0.5.2 (CLI helpers: prompts, messages, file IO) |
 | Testing         | Vitest ^5.1.0 with Vitest snapshots                           |
 | Infrastructure  | None (no CI workflows, no containers)                         |
 
@@ -33,6 +33,8 @@ npx agentcreed <cmd> [true|false]
 ```
 
 Setup and update also write `.creed/.version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
+
+Just before that, both call `setupAgentSettings()` (`utils/install.js`), which always prompts (regardless of automatic mode) once per entry of `CREED_AGENT_SETTINGS` and merges the accepted agent permission files (`.vscode/settings.json`, `.claude/settings.json`, `.gemini/settings.json`, `.cursor/cli.json`) via `updateJsonFile` from the template of the same path. Only the listed key paths are merged; dots inside a VS Code setting ID are escaped with a backslash so it stays a flat key.
 
 The `creed-check` skill (not the CLI) writes `.creed/.check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
 
@@ -74,7 +76,7 @@ Skills shipped in `src/.agents/skills/`:
 - No semicolons (unless required by syntax), single quotes, 2-space indentation
 - LF line endings in the repository (via `.gitattributes`)
 - Exported functions documented with JSDoc; constants with one-line `/** */` comments
-- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`)
+- Managed file paths are listed once in `utils/constants.js` (`CREED_FILES`, `CREED_SKILLS`, `CREED_VERSION_FILE`, `CREED_SUGGESTIONS_FILE`, `CREED_BACKLOG_FILE`, `CREED_AGENT_SETTINGS`)
 
 ## Quick Commands
 

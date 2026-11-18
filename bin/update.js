@@ -6,7 +6,9 @@ import {
   showMessage, showDebug, showSuccess 
 } from 'elrh-cosca'
 import { CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.js'
-import { applyManagedBlock, fetchTemplate, removeCheckFile, writeContainedFile, writeVersionFile } from '../utils/install.js'
+import {
+  applyManagedBlock, fetchTemplate, removeCheckFile, setupAgentSettings, writeContainedFile, writeVersionFile,
+} from '../utils/install.js'
 
 /**
  * Update Agent Creed managed content in project folder to the templates of the current package version (`CREED_VERSION`).
@@ -43,6 +45,9 @@ export async function creedUpdate(autoRun = false) {
       throw new Error(`Could not update '${file}' from ${url}: ${error.message}`, { cause: error })
     }
   }
+
+  // always prompts, even in automatic mode
+  await setupAgentSettings()
 
   // .creed folder adjustments
   await writeVersionFile()

@@ -42,3 +42,11 @@ export const CREED_FILES = [
   CREED_BACKLOG_FILE,
   ...CREED_SKILLS,
 ]
+
+/** Optional agent permission files: the template of the same path provides the values at each key path to merge in */
+export const CREED_AGENT_SETTINGS = [
+  { label: 'VS Code', file: '.vscode/settings.json', paths: [['chat.tools.terminal.autoApprove']] },
+  { label: 'Claude Code', file: '.claude/settings.json', paths: [['permissions', 'allow'], ['permissions', 'ask']] },
+  { label: 'Gemini CLI', file: '.gemini/settings.json', paths: [['tools', 'allowed'], ['tools', 'exclude']] },
+  { label: 'Cursor CLI', file: '.cursor/cli.json', paths: [['permissions', 'allow'], ['permissions', 'deny']] },
+]

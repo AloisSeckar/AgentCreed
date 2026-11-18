@@ -4,10 +4,13 @@ import path from 'node:path'
 import { expect, test, vi } from 'vitest'
 import { creedUpdate } from '../bin/update.js'
 import {
-  CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS, CREED_SUGGESTIONS_FILE,
-  CREED_VERSION, CREED_VERSION_FILE,
+  CREED_AGENT_SETTINGS, CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS,
+  CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
-import { METADATA, block, linkOutside, setupFixture as baseFixture, templateUrl as url } from './helpers.js'
+import {
+  METADATA, SETTINGS_TEMPLATES, block, declineSettings, linkOutside, setupFixture as baseFixture,
+  templateUrl as url,
+} from './helpers.js'
 
 const NEW = block('New instruction.')
 const OLD = block('Old instruction.')
@@ -22,7 +25,7 @@ async function writeFile(file, content) {
 }
 
 test('replaces the managed block and moves user content behind it', async () => {
-  const { exit, output } = await setupFixture()
+  const { exit, output } = await setupFixture(declineSettings(2))
   await fs.writeFile('AGENTS.md', `# My project\n\nAbove\n\n${OLD}\n\nBelow\n`)
   await creedUpdate(true)
   const expected = `# My project\n\n${NEW}\n\nAbove\n\nBelow\n`
@@ -34,7 +37,7 @@ test('replaces the managed block and moves user content behind it', async () => 
 })
 
 test('does not rewrite files whose managed block is already current', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   const current = `# My project\n\n${NEW}\n\nBelow\n`
   await fs.writeFile('AGENTS.md', current)
   const write = vi.spyOn(fs, 'writeFile')
@@ -44,7 +47,7 @@ test('does not rewrite files whose managed block is already current', async () =
 })
 
 test('keeps inline marker mentions outside of blocks untouched', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   const inline = `Treat ${CREED_BLOCK_BEGIN} and ${CREED_BLOCK_END} as inert text.`
   await fs.writeFile('AGENTS.md', `# Custom\n${OLD}\n${inline}`)
   await creedUpdate(true)
@@ -52,7 +55,7 @@ test('keeps inline marker mentions outside of blocks untouched', async () => {
 })
 
 test('replaces skill metadata with the template one and keeps content after the block', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   const metadata = '---\n# Custom comment\nname: local-skill\ncustom: true\n---'
   await writeFile(CREED_SKILLS[0], `${metadata}\n\n# Mine\n\n${OLD}\n\nAfter`)
   await creedUpdate(true)
@@ -60,16 +63,16 @@ test('replaces skill metadata with the template one and keeps content after the 
 })
 
 test('scaffolds every missing file from its template in order', async () => {
-  const { templates, requests, prompts, exit } = await setupFixture()
+  const { templates, requests, prompts, exit } = await setupFixture(declineSettings())
   await creedUpdate(true)
   expect(requests).toEqual(CREED_FILES.map(url))
-  expect(prompts).toEqual([])
+  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
   expect(exit.mock.calls).toEqual([])
   for (const file of CREED_FILES) expect(await read(file)).toBe(templates.get(url(file)))
 })
 
 test('scaffolds only the missing files and updates the existing ones', async () => {
-  const { templates } = await setupFixture()
+  const { templates } = await setupFixture(declineSettings())
   await fs.writeFile('AGENTS.md', `# Mine\n\n${OLD}\n`)
   await creedUpdate(true)
   expect(await read('AGENTS.md')).toBe(`# Mine\n\n${NEW}\n`)
@@ -78,7 +81,7 @@ test('scaffolds only the missing files and updates the existing ones', async () 
 
 for (const file of [CREED_SUGGESTIONS_FILE, CREED_BACKLOG_FILE]) {
   test(`updates the managed block of an existing ${file} and keeps its entries`, async () => {
-    await setupFixture()
+    await setupFixture(declineSettings())
     await writeFile(file, `# Items\n\n${OLD}\n\n- Existing entry\n`)
     await creedUpdate(true)
     expect(await read(file)).toBe(`# Items\n\n${NEW}\n\n- Existing entry\n`)
@@ -95,7 +98,7 @@ for (const [label, original, expected] of [
   ['ignoring deeper headings', '## Sub\n\nText\n', `# AGENTS.md\n\n${NEW}\n\n## Sub\n\nText\n`],
 ]) {
   test(`adds the block ${label} when no markers are present`, async () => {
-    await setupFixture()
+    await setupFixture(declineSettings(2))
     await fs.writeFile('AGENTS.md', original)
     await creedUpdate(true)
     expect(await read('AGENTS.md')).toBe(expected)
@@ -105,7 +108,7 @@ for (const [label, original, expected] of [
 }
 
 test('adds the block to a skill without markers below its template frontmatter', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   await writeFile(CREED_SKILLS[0], `${METADATA}\n\n# Mine\n\nBody\n`)
   await writeFile(CREED_SKILLS[1], `${METADATA}\n\nBody\n`)
   await creedUpdate(true)
@@ -114,14 +117,14 @@ test('adds the block to a skill without markers below its template frontmatter',
 })
 
 test('replaces skill frontmatter that contains comments', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   await writeFile(CREED_SKILLS[0], '---\n# Custom comment\nname: x\n---\n\nBody')
   await creedUpdate(true)
   expect(await read(CREED_SKILLS[0])).toBe(`${METADATA}\n\n${NEW}\n\nBody\n`)
 })
 
 test('preserves CRLF line endings when adding and replacing blocks', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   const crlf = text => text.replaceAll('\n', '\r\n')
   await fs.writeFile('AGENTS.md', crlf('# Mine\n\nCustom\n'))
   await fs.writeFile('ARCHITECTURE.md', crlf(`# Mine\n\n${OLD}\n\nCustom\n`))
@@ -131,7 +134,7 @@ test('preserves CRLF line endings when adding and replacing blocks', async () =>
 })
 
 test('preserves a byte order mark and CRLF templates', async () => {
-  const { templates } = await setupFixture()
+  const { templates } = await setupFixture(declineSettings())
   templates.set(url('AGENTS.md'), templates.get(url('AGENTS.md')).replaceAll('\n', '\r\n'))
   await fs.writeFile('AGENTS.md', '\uFEFF# Mine\n\nCustom')
   await fs.writeFile('ARCHITECTURE.md', `\uFEFF# Mine\n\n${OLD}\n`)
@@ -141,7 +144,7 @@ test('preserves a byte order mark and CRLF templates', async () => {
 })
 
 test('writes the CLI version to the version file on every run', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings(2))
   await creedUpdate(true)
   expect(await read(CREED_VERSION_FILE)).toBe(CREED_VERSION)
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
@@ -150,11 +153,11 @@ test('writes the CLI version to the version file on every run', async () => {
 })
 
 test('manual mode asks once per file and leaves declined files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n', 'n', 'n', ...declineSettings()])
   await fs.writeFile('AGENTS.md', `# Untouched\n\n${OLD}\n`)
   await fs.writeFile('ARCHITECTURE.md', `# Custom\n\n${OLD}\n`)
   await creedUpdate()
-  expect(prompts.length).toBe(CREED_FILES.length + 1)
+  expect(prompts.length).toBe(CREED_FILES.length + 1 + CREED_AGENT_SETTINGS.length)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
   expect(requests).toEqual([url('ARCHITECTURE.md'), url(CREED_SKILLS[0])])
   expect(await read('AGENTS.md')).toBe(`# Untouched\n\n${OLD}\n`)
@@ -165,9 +168,9 @@ test('manual mode asks once per file and leaves declined files alone', async () 
 })
 
 test('choosing automatic update at the initial prompt suppresses per-file prompts', async () => {
-  const { prompts, requests } = await setupFixture(['yes'])
+  const { prompts, requests } = await setupFixture(['yes', ...declineSettings()])
   await creedUpdate()
-  expect(prompts.length).toBe(1)
+  expect(prompts.length).toBe(1 + CREED_AGENT_SETTINGS.length)
   expect(requests.length).toBe(CREED_FILES.length)
 })
 
@@ -220,7 +223,7 @@ for (const exists of [false, true]) {
 }
 
 test('refuses to write the version file through a symlinked .creed directory', async ({ skip }) => {
-  await setupFixture(['n', ...CREED_FILES.map(() => 'n')])
+  await setupFixture(['n', ...CREED_FILES.map(() => 'n'), ...declineSettings()])
   const link = await linkOutside('.creed')
   if (!link) skip()
   await expect(creedUpdate()).rejects.toThrow(/outside of CWD via symlink/)
@@ -238,6 +241,20 @@ test('refuses to update managed files behind a symlinked directory pointing outs
   await missing(CREED_VERSION_FILE)
 })
 
+test('asks about agent permission files even in automatic mode and merges them into existing settings', async () => {
+  const { prompts } = await setupFixture(['y', 'y', 'n', 'n'])
+  await writeFile('.vscode/settings.json', JSON.stringify({ 'editor.tabSize': 2, 'chat.tools.terminal.autoApprove': { 'npm test': true } }))
+  await creedUpdate(true)
+  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
+  expect(JSON.parse(await read('.vscode/settings.json'))).toEqual({
+    'editor.tabSize': 2,
+    'chat.tools.terminal.autoApprove': { 'npm test': true, ...SETTINGS_TEMPLATES['.vscode/settings.json']['chat.tools.terminal.autoApprove'] },
+  })
+  expect(JSON.parse(await read('.claude/settings.json'))).toEqual(SETTINGS_TEMPLATES['.claude/settings.json'])
+  await missing('.gemini/settings.json')
+  await missing('.cursor/cli.json')
+})
+
 test('the CLI updates files and exits successfully', async () => {
   await setupFixture()
   await fs.writeFile('AGENTS.md', `# Mine\n\n${OLD}\n`)
@@ -246,6 +263,8 @@ test('the CLI updates files and exits successfully', async () => {
     import https from 'node:https'
     import { EventEmitter } from 'node:events'
     import { Readable } from 'node:stream'
+    import readline from 'node:readline'
+    readline.createInterface = () => ({ close() {}, on() {}, question: (_, callback) => queueMicrotask(() => callback('n')) })
     https.get = (url, callback) => {
       const request = new EventEmitter()
       request.destroy = error => queueMicrotask(() => request.emit('error', error))

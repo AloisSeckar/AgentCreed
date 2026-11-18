@@ -7,10 +7,36 @@ import path from 'node:path'
 import readline from 'node:readline'
 import { Readable } from 'node:stream'
 import { expect, onTestFinished, vi } from 'vitest'
-import { CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS } from '../utils/constants.js'
+import {
+  CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
+} from '../utils/constants.js'
 
 /** Skill frontmatter used by mocked templates */
 export const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
+
+/**
+ * Answers declining every agent permission prompt, which are asked even in automatic mode.
+ *
+ * @param {number} runs - Number of CLI runs the answers have to cover (defaults to 1).
+ * @returns {string[]} Queued 'n' answers.
+ */
+export const declineSettings = (runs = 1) => CREED_AGENT_SETTINGS.flatMap(() => Array(runs).fill('n'))
+
+/**
+ * Answers accepting every agent permission prompt.
+ *
+ * @param {number} runs - Number of CLI runs the answers have to cover (defaults to 1).
+ * @returns {string[]} Queued 'y' answers.
+ */
+export const acceptSettings = (runs = 1) => CREED_AGENT_SETTINGS.flatMap(() => Array(runs).fill('y'))
+
+/** Mocked agent permission templates by file path */
+export const SETTINGS_TEMPLATES = {
+  '.vscode/settings.json': { 'chat.tools.terminal.autoApprove': { 'git status': true, 'git stash drop': false } },
+  '.claude/settings.json': { permissions: { allow: ['Bash(git status)'], ask: ['Bash(git stash drop)'] } },
+  '.gemini/settings.json': { tools: { allowed: ['run_shell_command(git status)'], exclude: ['run_shell_command(git stash drop)'] } },
+  '.cursor/cli.json': { permissions: { allow: ['Shell(git:status)'], deny: ['Shell(git:stash drop)'] } },
+}
 
 /**
  * Wrap text into the AgentCreed managed block markers.
@@ -52,6 +78,7 @@ export async function setupFixture(answers = [], templateBlock = block('Keep thi
   const templates = new Map(CREED_FILES.map(file => [
     templateUrl(file), `${CREED_SKILLS.includes(file) ? METADATA : `# ${file}`}\n\n${templateBlock}\n`,
   ]))
+  for (const [file, content] of Object.entries(SETTINGS_TEMPLATES)) templates.set(templateUrl(file), JSON.stringify(content, null, 2))
   const requests = []
   vi.spyOn(https, 'get').mockImplementation((url, callback) => {
     requests.push(url)

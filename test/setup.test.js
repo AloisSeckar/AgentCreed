@@ -6,15 +6,17 @@ import path from 'node:path'
 import { expect, test, vi } from 'vitest'
 import { creedSetup } from '../bin/setup.js'
 import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
+  CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
   CREED_BACKLOG_FILE, CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
-import { METADATA, block, linkOutside, setupFixture, templateUrl } from './helpers.js'
+import {
+  METADATA, SETTINGS_TEMPLATES, acceptSettings, block, declineSettings, linkOutside, setupFixture, templateUrl,
+} from './helpers.js'
 
 const BLOCK = block('Keep this instruction.')
 
 test('preserves duplicate and one-line instructions through real helper calls and repeat runs', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings(2))
   const body = 'Keep this instruction.\n\n\n  Preserve indentation.  \nKeep this instruction.'
   await fs.writeFile('AGENTS.md', `# My agents\n\n${body}`)
   await fs.writeFile('ARCHITECTURE.md', '# My architecture\nKeep this instruction.')
@@ -30,10 +32,10 @@ test('preserves duplicate and one-line instructions through real helper calls an
 })
 
 test('scaffolds all full templates from the pinned release tag in order without prompting', async () => {
-  const { templates, requests, prompts, exit } = await setupFixture()
+  const { templates, requests, prompts, exit } = await setupFixture(declineSettings())
   await creedSetup(true)
   expect(requests).toEqual(CREED_FILES.map(templateUrl))
-  expect(prompts).toEqual([])
+  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
   expect(exit.mock.calls).toEqual([])
   for (const file of CREED_FILES) {
     expect(await fs.readFile(file, 'utf8')).toBe(templates.get(templateUrl(file)))
@@ -42,7 +44,7 @@ test('scaffolds all full templates from the pinned release tag in order without 
 })
 
 test('writes the CLI version to the version file on every run', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings(2))
   await creedSetup(true)
   expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
@@ -51,7 +53,7 @@ test('writes the CLI version to the version file on every run', async () => {
 })
 
 test('refuses to write the version file through a symlinked .creed directory', async ({ skip }) => {
-  await setupFixture(['n', ...CREED_FILES.map(() => 'n')])
+  await setupFixture(['n', ...CREED_FILES.map(() => 'n'), ...declineSettings()])
   const link = await linkOutside('.creed')
   if (!link) skip()
   await expect(creedSetup()).rejects.toThrow(/outside of CWD via symlink/)
@@ -72,7 +74,7 @@ test('refuses to merge managed files behind a symlinked directory pointing outsi
 })
 
 test('downloads existing-file templates through COSCA and removes them after processing', async () => {
-  const { templates } = await setupFixture()
+  const { templates } = await setupFixture(declineSettings())
   for (const file of CREED_FILES) {
     await fs.mkdir(path.dirname(file), { recursive: true })
     await fs.writeFile(file, templates.get(templateUrl(file)))
@@ -97,7 +99,7 @@ test('downloads existing-file templates through COSCA and removes them after pro
 })
 
 test('replaces the single old block, moves text before it behind it and retains inline markers', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings(2))
   const inline = `Treat ${CREED_BLOCK_BEGIN} and ${CREED_BLOCK_END} as inert text.`
   await fs.writeFile('AGENTS.md', `# Custom\nBefore\n${CREED_BLOCK_BEGIN}\nOld one\n${CREED_BLOCK_END}\nAfter\n${inline}`)
   await creedSetup(true)
@@ -108,14 +110,14 @@ test('replaces the single old block, moves text before it behind it and retains 
 })
 
 test('uses the template headline when the file has no custom H1', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   await fs.writeFile('AGENTS.md', `${CREED_BLOCK_BEGIN}\nOld\n${CREED_BLOCK_END}\nUser text`)
   await creedSetup(true)
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(`# AGENTS.md\n\n${BLOCK}\n\nUser text\n`)
 })
 
 test('replaces custom skill metadata with the template one', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings(2))
   const metadata = '---\n# Custom comment\ndescription: |\n  ---\n  My own description\n  ...\nname: local-skill\ncustom: true\n---'
   await fs.mkdir(path.dirname(CREED_SKILLS[0]), { recursive: true })
   await fs.writeFile(CREED_SKILLS[0], `${metadata}\nBefore\n${CREED_BLOCK_BEGIN}\nOld skill\n${CREED_BLOCK_END}\nAfter`)
@@ -127,7 +129,7 @@ test('replaces custom skill metadata with the template one', async () => {
 })
 
 test('adds template metadata to an existing skill without frontmatter', async () => {
-  await setupFixture()
+  await setupFixture(declineSettings())
   await fs.mkdir(path.dirname(CREED_SKILLS[0]), { recursive: true })
   await fs.writeFile(CREED_SKILLS[0], '# Local skill\n\nKeep this instruction.')
   await creedSetup(true)
@@ -135,7 +137,7 @@ test('adds template metadata to an existing skill without frontmatter', async ()
 })
 
 test('handles empty files, literal first lines, CRLF, BOM and absent final newlines', async () => {
-  const { templates } = await setupFixture()
+  const { templates } = await setupFixture(declineSettings(2))
   templates.set(`${CREED_FILES_URL}SECURITY.md`, templates.get(`${CREED_FILES_URL}SECURITY.md`).replaceAll('\n', '\r\n'))
   await fs.writeFile('AGENTS.md', '')
   await fs.writeFile('ARCHITECTURE.md', 'A literal first line')
@@ -150,11 +152,11 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
 })
 
 test('manual mode asks once per destination and leaves declined existing and missing files alone', async () => {
-  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n', 'n', 'n'])
+  const { requests, prompts } = await setupFixture(['n', 'n', 'y', 'n', 'n', 'n', 'y', 'n', 'n', 'n', 'n', ...declineSettings()])
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()
-  expect(prompts.length).toBe(CREED_FILES.length + 1)
+  expect(prompts.length).toBe(CREED_FILES.length + 1 + CREED_AGENT_SETTINGS.length)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
   expect(requests).toEqual([`${CREED_FILES_URL}ARCHITECTURE.md`, `${CREED_FILES_URL}${CREED_SKILLS[0]}`])
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Untouched\nMy instructions')
@@ -165,7 +167,7 @@ test('manual mode asks once per destination and leaves declined existing and mis
 
 for (const file of [CREED_SUGGESTIONS_FILE, CREED_BACKLOG_FILE]) {
   test(`merges an existing ${file} and preserves its entries on reruns`, async () => {
-    await setupFixture()
+    await setupFixture(declineSettings(2))
     await fs.mkdir(path.dirname(file), { recursive: true })
     await fs.writeFile(file, '# My items\n- Existing entry')
     await creedSetup(true)
@@ -177,9 +179,9 @@ for (const file of [CREED_SUGGESTIONS_FILE, CREED_BACKLOG_FILE]) {
 }
 
 test('choosing automatic setup at the initial prompt suppresses per-file prompts', async () => {
-  const { prompts, requests } = await setupFixture(['yes'])
+  const { prompts, requests } = await setupFixture(['yes', ...declineSettings()])
   await creedSetup()
-  expect(prompts.length).toBe(1)
+  expect(prompts.length).toBe(1 + CREED_AGENT_SETTINGS.length)
   expect(requests.length).toBe(CREED_FILES.length)
 })
 
@@ -282,6 +284,77 @@ for (const failure of ['download write', 'download read', 'prefix write', 'appen
     await expect(fs.access('AGENTS_temp.md')).rejects.toMatchObject({ code: 'ENOENT' })
   })
 }
+
+const readJson = async file => JSON.parse(await fs.readFile(file, 'utf8'))
+
+test('asks about every agent permission file even in automatic mode and creates the accepted ones', async () => {
+  const { prompts, requests } = await setupFixture(acceptSettings())
+  await creedSetup(true)
+  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
+  for (const [index, { file }] of CREED_AGENT_SETTINGS.entries()) {
+    expect(prompts[index]).toContain(file)
+    expect(await readJson(file)).toEqual(SETTINGS_TEMPLATES[file])
+  }
+  expect(requests.slice(CREED_FILES.length)).toEqual(CREED_AGENT_SETTINGS.map(({ file }) => templateUrl(file)))
+  expect(Object.keys(await readJson('.vscode/settings.json'))).toEqual(['chat.tools.terminal.autoApprove'])
+})
+
+test('creates only the agent permission files the user accepted', async () => {
+  const { requests } = await setupFixture(['n', 'y', 'n', 'n'])
+  await creedSetup(true)
+  expect(await readJson('.claude/settings.json')).toEqual(SETTINGS_TEMPLATES['.claude/settings.json'])
+  for (const file of ['.vscode/settings.json', '.gemini/settings.json', '.cursor/cli.json']) {
+    await expect(fs.access(file)).rejects.toMatchObject({ code: 'ENOENT' })
+  }
+  expect(requests.slice(CREED_FILES.length)).toEqual([templateUrl('.claude/settings.json')])
+})
+
+test('merges agent permissions into existing files without dropping other settings', async () => {
+  await setupFixture(acceptSettings(2))
+  await fs.mkdir('.vscode', { recursive: true })
+  await fs.mkdir('.claude', { recursive: true })
+  await fs.writeFile('.vscode/settings.json', JSON.stringify({
+    'editor.tabSize': 2,
+    'chat.tools.terminal.autoApprove': { 'npm test': true, 'git status': false },
+  }))
+  await fs.writeFile('.claude/settings.json', JSON.stringify({
+    model: 'custom',
+    permissions: { defaultMode: 'plan', allow: ['Bash(npm test)'] },
+  }))
+  await creedSetup(true)
+  const expectedVsCode = {
+    'editor.tabSize': 2,
+    'chat.tools.terminal.autoApprove': { 'npm test': true, 'git status': true, 'git stash drop': false },
+  }
+  const expectedClaude = {
+    model: 'custom',
+    permissions: { defaultMode: 'plan', allow: ['Bash(npm test)', 'Bash(git status)'], ask: ['Bash(git stash drop)'] },
+  }
+  expect(await readJson('.vscode/settings.json')).toEqual(expectedVsCode)
+  expect(await readJson('.claude/settings.json')).toEqual(expectedClaude)
+  await creedSetup(true)
+  expect(await readJson('.vscode/settings.json')).toEqual(expectedVsCode)
+  expect(await readJson('.claude/settings.json')).toEqual(expectedClaude)
+})
+
+test('stops on an existing agent permission file that is not valid JSON and leaves it untouched', async () => {
+  const { output } = await setupFixture(acceptSettings())
+  const original = '{\n  // a comment\n  "editor.tabSize": 2\n}'
+  await fs.mkdir('.vscode', { recursive: true })
+  await fs.writeFile('.vscode/settings.json', original)
+  await expect(creedSetup(true)).rejects.toThrow(/Could not set up '\.vscode\/settings\.json'/)
+  expect(await fs.readFile('.vscode/settings.json', 'utf8')).toBe(original)
+  await expect(fs.access(CREED_VERSION_FILE)).rejects.toMatchObject({ code: 'ENOENT' })
+  expect(output.join('')).not.toContain('SETUP COMPLETE')
+})
+
+test('refuses to write agent permissions through a symlinked directory pointing outside the project', async ({ skip }) => {
+  await setupFixture(acceptSettings())
+  const link = await linkOutside('.vscode')
+  if (!link) skip()
+  await expect(creedSetup(true)).rejects.toThrow(/outside of CWD via symlink/)
+  expect(await fs.readdir(link.outside)).toEqual([])
+})
 
 test('the CLI reports setup failures and exits nonzero', async () => {
   await setupFixture()

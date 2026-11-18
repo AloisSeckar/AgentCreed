@@ -2,9 +2,12 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { createFileFromWebTemplate, deletePath, pathExists, showDebug, updateTextFile } from 'elrh-cosca'
 import {
-  CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_CHECK_FILE, CREED_SKILLS, CREED_VERSION, CREED_VERSION_FILE,
+  createFileFromWebTemplate, deletePath, pathExists, promptUser, showDebug, showMessage, updateJsonFile, updateTextFile,
+} from 'elrh-cosca'
+import {
+  CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_CHECK_FILE, CREED_FILES_URL, CREED_SKILLS,
+  CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
 
 // Index of the closing frontmatter line, or -1 when the document has no frontmatter.
@@ -167,6 +170,39 @@ export function applyManagedBlock(original, template, isSkill = false) {
   const { bom, ...sections } = getMergeSections(original, template, isSkill)
   const eol = original.includes('\r\n') ? '\r\n' : '\n'
   return bom + composeDocument(sections).replaceAll('\n', eol)
+}
+
+/**
+ * Offer to merge the AgentCreed command permissions into the settings files of individual agent tools.
+ * Always asks, even in automatic mode. Existing files keep their other settings: objects are merged key by key
+ * and arrays get the missing items appended.
+ */
+export async function setupAgentSettings() {
+  showMessage({ message: 'OPTIONAL: AGENT COMMAND PERMISSIONS', linesBefore: 1 })
+  showMessage({
+    message: 'AgentCreed can configure your agent tools to run reasonably safe commands (e.g. `git status`) without asking. '
+      + 'This changes what agents may do without your approval. Other settings in existing files are kept.',
+    linesAfter: 1,
+  })
+  for (const { label, file, paths } of CREED_AGENT_SETTINGS) {
+    if (!await promptUser({ question: `Add or update AgentCreed command permissions for ${label} in '${file}'?` })) {
+      showDebug(`Permissions for '${file}' skipped.`)
+      continue
+    }
+    const url = `${CREED_FILES_URL}${file}`
+    try {
+      const template = JSON.parse(await fetchTemplate(url))
+      for (const segments of paths) {
+        const patch = segments.reduce((value, segment) => value?.[segment], template)
+        if (patch === undefined) throw new Error(`Template is missing '${segments.join('.')}'`)
+        const jsonKey = segments.map(segment => segment.replaceAll('.', '\\.')).join('.') // escaping due to elrh-cosca key handling
+        await updateJsonFile({ targetPath: file, jsonKey, patch, createMissing: true, force: true, silent: true })
+      }
+      showDebug(`'${file}' permissions updated.`)
+    } catch (error) {
+      throw new Error(`Could not set up '${file}' from ${url}: ${error.message}`, { cause: error })
+    }
+  }
 }
 
 /**
