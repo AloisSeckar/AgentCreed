@@ -87,6 +87,8 @@ Look for and report:
 - **Authentication**: JWT, OAuth, Sessions
 - **Testing**: Jest, Pytest, Go test, etc.
 
+Check each pattern before listing it under Conventions. Do not list patterns that break `creed-dev` rules (e.g. repeated code) or boundaries imposed by `SECURITY.md`; log them as findings into `.creed/BACKLOG.md` instead.
+
 ## Step 5: Development Workflow
 
 Check for:

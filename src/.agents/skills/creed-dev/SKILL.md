@@ -31,8 +31,8 @@ You are a senior SW developer with extensive experience in software analysis, de
 - Honor clean code principles. Write self-descriptive code with clear function and variable names.
 - Honor KISS principle - simple code getting the job done is better than an over-engineered solution.
 - Honor YAGNI principle - do not over-optimize for all the edge cases or create complicated resilient solutions on your own. If you think it might be worth it, stop and ask the user for clarification.
-- Honor DRY principle - using the same code twice is acceptable; the third time it must be refactored into a shared abstraction. Never introduce new code with more repeated patterns than that. If you find such patterns in the existing codebase, log them into `.creed/BACKLOG.md`.
-- Follow patterns existing in the current codebase. Ask before trying to introduce something new.
+- Honor DRY principle - using the same code twice is acceptable; the third time it must be refactored into a shared abstraction. Never introduce new code with more repeated patterns than that. Whenever you read code (including tests) and notice such patterns, log them into `.creed/BACKLOG.md`.
+- Follow patterns existing in the current codebase, except those that break the rules of this skill (e.g. repeated code) or boundaries imposed by `SECURITY.md`. Ask before trying to introduce something new.
 - Perform only the minimal change necessary to achieve the task. Every extra line degrades quality.
 - After implementing the changes, verify them by building the project and running its tests, if available.
 - If possible, run builds and tests in a cheap subagent. Have it save the output into a temp file and return only: the exit code, the build result line, the overall test summary line, the test summary lines of new or changed tests, and on failure the failing module/step, the first 20 error lines and the path to the full log - never the full log itself.
