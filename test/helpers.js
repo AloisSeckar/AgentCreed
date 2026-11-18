@@ -15,20 +15,20 @@ import {
 export const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'
 
 /**
- * Answers declining every agent permission prompt, which are asked even in automatic mode.
+ * Answers to the agent permission prompt (always asked, even in automatic mode) picking no tool.
  *
  * @param {number} runs - Number of CLI runs the answers have to cover (defaults to 1).
- * @returns {string[]} Queued 'n' answers.
+ * @returns {string[]} Queued empty answers.
  */
-export const declineSettings = (runs = 1) => CREED_AGENT_SETTINGS.flatMap(() => Array(runs).fill('n'))
+export const declineSettings = (runs = 1) => Array(runs).fill('')
 
 /**
- * Answers accepting every agent permission prompt.
+ * Answers to the agent permission prompt picking every tool.
  *
  * @param {number} runs - Number of CLI runs the answers have to cover (defaults to 1).
- * @returns {string[]} Queued 'y' answers.
+ * @returns {string[]} Queued answers listing all tool numbers.
  */
-export const acceptSettings = (runs = 1) => CREED_AGENT_SETTINGS.flatMap(() => Array(runs).fill('y'))
+export const acceptSettings = (runs = 1) => Array(runs).fill(CREED_AGENT_SETTINGS.map((_, index) => index + 1).join(', '))
 
 /** Mocked agent permission templates by file path */
 export const SETTINGS_TEMPLATES = {

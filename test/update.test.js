@@ -4,7 +4,7 @@ import path from 'node:path'
 import { expect, test, vi } from 'vitest'
 import { creedUpdate } from '../bin/update.js'
 import {
-  CREED_AGENT_SETTINGS, CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS,
+  CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS,
   CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
 } from '../utils/constants.js'
 import {
@@ -66,7 +66,7 @@ test('scaffolds every missing file from its template in order', async () => {
   const { templates, requests, prompts, exit } = await setupFixture(declineSettings())
   await creedUpdate(true)
   expect(requests).toEqual(CREED_FILES.map(url))
-  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(1)
   expect(exit.mock.calls).toEqual([])
   for (const file of CREED_FILES) expect(await read(file)).toBe(templates.get(url(file)))
 })
@@ -157,7 +157,7 @@ test('manual mode asks once per file and leaves declined files alone', async () 
   await fs.writeFile('AGENTS.md', `# Untouched\n\n${OLD}\n`)
   await fs.writeFile('ARCHITECTURE.md', `# Custom\n\n${OLD}\n`)
   await creedUpdate()
-  expect(prompts.length).toBe(CREED_FILES.length + 1 + CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(CREED_FILES.length + 2)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
   expect(requests).toEqual([url('ARCHITECTURE.md'), url(CREED_SKILLS[0])])
   expect(await read('AGENTS.md')).toBe(`# Untouched\n\n${OLD}\n`)
@@ -170,7 +170,7 @@ test('manual mode asks once per file and leaves declined files alone', async () 
 test('choosing automatic update at the initial prompt suppresses per-file prompts', async () => {
   const { prompts, requests } = await setupFixture(['yes', ...declineSettings()])
   await creedUpdate()
-  expect(prompts.length).toBe(1 + CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(2)
   expect(requests.length).toBe(CREED_FILES.length)
 })
 
@@ -242,10 +242,10 @@ test('refuses to update managed files behind a symlinked directory pointing outs
 })
 
 test('asks about agent permission files even in automatic mode and merges them into existing settings', async () => {
-  const { prompts } = await setupFixture(['y', 'y', 'n', 'n'])
+  const { prompts } = await setupFixture(['1, 2'])
   await writeFile('.vscode/settings.json', JSON.stringify({ 'editor.tabSize': 2, 'chat.tools.terminal.autoApprove': { 'npm test': true } }))
   await creedUpdate(true)
-  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(1)
   expect(JSON.parse(await read('.vscode/settings.json'))).toEqual({
     'editor.tabSize': 2,
     'chat.tools.terminal.autoApprove': { 'npm test': true, ...SETTINGS_TEMPLATES['.vscode/settings.json']['chat.tools.terminal.autoApprove'] },
@@ -264,7 +264,7 @@ test('the CLI updates files and exits successfully', async () => {
     import { EventEmitter } from 'node:events'
     import { Readable } from 'node:stream'
     import readline from 'node:readline'
-    readline.createInterface = () => ({ close() {}, on() {}, question: (_, callback) => queueMicrotask(() => callback('n')) })
+    readline.createInterface = () => ({ close() {}, once() {}, question: (_, callback) => queueMicrotask(() => callback('')) })
     https.get = (url, callback) => {
       const request = new EventEmitter()
       request.destroy = error => queueMicrotask(() => request.emit('error', error))

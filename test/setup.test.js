@@ -35,7 +35,7 @@ test('scaffolds all full templates from the pinned release tag in order without 
   const { templates, requests, prompts, exit } = await setupFixture(declineSettings())
   await creedSetup(true)
   expect(requests).toEqual(CREED_FILES.map(templateUrl))
-  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(1)
   expect(exit.mock.calls).toEqual([])
   for (const file of CREED_FILES) {
     expect(await fs.readFile(file, 'utf8')).toBe(templates.get(templateUrl(file)))
@@ -156,7 +156,7 @@ test('manual mode asks once per destination and leaves declined existing and mis
   await fs.writeFile('AGENTS.md', '# Untouched\nMy instructions')
   await fs.writeFile('ARCHITECTURE.md', '# Custom architecture\nUser body')
   await creedSetup()
-  expect(prompts.length).toBe(CREED_FILES.length + 1 + CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(CREED_FILES.length + 2)
   for (const [index, file] of CREED_FILES.entries()) expect(prompts[index + 1]).toContain(file)
   expect(requests).toEqual([`${CREED_FILES_URL}ARCHITECTURE.md`, `${CREED_FILES_URL}${CREED_SKILLS[0]}`])
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Untouched\nMy instructions')
@@ -181,7 +181,7 @@ for (const file of [CREED_SUGGESTIONS_FILE, CREED_BACKLOG_FILE]) {
 test('choosing automatic setup at the initial prompt suppresses per-file prompts', async () => {
   const { prompts, requests } = await setupFixture(['yes', ...declineSettings()])
   await creedSetup()
-  expect(prompts.length).toBe(1 + CREED_AGENT_SETTINGS.length)
+  expect(prompts.length).toBe(2)
   expect(requests.length).toBe(CREED_FILES.length)
 })
 
@@ -287,26 +287,41 @@ for (const failure of ['download write', 'download read', 'prefix write', 'appen
 
 const readJson = async file => JSON.parse(await fs.readFile(file, 'utf8'))
 
-test('asks about every agent permission file even in automatic mode and creates the accepted ones', async () => {
-  const { prompts, requests } = await setupFixture(acceptSettings())
+test('asks once which agent tools to configure even in automatic mode and creates all picked files', async () => {
+  const { prompts, requests, output } = await setupFixture(acceptSettings())
   await creedSetup(true)
-  expect(prompts.length).toBe(CREED_AGENT_SETTINGS.length)
-  for (const [index, { file }] of CREED_AGENT_SETTINGS.entries()) {
-    expect(prompts[index]).toContain(file)
+  expect(prompts.length).toBe(1)
+  for (const { file } of CREED_AGENT_SETTINGS) {
+    expect(output.join('')).toContain(file)
     expect(await readJson(file)).toEqual(SETTINGS_TEMPLATES[file])
   }
   expect(requests.slice(CREED_FILES.length)).toEqual(CREED_AGENT_SETTINGS.map(({ file }) => templateUrl(file)))
   expect(Object.keys(await readJson('.vscode/settings.json'))).toEqual(['chat.tools.terminal.autoApprove'])
 })
 
-test('creates only the agent permission files the user accepted', async () => {
-  const { requests } = await setupFixture(['n', 'y', 'n', 'n'])
+test('creates only the picked agent permission files', async () => {
+  const { requests } = await setupFixture(['2'])
   await creedSetup(true)
   expect(await readJson('.claude/settings.json')).toEqual(SETTINGS_TEMPLATES['.claude/settings.json'])
   for (const file of ['.vscode/settings.json', '.gemini/settings.json', '.cursor/cli.json']) {
     await expect(fs.access(file)).rejects.toMatchObject({ code: 'ENOENT' })
   }
   expect(requests.slice(CREED_FILES.length)).toEqual([templateUrl('.claude/settings.json')])
+})
+
+test('accepts comma or space separated picks and ignores duplicates', async () => {
+  const { requests } = await setupFixture(['4 ,1,4'])
+  await creedSetup(true)
+  expect(requests.slice(CREED_FILES.length)).toEqual([templateUrl('.vscode/settings.json'), templateUrl('.cursor/cli.json')])
+})
+
+test('asks again after an invalid pick and picks nothing on an empty answer', async () => {
+  const { prompts, requests, output } = await setupFixture(['x', '9', '0', ''])
+  await creedSetup(true)
+  expect(prompts.length).toBe(4)
+  expect(output.join('')).toContain("Invalid choice 'x'")
+  expect(requests.length).toBe(CREED_FILES.length)
+  for (const { file } of CREED_AGENT_SETTINGS) await expect(fs.access(file)).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
 test('merges agent permissions into existing files without dropping other settings', async () => {

@@ -34,7 +34,7 @@ npx agentcreed <cmd> [true|false]
 
 Setup and update also write `.creed/.version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
 
-Just before that, both call `setupAgentSettings()` (`utils/install.js`), which always prompts (regardless of automatic mode) once per entry of `CREED_AGENT_SETTINGS` and merges the accepted agent permission files (`.vscode/settings.json`, `.claude/settings.json`, `.gemini/settings.json`, `.cursor/cli.json`) via `updateJsonFile` from the template of the same path. Only the listed key paths are merged; dots inside a VS Code setting ID are escaped with a backslash so it stays a flat key.
+Just before that, both call `setupAgentSettings()` (`utils/install.js`), which always prompts (regardless of automatic mode) with one multi-choice question over the entries of `CREED_AGENT_SETTINGS` and merges the picked agent permission files (`.vscode/settings.json`, `.claude/settings.json`, `.gemini/settings.json`, `.cursor/cli.json`) via `updateJsonFile` from the template of the same path. Only the listed key paths are merged; dots inside a VS Code setting ID are escaped with a backslash so it stays a flat key.
 
 The `creed-check` skill (not the CLI) writes `.creed/.check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
 
