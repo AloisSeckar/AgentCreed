@@ -15,9 +15,11 @@ For the purpose of this skill, consider:
 - `creed-files` are `AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/BACKLOG.md` and `.creed/SUGGESTIONS.md` in `project root`. Other files with the same names in nested folders are ordinary `linked-files`.
 - `linked-files` are instruction or documentation files a read file links to or directs to read/use, including skills it requires to be used (e.g. `creed-dev`). Exclude `creed-files` and exclude source code, test or configuration files. Read each file only once.
 - `security-boundaries` impose limits on code or agent actions from a security perspective that must always be fulfilled.
-- `agent-instructions` describe how agents should (or shouldn't) interact with the code or behave when performing given tasks (excluding security rules).
-- `documented-facts` describe the project structure and its behavior (to be "documented", the fact must be written somewhere within the project).
+- `agent-instructions` describe how agents should (or shouldn't) interact with the code or behave when performing given tasks (excluding security rules). This includes coding conventions phrased as a rule (should, must, never, always, "use X"), e.g. "Functions should contain JSDoc comments".
+- `documented-facts` describe the project structure and its behavior (to be "documented", the fact must be written somewhere within the project). This includes coding conventions phrased as a description of the existing code, e.g. "Functions are documented with JSDoc comments".
 - `source` of an item is the exact file and passage it was taken from.
+
+Every coding convention must be documented in both forms: as a fact in `ARCHITECTURE.md` and as a derived rule in `AGENTS.md`. These pairs are intentional, not duplicates. Both must say aligned.
 
 Split a passage into separate items only where it holds independent rules. Keep a condition together with its consequence (e.g. "do X and notify the user" is one item).
 
@@ -83,6 +85,11 @@ For each item of `documented-facts` list, verify it is:
 2. Clear and unambiguous. Rephrase the source if needed. If the intention is not clear to you, add it into `questions`.
 3. Not duplicated by any other item in any list. If yes, keep only one in the source.
 4. Accurate. Verify it against the project's own code and configuration (e.g. package manifests, scripts, folder structure). Do not dig into third-party libraries or other pulled-in code (e.g. `node_modules`); take it as fact that such code does what its name, documentation and usage suggest. If the behavior of third-party code is uncertain, add it into `questions`. Fix verifiably wrong facts, remove transient states (e.g. test counts) and add uncertain cases into `questions`.
+
+For each coding convention found in either `ARCHITECTURE.md` or `AGENTS.md`, verify it is:
+
+1. Documented in both forms. If only the fact is present, add the derived rule into the project-specific part of `AGENTS.md`; if only the rule is present, add the fact into `ARCHITECTURE.md`. If the derived wording is not obvious, add it into `questions`.
+2. Consistent between both forms. If they differ, add it into `questions` and ask which one wins.
 
 For each temporary override (a rule marked with `<!-- TEMPORARY OVERRIDE of AgentCreed: ... -->` in the project-specific part of any `creed-file` or `linked-file`), verify it is:
 
