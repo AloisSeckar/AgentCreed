@@ -354,7 +354,7 @@ test('merges agent permissions into existing files without dropping other settin
 
 test('stops on an existing agent permission file that is not valid JSON and leaves it untouched', async () => {
   const { output } = await setupFixture(acceptSettings())
-  const original = '{\n  // a comment\n  "editor.tabSize": 2\n}'
+  const original = '{\n  "editor.tabSize": 2,\n'
   await fs.mkdir('.vscode', { recursive: true })
   await fs.writeFile('.vscode/settings.json', original)
   await expect(creedSetup(true)).rejects.toThrow(/Could not set up '\.vscode\/settings\.json'/)

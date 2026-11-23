@@ -264,7 +264,7 @@ test('the CLI updates files and exits successfully', async () => {
     import { EventEmitter } from 'node:events'
     import { Readable } from 'node:stream'
     import readline from 'node:readline'
-    readline.createInterface = () => ({ close() {}, once() {}, question: (_, callback) => queueMicrotask(() => callback('')) })
+    readline.createInterface = () => ({ close() {}, on() {}, once() {}, question: (_, callback) => queueMicrotask(() => callback('')) })
     https.get = (url, callback) => {
       const request = new EventEmitter()
       request.destroy = error => queueMicrotask(() => request.emit('error', error))

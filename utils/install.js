@@ -2,9 +2,8 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import readline from 'node:readline'
 import {
-  createFileFromWebTemplate, deletePath, pathExists, showDebug, showMessage, updateJsonFile, updateTextFile,
+  createFileFromWebTemplate, deletePath, pathExists, promptUser, showDebug, showMessage, updateJsonFile, updateTextFile,
 } from 'elrh-cosca'
 import {
   CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_CHECK_FILE, CREED_FILES_URL, CREED_SKILLS,
@@ -173,27 +172,6 @@ export function applyManagedBlock(original, template, isSkill = false) {
   return bom + composeDocument(sections).replaceAll('\n', eol)
 }
 
-// Multi-choice prompt (elrh-cosca only offers yes/no): returns the picked 0-based indexes, none for an empty answer.
-async function promptChoices(options) {
-  for (const [index, option] of options.entries()) showMessage({ message: `  ${index + 1}) ${option}` })
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-  try {
-    while (true) {
-      const answer = await new Promise(resolve => {
-        rl.once('close', () => resolve(''))
-        rl.question('\nEnter numbers separated by commas (empty for none): ', resolve)
-      })
-      const numbers = answer.split(/[\s,]+/).filter(Boolean).map(Number)
-      if (numbers.every(number => Number.isInteger(number) && number >= 1 && number <= options.length)) {
-        return [...new Set(numbers)].sort((a, b) => a - b).map(number => number - 1)
-      }
-      showMessage({ message: `Invalid choice '${answer.trim()}'.` })
-    }
-  } finally {
-    rl.close()
-  }
-}
-
 /**
  * Offer to merge the AgentCreed command permissions into the settings files of the agent tools picked by the user.
  * Always asks, even in automatic mode. Existing files keep their other settings: objects are merged key by key
@@ -206,12 +184,15 @@ export async function setupAgentSettings() {
       + 'This changes what agents may do without your approval. Other settings in existing files are kept.',
     linesAfter: 1,
   })
-  const picked = await promptChoices(CREED_AGENT_SETTINGS.map(({ label, file }) => `${label} (${file})`))
+  const picked = await promptUser({
+    question: 'Select the agent tools to configure:',
+    multiChoice: CREED_AGENT_SETTINGS.map(({ label, file }) => `${label} (${file})`),
+  })
   if (!picked.length) {
     showDebug('Agent command permissions skipped.')
     return
   }
-  for (const { file, paths } of picked.map(index => CREED_AGENT_SETTINGS[index])) {
+  for (const { file, paths } of picked.map(number => CREED_AGENT_SETTINGS[number - 1])) {
     const url = `${CREED_FILES_URL}${file}`
     try {
       const template = JSON.parse(await fetchTemplate(url))
