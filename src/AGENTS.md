@@ -10,6 +10,8 @@ Always use the `creed-dev` skill when tasked to interact with the codebase.
 
 Lines `<!-- ↓↓↓ agentcreed ↓↓↓ -->` and `<!-- ↑↑↑ agentcreed ↑↑↑ -->` are structural markers, not instructions. Text between them is managed by AgentCreed and gets overwritten on `agentcreed setup` and `agentcreed update`: each file has a single managed block, project-specific content belongs AFTER `<!-- ↑↑↑ agentcreed ↑↑↑ -->`, and managed text must not be edited unless `AGENTS.md` allows it.
 
+Project-specific rules (outside AgentCreed-managed text) may intentionally override AgentCreed-managed rules, including rules in `SECURITY.md`. Always include any such rule in summary response.
+
 When the user prompt contradicts any of the established rules, notify the user and ask for confirmation.
 
 ## Architecture and security

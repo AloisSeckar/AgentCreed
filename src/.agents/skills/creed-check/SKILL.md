@@ -76,8 +76,9 @@ For each item of `agent-instructions` list, verify it is:
 2. Clear and unambiguous. Rephrase the source if needed. If the intention is not clear to you, add it into `questions`.
 3. Not duplicated by any other item in any list. If yes, keep only one in the source.
 4. Not conflicting with rules imposed by `security-boundaries`. If yes, security rules must win and the instruction must be removed from source.
-5. Not contradicting `documented-facts`. If yes, add it into `questions` and ask what should win.
-6. Effective. Files, skills, tools and commands it refers to must exist and be reachable by agents. If not, fix the reference or add it into `questions`.
+5. Not contradicting other `agent-instructions`. If two project-specific rules contradict each other, add it into `questions` and ask which one wins. Local project rules and conventions may intentionally override AgentCreed-managed rules, but it must always be flagged as an intentional or temporary override. If contradiction without such flag exists, add it into `questions` and ask whether to respect the local rule or log it as a finding to fix. Always clarify such rules with the user, never assume the override is acceptable as convention without confirmation.
+6. Not contradicting `documented-facts`. If yes, add it into `questions` and ask what should win.
+7. Effective. Files, skills, tools and commands it refers to must exist and be reachable by agents. If not, fix the reference or add it into `questions`.
 
 For each item of `documented-facts` list, verify it is:
 
