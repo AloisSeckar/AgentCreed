@@ -9,7 +9,7 @@ import { Readable } from 'node:stream'
 import { expect, onTestFinished, vi } from 'vitest'
 import {
   CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
-} from '../utils/constants.js'
+} from '../bin/utils/constants.js'
 
 /** Skill frontmatter used by mocked templates */
 export const METADATA = '---\nname: creed-dev\ndescription: Template skill\n---'

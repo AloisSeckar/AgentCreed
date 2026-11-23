@@ -16,4 +16,4 @@ The library `elrh-cosca` is the preferred way of handling file operations in the
 - Use single quotes, two-space indentation and no semicolons unless the syntax requires one.
 - Use LF line endings for repository text files.
 - Document exported functions with JSDoc and exported constants with one-line `/** */` comments.
-- Define managed file paths in `utils/constants.js` and reuse them in CLI code.
+- Define managed file paths in `bin/utils/constants.js` and reuse them in CLI code.

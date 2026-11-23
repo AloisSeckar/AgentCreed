@@ -8,7 +8,7 @@ import { creedSetup } from '../bin/setup.js'
 import {
   CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_FILES_URL, CREED_SKILLS,
   CREED_BACKLOG_FILE, CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
-} from '../utils/constants.js'
+} from '../bin/utils/constants.js'
 import {
   METADATA, SETTINGS_TEMPLATES, acceptSettings, block, declineSettings, linkOutside, setupFixture, templateUrl,
 } from './helpers.js'

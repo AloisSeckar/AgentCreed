@@ -6,9 +6,9 @@
 
 import { 
   getPackageManager, showMessage, showError, 
-  showDebug, showSuccess
+  showDebug, showSuccess,
 } from 'elrh-cosca'
-import { CREED_VERSION } from '../utils/constants.js'
+import { CREED_VERSION } from './utils/constants.js'
 
 // get parameters passed by user
 const args = process.argv.slice(2); // semicolon required

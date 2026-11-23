@@ -2,10 +2,12 @@
 
 import { 
   createFileFromWebTemplate, pathExists, promptUser, 
-  showDebug, showMessage, showSuccess 
+  showDebug, showMessage, showSuccess,
 } from 'elrh-cosca'
-import { CREED_FILES, CREED_FILES_URL } from '../utils/constants.js'
-import { fetchTemplate, mergeFile, removeCheckFile, setupAgentSettings, writeVersionFile } from '../utils/install.js'
+import { CREED_FILES, CREED_FILES_URL } from './utils/constants.js'
+import { 
+  fetchTemplate, mergeFile, removeCheckFile, setupAgentSettings, writeVersionFile,
+} from './utils/install.js'
 
 /**
  * Scaffold the root instruction documents, skills and aux files.

@@ -6,7 +6,7 @@ import { creedUpdate } from '../bin/update.js'
 import {
   CREED_BACKLOG_FILE, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_FILES, CREED_SKILLS,
   CREED_SUGGESTIONS_FILE, CREED_VERSION, CREED_VERSION_FILE,
-} from '../utils/constants.js'
+} from '../bin/utils/constants.js'
 import {
   METADATA, SETTINGS_TEMPLATES, block, declineSettings, linkOutside, setupFixture as baseFixture,
   templateUrl as url,
