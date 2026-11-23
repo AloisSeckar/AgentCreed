@@ -3,10 +3,12 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {
-  createFileFromWebTemplate, deletePath, pathExists, promptUser, showDebug, showMessage, updateJsonFile, updateTextFile,
+  createFileFromWebTemplate, deletePath, pathExists, promptUser,
+  showDebug, showMessage, updateJsonFile, updateTextFile,
 } from 'elrh-cosca'
 import {
-  CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END, CREED_CHECK_FILE, CREED_FILES_URL, CREED_SKILLS,
+  CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END,
+  CREED_CHECK_FILE, CREED_FILES_URL, CREED_SKILLS,
   CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
 
@@ -119,7 +121,7 @@ export async function fetchTemplate(url) {
     await createFileFromWebTemplate({ url, targetPath: templateFile, force: true, silent: true })
     return await fs.readFile(templateFile, 'utf8')
   } finally {
-    await fs.rm(directory, { recursive: true, force: true })
+    await deletePath({ targetPath: directory, force: true, silent: true })
   }
 }
 
@@ -154,7 +156,7 @@ export async function mergeFile(file, template) {
     showDebug(`'${file}' file updated.`)
     ownsTemp = false
   } finally {
-    if (ownsTemp) await fs.rm(tempFile, { force: true })
+    if (ownsTemp) await deletePath({ targetPath: tempFile, force: true, silent: true })
   }
 }
 
