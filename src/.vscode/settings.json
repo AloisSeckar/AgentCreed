@@ -5,6 +5,8 @@
         "git stash": true,
         "git stash pop": true,
         "git stash drop": false,
-        "git stash clear": false
+        "git stash clear": false,
+        "date -u +%Y-%m-%dT%H:%M:%SZ": true,
+        "Get-Date -Format o": true
     }
 }

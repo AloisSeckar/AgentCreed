@@ -112,6 +112,6 @@ Respond with a summary of:
 - typos and grammar mistakes fixed
 - every moved or rephrased rule with its old and new wording, marked as kept, merged, strengthened, weakened or dropped
 
-Finally, write the current timestamp (ISO 8601) into `.creed/.check` in `project root`. Create the file if missing. Overwrite it if exists.
+Finally, write the current timestamp (ISO 8601) into `.creed/.check` in `project root`. Create the file if missing. Overwrite it if exists. To get the timestamp, run `date -u +%Y-%m-%dT%H:%M:%SZ` on Unix/macOS/Git Bash or `Get-Date -Format o` on PowerShell. If that fails, use any other suitable method.
 
 <!-- ↑↑↑ agentcreed ↑↑↑ -->
