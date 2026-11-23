@@ -13,7 +13,7 @@ Methodology framework for AI-assisted development, shipped as an NPM CLI (`agent
 | Language        | JavaScript (ES modules, `"type": "module"`)                   |
 | Runtime         | Node.js >=22.13.0 (`engines` field)                           |
 | Package manager | pnpm 12.21.0 (`packageManager` field)                         |
-| Dependencies    | `elrh-cosca` ^0.5.2 (CLI helpers: prompts, messages, file IO) |
+| Dependencies    | `elrh-cosca` ^0.5.3 (CLI helpers: prompts, messages, file IO) |
 | Testing         | Vitest ^5.1.0 with Vitest snapshots                           |
 | Infrastructure  | None (no CI workflows, no containers)                         |
 
@@ -38,7 +38,7 @@ Just before that, both call `setupAgentSettings()` (`utils/install.js`), which a
 
 The `creed-check` skill (not the CLI) writes `.creed/.check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
 
-Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup and update call `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `utils/install.js` repeats the check in `mergeFile()`, `writeContainedFile()` (used by update and for the version file) and `writeVersionFile()`.
+Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup and update call `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `utils/install.js` repeats the check in `mergeFile()`, `writeContainedFile()` (used by update and for the version file), `writeVersionFile()` and `removeCheckFile()`.
 
 Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each processed file ends up with exactly one managed block: setup and update replace an existing block entirely with the template block and add it when missing. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
 
