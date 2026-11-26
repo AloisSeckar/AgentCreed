@@ -26,7 +26,7 @@ const args = process.argv.slice(2); // semicolon required
     switch (args[0]) {
       case 'update':
         showWarning({
-          message: 'Deprecated for removal: The `setup` command now provides unified setup and update functionality.',
+          message: 'WARNING: Deprecated for removal\nUse `setup` for both setup and update functionality.',
           linesAfter: 1,
         })
         // falls through
