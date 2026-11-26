@@ -5,7 +5,7 @@
             "Bash(git pull --ff-only)",
             "Bash(git stash)",
             "Bash(git stash pop)",
-            "Bash(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "Bash(date +%Y-%m-%dT%H:%M:%S%z)",
             "Bash(Get-Date -Format o)"
         ],
         "ask": [
