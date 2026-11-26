@@ -5,7 +5,7 @@
             "Shell(git:pull --ff-only)",
             "Shell(git:stash)",
             "Shell(git:stash pop)",
-            "Shell(date:-u +%Y-%m-%dT%H:%M:%SZ)",
+            "Shell(date:+%Y-%m-%dT%H:%M:%S%z)",
             "Shell(Get-Date:-Format o)"
         ],
         "deny": [

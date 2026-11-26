@@ -5,7 +5,7 @@
             "run_shell_command(git pull --ff-only)",
             "run_shell_command(git stash)",
             "run_shell_command(git stash pop)",
-            "run_shell_command(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "run_shell_command(date +%Y-%m-%dT%H:%M:%S%z)",
             "run_shell_command(Get-Date -Format o)"
         ],
         "exclude": [
