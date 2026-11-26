@@ -38,12 +38,11 @@ It is not - at least not yet - oriented toward fully autonomous agentic systems.
 
 ## Usage
 
-- to start, just use `npx agentcreed setup` - CLI will run a wizard to create/adjust necessary files
-- to update an existing instance, use `npx agentcreed update` - CLI will update existing instruction files to the latest versions (while preserving project-specific sections) and create new files if needed
+- use `npx agentcreed setup` - CLI runs a wizard to create missing files and update existing instruction files to the latest versions (while preserving project-specific sections)
 
 ### Setup behavior
 
-The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan`, `creed-check` and `creed-explain` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/.version`.
+The `npx agentcreed setup [true|false]` command processes `AGENTS.md`, `ARCHITECTURE.md`, and `SECURITY.md` in the current working directory, followed by `.creed/SUGGESTIONS.md` (a file where agents collect pending findings about agent instructions), `.creed/BACKLOG.md` (a file where agents collect pending tasks for the project), and the `creed-dev`, `creed-chat`, `creed-scan`, `creed-check` and `creed-explain` skills. Missing files are copied from the complete templates, creating directories as needed. Finally, the installed CLI version is written to `.creed/.version`, and the closing hint suggests `creed-check` if `.creed/.version` already existed or `creed-scan` on a fresh setup.
 
 Templates come from the GitHub release tag matching the installed CLI version (`refs/tags/v<version>/src/`).
 
@@ -51,17 +50,11 @@ For existing documents, setup keeps a custom H1 headline (the first non-blank li
 
 **Each file must contain at most one managed block, and user content belongs after it.** Content found before the block (other than the H1) is moved after it. Files with more than one block are rejected with an error; remove the extra blocks manually.
 
-Existing files are assembled in sibling `_temp.md` files using whole-block appends before being renamed over the originals. Line endings become LF and boundary blank lines are normalized; duplicate instructions, indentation, and internal spacing are retained. Repeating setup with unchanged templates produces the same merged contents.
+Existing files are merged in memory, preserving CRLF line endings when present and normalizing boundary blank lines; duplicate instructions, indentation, and internal spacing are retained. Files whose content is unchanged are not rewritten.
 
-Unless `true` is passed, setup asks whether to run automatically or prompt once per file; declining a file leaves it untouched. Automatic mode suppresses further per-file prompts (excluding the [agent command permissions](#agent-command-permissions)). Malformed markers, unterminated skill frontmatter, failed downloads, and temporary-file collisions stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
+Unless `true` is passed, setup asks whether to run automatically or prompt once per file; declining a file leaves it untouched. Automatic mode suppresses further per-file prompts (excluding the [agent command permissions](#agent-command-permissions)). Malformed markers, unterminated skill frontmatter, and failed downloads stop setup with an error. A failed merge leaves its original intact; files already processed are not rolled back.
 
-### Update behavior
-
-The `npx agentcreed update [true|false]` command refreshes an existing instance using the same prompt flow, file list, merge rules, marker/frontmatter validation, download error handling, and `.creed/.version` update as setup, with templates fetched from the installed CLI version's release tag:
-
-- Missing files are created from the templates.
-- Existing files are merged in memory rather than via `_temp.md`, preserving CRLF line endings when present (including adding the block below the headline or skill frontmatter when markers are absent).
-- Files whose content is unchanged are not rewritten.
+When used on project where Agent Creed is already established, it effectively acts like an update - the project specific content is preserved, Agent Creed blocks and files are updated to the latest versions.
 
 ### Agent command permissions
 

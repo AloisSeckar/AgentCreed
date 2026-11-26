@@ -43,13 +43,26 @@ test('scaffolds all full templates from the pinned release tag in order without 
   }
 })
 
-test('writes the CLI version to the version file on every run', async () => {
-  await setupFixture(declineSettings(2))
+test('writes the CLI version to the version file on every run and adapts the closing hint', async () => {
+  const { output } = await setupFixture(declineSettings(2))
   await creedSetup(true)
   expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
+  expect(output.join('')).toContain('`creed-scan`')
+  output.length = 0
   await fs.writeFile(CREED_VERSION_FILE, 'stale')
   await creedSetup(true)
   expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
+  expect(output.join('')).toContain('`creed-check`')
+})
+
+test('does not rewrite files whose managed block is already current', async () => {
+  await setupFixture(declineSettings())
+  const current = `# My project\n\n${BLOCK}\n\nBelow\n`
+  await fs.writeFile('AGENTS.md', current)
+  const write = vi.spyOn(fs, 'writeFile')
+  await creedSetup(true)
+  expect(write.mock.calls.filter(call => call[0] === 'AGENTS.md')).toEqual([])
+  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(current)
 })
 
 test('refuses to write the version file through a symlinked .creed directory', async ({ skip }) => {
@@ -146,7 +159,7 @@ test('handles empty files, literal first lines, CRLF, BOM and absent final newli
   expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(`# AGENTS.md\n\n${BLOCK}\n`)
   expect(await fs.readFile('ARCHITECTURE.md', 'utf8')).toBe(`# ARCHITECTURE.md\n\n${BLOCK}\n\nA literal first line\n`)
   const expected = await fs.readFile('SECURITY.md', 'utf8')
-  expect(expected).toBe(`\uFEFF# Security\n\n${BLOCK}\n\n  Keep spacing.  \n\nSecond line\n`)
+  expect(expected).toBe(`\uFEFF# Security\n\n${BLOCK}\n\n  Keep spacing.  \n\nSecond line\n`.replaceAll('\n', '\r\n'))
   await creedSetup(true)
   expect(await fs.readFile('SECURITY.md', 'utf8')).toBe(expected)
 })
@@ -234,17 +247,8 @@ for (const exists of [false, true]) {
   }
 }
 
-test('refuses to overwrite or remove a pre-existing temp file', async () => {
-  await setupFixture()
-  await fs.writeFile('AGENTS.md', '# Original\nUntouched')
-  await fs.writeFile('AGENTS_temp.md', 'Unrelated temp content')
-  await expect(creedSetup(true)).rejects.toThrow(/EEXIST/)
-  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Original\nUntouched')
-  expect(await fs.readFile('AGENTS_temp.md', 'utf8')).toBe('Unrelated temp content')
-})
-
-for (const failure of ['download write', 'download read', 'prefix write', 'append', 'verification', 'rename']) {
-  test(`preserves the original and cleans its temp after a ${failure} failure`, async () => {
+for (const failure of ['download write', 'download read']) {
+  test(`preserves the original and cleans temp dir after a ${failure} failure`, async () => {
     await setupFixture()
     await fs.writeFile('AGENTS.md', '# Original\nUntouched')
     if (failure === 'download write') {
@@ -254,34 +258,13 @@ for (const failure of ['download write', 'download read', 'prefix write', 'appen
         throw new Error('Download write failed')
       })
       syncBuiltinESMExports()
-    } else if (failure === 'download read') {
+    } else {
       const readFile = fs.readFile.bind(fs)
       vi.spyOn(fs, 'readFile').mockImplementation((file, ...args) => file.startsWith('.agentcreed-')
         ? Promise.reject(new Error('Download read failed')) : readFile(file, ...args))
-    } else if (failure === 'prefix write') {
-      const open = fs.open.bind(fs)
-      vi.spyOn(fs, 'open').mockImplementation(async (...args) => {
-        const handle = await open(...args)
-        vi.spyOn(handle, 'writeFile').mockImplementation(async () => { throw new Error('Write failed') })
-        return handle
-      })
-    } else if (failure === 'append') {
-      const writeFile = fsSync.writeFileSync.bind(fsSync)
-      vi.spyOn(fsSync, 'writeFileSync').mockImplementation((file, ...args) => {
-        if (file.endsWith('_temp.md')) throw new Error('Append failed')
-        return writeFile(file, ...args)
-      })
-      syncBuiltinESMExports()
-    } else if (failure === 'verification') {
-      const readFile = fs.readFile.bind(fs)
-      vi.spyOn(fs, 'readFile').mockImplementation((file, ...args) => file.endsWith('_temp.md')
-        ? Promise.resolve('Unexpected staged content') : readFile(file, ...args))
-    } else {
-      vi.spyOn(fs, 'rename').mockImplementation(async () => { throw new Error('Rename failed') })
     }
-    await expect(creedSetup(true)).rejects.toThrow(/Download (write|read) failed|Write failed|Append failed|expected content|Rename failed/)
+    await expect(creedSetup(true)).rejects.toThrow(/Download (write|read) failed/)
     expect(await fs.readFile('AGENTS.md', 'utf8')).toBe('# Original\nUntouched')
-    await expect(fs.access('AGENTS_temp.md')).rejects.toMatchObject({ code: 'ENOENT' })
   })
 }
 
@@ -369,6 +352,43 @@ test('refuses to write agent permissions through a symlinked directory pointing 
   if (!link) skip()
   await expect(creedSetup(true)).rejects.toThrow(/outside of CWD via symlink/)
   expect(await fs.readdir(link.outside)).toEqual([])
+})
+
+test('the CLI logs a deprecation warning for update and delegates to setup', async () => {
+  await setupFixture()
+  await fs.writeFile('AGENTS.md', `# Mine\n\n${block('Old instruction.')}\n`)
+  const cli = new URL('../bin/cli.js', import.meta.url).href
+  const script = `
+    import https from 'node:https'
+    import { EventEmitter } from 'node:events'
+    import { Readable } from 'node:stream'
+    import readline from 'node:readline'
+    readline.createInterface = () => ({ close() {}, on() {}, once() {}, question: (_, callback) => queueMicrotask(() => callback('')) })
+    https.get = (url, callback) => {
+      const request = new EventEmitter()
+      request.destroy = error => queueMicrotask(() => request.emit('error', error))
+      queueMicrotask(() => {
+        const response = Readable.from([Buffer.from(${JSON.stringify(`# T\n\n${BLOCK}\n`)})])
+        response.statusCode = 200
+        response.headers = {}
+        callback(response)
+      })
+      return request
+    }
+    process.argv = ['node', 'cli.js', 'update', 'true']
+    await import(${JSON.stringify(cli)})
+  `
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], {
+    encoding: 'utf8', timeout: 20000,
+  })
+  expect(result.error).toBeUndefined()
+  expect(result.stderr).toBe('')
+  expect(result.status).toBe(0)
+  expect(result.stdout).toContain('Deprecated for removal')
+  expect(result.stdout).toContain('SETUP COMPLETE')
+  expect(await fs.readFile('AGENTS.md', 'utf8')).toBe(`# Mine\n\n${BLOCK}\n`)
+  expect(await fs.readFile('SECURITY.md', 'utf8')).toBe(`# T\n\n${BLOCK}\n`)
+  expect(await fs.readFile(CREED_VERSION_FILE, 'utf8')).toBe(CREED_VERSION)
 })
 
 test('the CLI reports setup failures and exits nonzero', async () => {

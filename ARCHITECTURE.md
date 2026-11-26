@@ -25,30 +25,27 @@ Single-package CLI. Templates are not bundled - they are downloaded at runtime f
 npx agentcreed <cmd> [true|false]
         │
    bin/cli.js ──► bin/setup.js  ──► download src/<file> from GitHub (CREED_FILES_URL)
-              │                      ├─ missing file → create from template
-              │                      └─ existing file → merge via <file>_temp.md, then rename
-              └─► bin/update.js ──► download src/<file> from GitHub (CREED_FILES_URL)
-                                     ├─ missing file → create from template
-                                     └─ existing file → merge in memory (same rules as setup, preserving CRLF), write if changed
+   (`update` logs deprecation        ├─ missing file → create from template
+    warning and delegates here)      └─ existing file → merge in memory (preserving CRLF), write if changed
 ```
 
-Setup and update also write `.creed/.version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template.
+Setup also writes `.creed/.version` (`CREED_VERSION_FILE`) directly with the `CREED_VERSION` value, without downloading a template. Whether `.creed/.version` already existed before writing determines the closing skill hint (`creed-check` if it existed, `creed-scan` otherwise).
 
-Just before that, both call `setupAgentSettings()` (`bin/utils/install.js`), which always prompts (regardless of automatic mode) with one multi-choice question over the entries of `CREED_AGENT_SETTINGS` and merges the picked agent permission files (`.vscode/settings.json`, `.claude/settings.json`, `.gemini/settings.json`, `.cursor/cli.json`) via `updateJsonFile` from the template of the same path. Only the listed key paths are merged; dots inside a VS Code setting ID are escaped with a backslash so it stays a flat key.
+Just before that, it calls `setupAgentSettings()` (`bin/utils/install.js`), which always prompts (regardless of automatic mode) with one multi-choice question over the entries of `CREED_AGENT_SETTINGS` and merges the picked agent permission files (`.vscode/settings.json`, `.claude/settings.json`, `.gemini/settings.json`, `.cursor/cli.json`) via `updateJsonFile` from the template of the same path. Only the listed key paths are merged; dots inside a VS Code setting ID are escaped with a backslash so it stays a flat key.
 
-The `creed-check` skill (not the CLI) writes `.creed/.check` with the timestamp of its last run. Setup and update CLI commands delete it as their last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
+The `creed-check` skill (not the CLI) writes `.creed/.check` with the timestamp of its last run. The setup CLI command deletes it as its last step (`removeCheckFile()`); its absence lets the next `creed-scan` or `creed-check` run skip the git status and pull check of `creed-dev`.
 
-Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup and update call `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `bin/utils/install.js` repeats the check in `mergeFile()`, `writeContainedFile()` (used by update and for the version file), `writeVersionFile()` and `removeCheckFile()`.
+Before every write to an existing or new managed path, the CLI verifies through `elrh-cosca` (`pathExists`) that the path resolves inside the working directory, so symlinks or junctions pointing outside are rejected. Setup calls `pathExists` directly when choosing between creating and merging a file. `assertContained()` in `bin/utils/install.js` repeats the check in `writeContainedFile()`, `writeVersionFile()` and `removeCheckFile()`.
 
-Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each processed file ends up with exactly one managed block: setup and update replace an existing block entirely with the template block and add it when missing. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
+Managed content is delimited by `CREED_BLOCK_BEGIN` / `CREED_BLOCK_END` marker lines. Each processed file ends up with exactly one managed block: setup replaces an existing block entirely with the template block and adds it when missing. The merged document is: custom H1 (or template headline) → managed block → user content (anything outside the block, which includes text found before it). For skills, the frontmatter always comes from the template. Files with several blocks are rejected.
 
 ## Key Directories
 
-- `bin/` - CLI entry (`cli.js`) and command implementations (`setup.js`, `update.js`)
+- `bin/` - CLI entry (`cli.js`, where `update` is a deprecated alias) and setup command implementation (`setup.js`)
 - `bin/utils/` - shared constants (version, template URL, markers, managed file list) and `install.js` (template download, merge/replace of managed blocks, version file writing)
 - `src/` - templates distributed to target projects (`AGENTS.md`, `ARCHITECTURE.md`, `SECURITY.md`, `.creed/SUGGESTIONS.md`, `.creed/BACKLOG.md`, `.agents/skills/*`); root `AGENTS.md`, `ARCHITECTURE.md` and `SECURITY.md` point to them and add project-specific content
 - `.agents/skills/` - stub skills pointing to `src/.agents/skills/` so agent harnesses discover them in this repo; running `setup` or `update` here would merge full template content into them
-- `test/` - Vitest suites for setup and update (temp dirs, mocked `https.get` and `readline`); setup uses snapshots, update uses explicit expectations
+- `test/` - Vitest suite for setup and CLI behavior (temp dirs, mocked `https.get` and `readline`, Vitest snapshots)
 - `playground/` - manual sandbox; `test.js` runs the CLI against `void/` (empty project) and `established/` (pre-existing files)
 - `.creed/` - versioned agent work files; `SUGGESTIONS.md` (pending findings about agent instructions) and `BACKLOG.md` (pending project tasks) are merged/updated by setup and update like other managed files, `.version` is written by setup and update
 - `.vscode/` - editor file associations only

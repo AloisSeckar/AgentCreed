@@ -1,14 +1,14 @@
-// Shared helpers for AgentCreed setup and update commands
+// Helpers for AgentCreed setup command
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {
   createFileFromWebTemplate, deletePath, pathExists, promptUser,
-  showDebug, showMessage, updateJsonFile, updateTextFile,
+  showDebug, showMessage, updateJsonFile,
 } from 'elrh-cosca'
 import {
   CREED_AGENT_SETTINGS, CREED_BLOCK_BEGIN, CREED_BLOCK_END,
-  CREED_CHECK_FILE, CREED_FILES_URL, CREED_SKILLS,
+  CREED_CHECK_FILE, CREED_FILES_URL,
   CREED_VERSION, CREED_VERSION_FILE,
 } from './constants.js'
 
@@ -126,42 +126,8 @@ export async function fetchTemplate(url) {
 }
 
 /**
- * Replace the managed block in `file` with the one from `template`, keeping a custom H1 headline and the content after the block.
- *
- * @param {string} file - Path to the existing file to merge into.
- * @param {string} template - Text of the template providing the managed block.
- */
-export async function mergeFile(file, template) {
-  assertContained(file)
-  const original = await fs.readFile(file, 'utf8')
-  const { bom, header, block, body } = getMergeSections(original, template, CREED_SKILLS.includes(file))
-  const prefix = bom + header
-  const tempFile = file.replace(/\.md$/, '_temp.md')
-  let ownsTemp = false
-  try {
-    const handle = await fs.open(tempFile, 'wx')
-    ownsTemp = true
-    try {
-      await handle.writeFile(`${prefix}\n`, 'utf8')
-    } finally {
-      await handle.close()
-    }
-    await updateTextFile({ targetPath: tempFile, rowsToAdd: [block], allowDuplicates: true, force: true, silent: true })
-    if (body) await updateTextFile({ targetPath: tempFile, rowsToAdd: [body], allowDuplicates: true, force: true, silent: true })
-    const expected = bom + composeDocument({ header, block, body })
-    if (await fs.readFile(tempFile, 'utf8') !== expected) {
-      throw new Error('Temporary file did not preserve the expected content')
-    }
-    await fs.rename(tempFile, file)
-    showDebug(`'${file}' file updated.`)
-    ownsTemp = false
-  } finally {
-    if (ownsTemp) await deletePath({ targetPath: tempFile, force: true, silent: true })
-  }
-}
-
-/**
- * Same merge as `mergeFile`, returned as text.
+ * Replace the managed block in `original` with the one from `template`, keeping a custom H1 headline,
+ * line endings and the content outside the block.
  *
  * @param {string} original - Current text of the file.
  * @param {string} template - Text of the template providing the managed block.

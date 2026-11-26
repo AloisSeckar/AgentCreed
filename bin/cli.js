@@ -6,7 +6,7 @@
 
 import { 
   getPackageManager, showMessage, showError, 
-  showDebug, showSuccess,
+  showDebug, showSuccess, showWarning,
 } from 'elrh-cosca'
 import { CREED_VERSION } from './utils/constants.js'
 
@@ -23,12 +23,15 @@ const args = process.argv.slice(2); // semicolon required
     showDebug({ message: `CLI version: ${CREED_VERSION}`, linesAfter: 1 })
     showSuccess({ message: 'AGENT CREED CLI', linesAfter: 1 })
 
-    switch (args[0]) {  
+    switch (args[0]) {
+      case 'update':
+        showWarning({
+          message: 'Deprecated for removal: The `setup` command now provides unified setup and update functionality.',
+          linesAfter: 1,
+        })
+        // falls through
       case 'setup':
         await (await import('./setup.js')).creedSetup(autoRun)
-        break
-      case 'update':
-        await (await import('./update.js')).creedUpdate(autoRun)
         break
       default:
         showError(`[agentcreed] Usage: \`${getPackageManager()} agentcreed setup|update [true|false]\``)

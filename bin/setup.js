@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
+import fs from 'node:fs/promises'
 import { 
   createFileFromWebTemplate, pathExists, promptUser, 
   showDebug, showMessage, showSuccess,
 } from 'elrh-cosca'
-import { CREED_FILES, CREED_FILES_URL } from './utils/constants.js'
+import { CREED_FILES, CREED_FILES_URL, CREED_SKILLS, CREED_VERSION_FILE } from './utils/constants.js'
 import { 
-  fetchTemplate, mergeFile, removeCheckFile, setupAgentSettings, writeVersionFile,
+  applyManagedBlock, fetchTemplate, removeCheckFile, setupAgentSettings, writeContainedFile, writeVersionFile,
 } from './utils/install.js'
 
 /**
- * Scaffold the root instruction documents, skills and aux files.
+ * Scaffold or update the root instruction documents, skills and aux files.
  *
  * @param {boolean} autoRun - Whether to run the setup automatically without any prompts (defaults to false).
  */
@@ -27,10 +28,18 @@ export async function creedSetup(autoRun = false) {
     }
     const url = `${CREED_FILES_URL}${file}`
     try {
-      if (pathExists({ targetPath: file })) {
-        await mergeFile(file, await fetchTemplate(url))
-      } else {
+      if (!pathExists({ targetPath: file })) {
         await createFileFromWebTemplate({ url, targetPath: file, force: true })
+        continue
+      }
+      const template = await fetchTemplate(url)
+      const original = await fs.readFile(file, 'utf8')
+      const updated = applyManagedBlock(original, template, CREED_SKILLS.includes(file))
+      if (updated === original) {
+        showDebug(`'${file}' file already up to date.`)
+      } else {
+        await writeContainedFile(file, updated)
+        showDebug(`'${file}' file updated.`)
       }
     } catch (error) {
       throw new Error(`Could not set up '${file}' from ${url}: ${error.message}`, { cause: error })
@@ -41,11 +50,13 @@ export async function creedSetup(autoRun = false) {
   await setupAgentSettings()
 
   // .creed folder adjustments
+  const isUpdate = pathExists({ targetPath: CREED_VERSION_FILE })
   await writeVersionFile()
   await removeCheckFile()
 
   // inform user
+  const nextSkill = isUpdate ? 'creed-check' : 'creed-scan'
   showSuccess({ message: 'SETUP COMPLETE', linesBefore: 1, linesAfter: 1 })
-  showMessage({ message: 'Proceed with running `creed-scan` skill via your agent to make sure all instructions are consistent and up-to-date.' })
+  showMessage({ message: `Proceed with running \`${nextSkill}\` skill via your agent to make sure all instructions are consistent and up-to-date.` })
 
 }
