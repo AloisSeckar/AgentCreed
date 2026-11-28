@@ -15,7 +15,7 @@ If the `ARCHITECTURE.md` file already exists in the project root, treat it as a 
 
 ## Preparation
 
-If and only if `.creed/.check` is not present in `project root` yet (the first run after installation), skip the `git status` and `git pull --ff-only` check required by `creed-dev` and continue right away.
+If and only if `.creed/.check` is not present in `project root` (typically the first run after `agentcreed setup`), skip the `git status` and `git pull --ff-only` check required by `creed-dev` and continue right away. On all other runs, follow `creed-dev` and stop if the worktree is dirty.
 
 ## Project Analysis Workflows
 

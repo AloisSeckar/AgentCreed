@@ -12,7 +12,7 @@ Lines `<!-- ↓↓↓ agentcreed ↓↓↓ -->` and `<!-- ↑↑↑ agentcreed �
 
 Project-specific rules (outside AgentCreed-managed text) may intentionally override AgentCreed-managed rules, including rules in `SECURITY.md`. Always include any such rule in summary response.
 
-When the user prompt contradicts any of the established rules, notify the user and ask for confirmation.
+When the user prompt contradicts any of the established rules, notify the user and ask for confirmation. Any confirmation applies only to the current task; lasting exceptions must be added as project-specific rules reachable from `AGENTS.md`.
 
 ## Architecture and security
 
